@@ -1,11 +1,11 @@
-
-import Varsity from './components/Varsity'
-
-
+import Landing from './components/Landing'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 function App() {
-  return(
+  return (
     <>
-      <varsity/>
+      <BrowserRouter>
+        <Landing />
+      </BrowserRouter>
     </>
   )
 
