@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FiClock, FiDollarSign, FiHeart, FiFilter, FiSearch } from "react-icons/fi";
 import { motion } from "framer-motion";
 
-// Sample meal category data
+
 const categories = [
   { id: "all", name: "All" },
   { id: "breakfast", name: "Breakfast" },
