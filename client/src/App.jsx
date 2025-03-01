@@ -6,6 +6,7 @@ import ClassSchedule from './components/ClassSchedule';
 import EventCalendar from './components/EventCalendar';
 import HomePage from './components/Homepage';
 import Landing from './components/Landing';
+import Notes from './pages/Notes';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/ClassSchedule" element={<ClassSchedule />} />
           <Route path="/CampusNavigation" element={<CampusNavigation />} />
           <Route path="/HomePage" element={<HomePage />} />
+          <Route path="/Notes" element={<Notes />} />
         </Routes>
       </BrowserRouter>
     </>
