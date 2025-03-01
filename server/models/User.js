@@ -16,23 +16,31 @@ const UserSchema = new mongoose.Schema({
             'Please add a valid email'
         ]
     },
+    studentId: { type: String, required: true, unique: true },
     role:{
         type:[String],
-        enum:["user","publisher"],
+        enum:["user"],
         default:['user']
     },
     password:{
         type:String,
-        required:[true,"Please enter a valid password"],
+        // required:[true,"Please enter a valid password"],
         minlength:6,
         select:false,
     },
+    department: { type: String },
+  joinedClubs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Club' }],
+  eventReminders: [{
+    event: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
+    reminderTime: { type: Date }
+  }],
     resetPasswordToken:String,
     resetPasswordExpire:Date,
     createdAt:{
         type:Date,
         default:Date.now
     }
+
 })
 // encrypt password using bcrypt
 UserSchema.pre('save',async function(next){
