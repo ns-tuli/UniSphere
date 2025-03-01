@@ -10,7 +10,8 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import mealRoutes from "./routes/mealRoutes.js";
 import busRoutes from "./routes/busRoutes.js"
-
+import classRoutes from "./routes/classRoutes.js"
+import departmentRoutes from "./routes/departmentRoutes.js"
 dotenv.config();
 
 connectDB();
@@ -24,6 +25,8 @@ app.use(express.json());
 // Routes
 app.use("/api/meals", mealRoutes);
 app.use("/api/bus", busRoutes);
+app.use("/api/class", classRoutes);
+app.use("/api/department", departmentRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
