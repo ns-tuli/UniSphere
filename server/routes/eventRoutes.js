@@ -23,10 +23,11 @@ router.post(
   ],
   createEvent
 );
-
+router.get('/tags', getTags);
+router.post('/:id/rsvp', rsvpEvent);
 router.get('/', getEvents);
 router.get('/:id', getEvent);
-router.post('/:id/rsvp', rsvpEvent);
-router.get('/tags', getTags);
+
+
 
 export default router;
