@@ -9,7 +9,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import mealRoutes from "./routes/mealRoutes.js";
-
+import busRoutes from "./routes/busRoutes.js"
 
 dotenv.config();
 
@@ -23,6 +23,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/meals", mealRoutes);
+app.use("/api/bus", busRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

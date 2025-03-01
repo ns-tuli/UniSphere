@@ -1,166 +1,59 @@
 // src/components/BusSchedule.jsx
 import React, { useState, useEffect } from "react";
 import { MapPin, Clock, Bus, AlertTriangle, Calendar, Search, Filter } from "lucide-react";
+import { getBusSchedules, getBusScheduleById } from "../api/bus"; // Adjust the path to busAPI.js
 
 // Sample data - in a real app, this would come from an API
-const routes = [
-  {
-    id: 1,
-    name: "Route: Main Campus → Downtown",
-    schedule: [
-      { time: "7:30 AM", status: "On Time" },
-      { time: "8:15 AM", status: "Delayed (5 min)" },
-      { time: "9:00 AM", status: "On Time" },
-      { time: "10:30 AM", status: "On Time" },
-      { time: "12:00 PM", status: "On Time" },
-    ],
-    stops: ["Student Center", "Library", "Science Building", "Downtown Station"],
-    busNumber: "UC-01",
-    driver: "John Davis",
-    capacity: "40 seats",
-    accessibility: true,
-    estimatedTime: "25 minutes",
-    currentLocation: "Near Science Building",
-  },
-  {
-    id: 2,
-    name: "Route: Residence Halls → Medical Campus",
-    schedule: [
-      { time: "7:45 AM", status: "On Time" },
-      { time: "9:15 AM", status: "On Time" },
-      { time: "11:00 AM", status: "Cancelled" },
-      { time: "1:30 PM", status: "On Time" },
-      { time: "3:00 PM", status: "On Time" },
-    ],
-    stops: ["Oakwood Hall", "Pinecrest Apartments", "Student Rec Center", "Medical Campus"],
-    busNumber: "UC-02",
-    driver: "Sarah Johnson",
-    capacity: "30 seats",
-    accessibility: true,
-    estimatedTime: "20 minutes",
-    currentLocation: "At Oakwood Hall",
-  },
-  {
-    id: 3,
-    name: "Route: Athletic Complex → Engineering Buildings",
-    schedule: [
-      { time: "8:00 AM", status: "On Time" },
-      { time: "10:00 AM", status: "On Time" },
-      { time: "12:30 PM", status: "Delayed (10 min)" },
-      { time: "2:30 PM", status: "On Time" },
-      { time: "4:15 PM", status: "On Time" },
-    ],
-    stops: ["Athletic Complex", "Stadium", "Engineering Hall", "Research Park"],
-    busNumber: "UC-03",
-    driver: "Michael Chen",
-    capacity: "35 seats",
-    accessibility: true,
-    estimatedTime: "15 minutes",
-    currentLocation: "At Engineering Hall",
-  },
-  {
-    id: 4,
-    name: "Route: West Campus → Arts District",
-    schedule: [
-      { time: "7:15 AM", status: "On Time" },
-      { time: "9:30 AM", status: "On Time" },
-      { time: "11:45 AM", status: "On Time" },
-      { time: "2:00 PM", status: "Delayed (7 min)" },
-      { time: "4:30 PM", status: "On Time" },
-    ],
-    stops: ["West Campus Housing", "Music Building", "Theater Complex", "Art Gallery"],
-    busNumber: "UC-04",
-    driver: "Emily Rodriguez",
-    capacity: "25 seats",
-    accessibility: true,
-    estimatedTime: "30 minutes",
-    currentLocation: "Near Music Building",
-  },
-];
 
 export default function BusSchedule() {
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredRoutes, setFilteredRoutes] = useState(routes);
+  const [filteredRoutes, setFilteredRoutes] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
   const [notifications, setNotifications] = useState([]);
   const [showMap, setShowMap] = useState(false);
 
-  // Mock notifications that would come from a real-time system
+  // Fetch bus schedules on component mount
   useEffect(() => {
-    // Simulate real-time notifications
-    const initialNotifications = [
-      {
-        id: 1,
-        message: "Route B 11:00 AM trip cancelled due to maintenance",
-        time: "6:30 AM",
-        type: "alert",
-      },
-      {
-        id: 2,
-        message: "Weather advisory: Expect delays on all routes this afternoon",
-        time: "8:15 AM",
-        type: "warning",
-      },
-      {
-        id: 3,
-        message: "Route A running 5 minutes behind schedule",
-        time: "8:10 AM",
-        type: "info",
-      },
-    ];
-    setNotifications(initialNotifications);
-
-    // Simulate a new notification coming in
-    const timer = setTimeout(() => {
-      setNotifications([
-        ...initialNotifications,
-        {
-          id: 4,
-          message: "Route C facing 10-minute delay due to traffic",
-          time: "Just now",
-          type: "info",
-        },
-      ]);
-    }, 5000);
-
-    return () => clearTimeout(timer);
+    const fetchBusSchedules = async () => {
+      try {
+        const schedules = await getBusSchedules(); // Fetch schedules from the API
+        setFilteredRoutes(schedules); // Set the fetched data as the filtered routes
+      } catch (error) {
+        console.error("Error fetching bus schedules:", error.message);
+      }
+    };
+    fetchBusSchedules();
   }, []);
 
   // Filter routes based on search query
   useEffect(() => {
-    const filtered = routes.filter(
+    const filtered = filteredRoutes.filter(
       (route) =>
         route.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         route.stops.some((stop) => stop.toLowerCase().includes(searchQuery.toLowerCase()))
     );
     setFilteredRoutes(filtered);
-  }, [searchQuery]);
+  }, [searchQuery, filteredRoutes]);
 
   // Filter routes based on active tab
   useEffect(() => {
     if (activeTab === "all") {
-      setFilteredRoutes(
-        routes.filter((route) =>
-          route.name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
+      setFilteredRoutes(filteredRoutes);
     } else if (activeTab === "delayed") {
       setFilteredRoutes(
-        routes.filter((route) =>
+        filteredRoutes.filter((route) =>
           route.schedule.some((time) => time.status.includes("Delayed"))
         )
       );
     } else if (activeTab === "ontime") {
       setFilteredRoutes(
-        routes.filter((route) =>
-          route.schedule.every(
-            (time) => time.status === "On Time" || time.status === "Cancelled"
-          )
+        filteredRoutes.filter((route) =>
+          route.schedule.every((time) => time.status === "On Time" || time.status === "Cancelled")
         )
       );
     }
-  }, [activeTab, searchQuery]);
+  }, [activeTab]);
 
   const getStatusColor = (status) => {
     if (status === "On Time") return "text-green-500";
