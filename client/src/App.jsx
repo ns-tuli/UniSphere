@@ -10,6 +10,8 @@ import HomePage from "./components/Homepage";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import CafeteriaManagement from "./components/Admin/CafeteriaManagement";
 import BusManagement from "./components/Admin/BusManagement";
+import Notes from "./pages/Notes";
+import Roadmap from "./pages/Roadmap";
 
 function App() {
   return (
@@ -22,7 +24,9 @@ function App() {
         <Route path="/ClassSchedule" element={<ClassSchedule />} />
         <Route path="/CampusNavigation" element={<CampusNavigation />} />
         <Route path="/HomePage" element={<HomePage />} />
-        
+        <Route path="/Notes" element={<Notes />} />
+        <Route path="/Roadmap" element={<Roadmap />} />
+
         {/* Nested Admin Routes */}
         <Route path="/Admin">
           <Route index element={<AdminDashboard />} />
@@ -33,5 +37,3 @@ function App() {
     </BrowserRouter>
   );
 }
-
-export default App;
