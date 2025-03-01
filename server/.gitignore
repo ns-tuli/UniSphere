@@ -1,7 +1,6 @@
-<<<<<<< HEAD
 # Dependencies
-/node_modules
-node_modules/
+
+node_modules
 /.pnp
 .pnp.js
 .env
@@ -29,7 +28,6 @@ yarn-error.log*
 .vscode
 *.swp
 *.swo
-=======
 # Logs
 logs
 *.log
@@ -54,4 +52,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
->>>>>>> Siyam
