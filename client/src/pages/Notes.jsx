@@ -39,7 +39,9 @@ function Notes() {
       >
         <div className="flex flex-col min-h-screen p-8 bg-yellow-50 dark:bg-[#18181b] font-['Poppins'] dark:border dark:border-yellow-200/50 dark:rounded-xl">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold dark:text-yellow-100">Notes</h1>
+            <h1 className="text-2xl flex items-center justify-center font-bold dark:text-yellow-100">
+              Notes
+            </h1>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleCopy}
