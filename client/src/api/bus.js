@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // The base URL of your API, adjust this to your actual backend URL
-const API_URL = "http://localhost:5000/api/bus-schedules"; // Adjust as needed
+const API_URL = "http://localhost:5000/api/bus"; // Adjust as needed
 
 // Get all bus schedules
 export const getBusSchedules = async () => {
