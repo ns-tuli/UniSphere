@@ -8,7 +8,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./components/Homepage";
 import Notes from "./pages/Notes";
 import Roadmap from "./pages/Roadmap";
-import ChatbotPage from "./components/Chatbot"; // Import your chatbot page component
+import Chatbot from "./components/Chatbot"; // Import your chatbot page component
 
 function App() {
   return (
@@ -25,7 +25,7 @@ function App() {
         <Route path="/HomePage" element={<HomePage />} />
         <Route path="/Notes" element={<Notes />} />
         <Route path="/Roadmap" element={<Roadmap />} />
-        <Route path="/ChatbotPage" element={<ChatbotPage />} />
+        <Route path="/Chatbot" element={<Chatbot />} />
 
         {/* Nested Admin Routes */}
         <Route path="/Admin">
