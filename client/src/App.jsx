@@ -19,6 +19,8 @@ function App() {
       <Routes>
         <Route index element={<Landing />} />
         <Route path="/BusSchedule" element={<BusSchedule />} />
+        <Route path="/MapConponent" element={<BusSchedule />} />
+        
         <Route path="/CafeteriaMenu" element={<CafeteriaMenu />} />
         <Route path="/EventCalendar" element={<EventCalendar />} />
         <Route path="/ClassSchedule" element={<ClassSchedule />} />
