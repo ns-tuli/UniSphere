@@ -10,11 +10,11 @@ export function Landing() {
       <header className="fixed w-full bg-yellow-50 dark:bg-[#18181b] backdrop-blur-sm py-4 z-50 transition-all duration-300">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-yellow-600 dark:text-yellow-200 hover:text-yellow-500 dark:hover:text-yellow-100 transition-colors duration-300">
-            DoodleDuck
+            UniSphere
           </h1>
           <nav className="hidden md:flex space-x-6"></nav>
           <div className="flex space-x-4">
-            <Link to="/sign-in">
+            <Link to="/HomePage">
               <button className="bg-yellow-600 dark:bg-yellow-200 hover:bg-yellow-500 dark:hover:bg-yellow-100 text-[#f5f5f5] dark:text-black px-4 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-200/20">
                 Get Started
               </button>
@@ -30,7 +30,7 @@ export function Landing() {
           className="absolute inset-0 bg-cover bg-center transition-transform duration-10000 hover:scale-105"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80')",
+              "url('https://media.istockphoto.com/id/1588289977/photo/happy-black-females-student-during-a-class-in-lecture-hall-looking-at-camera.jpg?s=612x612&w=0&k=20&c=o2l4DsMWHhZ3Oqq8hxrGoKqJfC1S2kAfnjUHlRJuD-k=')",
           }}
         >
           <div className="absolute inset-0 bg-gray-900/70"></div>
@@ -38,22 +38,20 @@ export function Landing() {
         <div className="relative container mx-auto px-4 py-32">
           <div className="max-w-3xl transform transition-all duration-700 hover:translate-x-2">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-yellow-200 animate-fade-in">
-              Master Programming with Confidence
+              Welcome to UniSphere!
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-gray-200">
-              Interactive learning platform with AI-powered guidance, real-time
-              coding environments, and a supportive community to help you
-              achieve your coding goals.
+              All-in-One University App – Revolutionizing every student's life
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/sign-up">
                 <button className="w-full sm:w-auto bg-yellow-200 hover:bg-yellow-300 text-gray-900 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-200/20">
-                  Start Learning Now
+                  Let's Get Started
                 </button>
               </Link>
-              <Link to="/courses">
+              <Link to="/HomePage">
                 <button className="w-full sm:w-auto bg-transparent border-2 border-yellow-200 hover:bg-yellow-200/10 text-yellow-200 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-200/20">
-                  Explore Courses
+                  Explore
                 </button>
               </Link>
             </div>
@@ -67,26 +65,55 @@ export function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
-                number: "50K+",
-                label: "Active Learners",
+                number: "50+",
+                label: "Cafeteria Menu Items",
+                description: "Daily updated menu with pricing and availability",
+              },
+              {
+                number: "100+",
+                label: "Bus Schedules",
+                description: "Real-time bus tracking and route information",
+              },
+              {
+                number: "500+",
+                label: "Class Timetable Entries",
+                description: "Up-to-date schedules with faculty details",
+              },
+              {
+                number: "20+",
+                label: "Campus Navigation Features",
                 description:
-                  "Join our growing community of dedicated programmers",
+                  "AR maps and GPS-based navigation for easy movement",
+              },
+              {
+                number: "1000+",
+                label: "Club & Event Announcements",
+                description:
+                  "AI-integrated chatbot for real-time event updates",
+              },
+              {
+                number: "99%",
+                label: "Learning Support",
+                description:
+                  "Video calls, online whiteboard, and text-based coding sessions",
               },
               {
                 number: "200+",
-                label: "Video Tutorials",
+                label: "Skill-Specific Courses",
                 description:
-                  "High-quality, curated content for effective learning",
+                  "Personalized learning paths for university students",
               },
               {
-                number: "15+",
-                label: "Programming Languages",
-                description: "Comprehensive coverage of popular technologies",
+                number: "95%",
+                label: "Student Engagement",
+                description:
+                  "Collaborative text editor and interactive quiz system",
               },
               {
-                number: "98%",
-                label: "Success Rate",
-                description: "Our students achieve their learning goals",
+                number: "1000+",
+                label: "Complaints Resolved",
+                description:
+                  "Secure complaint system for hall, security, and academic issues",
               },
             ].map((stat, index) => (
               <div
@@ -110,7 +137,7 @@ export function Landing() {
       <div className="py-20 bg-white dark:bg-gray-900">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-black dark:text-yellow-200 mb-16 transform transition-all duration-500 hover:scale-105">
-            Everything You Need to Succeed
+            Everything You Need in One Platform
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
@@ -118,15 +145,15 @@ export function Landing() {
                 icon: (
                   <Terminal className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "Interactive Code Editor",
+                title: "Cafeteira Menu",
                 description:
-                  "Write, compile, and test code directly in your browser with our powerful editor.",
+                  "enjoy your meal and get the best food in the cafeteria.",
               },
               {
                 icon: (
                   <Brain className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "AI-Powered Learning",
+                title: "AI-Powered Learning and take quizzes",
                 description:
                   "Get personalized suggestions and help from our AI assistant as you code.",
               },
@@ -134,33 +161,31 @@ export function Landing() {
                 icon: (
                   <Book className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "Comprehensive Curriculum",
-                description:
-                  "Structured learning paths for multiple programming languages and skill levels.",
+                title: "courses to get skilled",
+                description: "course to get skilled and learn new things.",
               },
               {
                 icon: (
                   <Timer className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "Progress Tracking",
-                description:
-                  "Monitor your learning journey with detailed progress analytics.",
+                title: "Bus Schedules",
+                description: "monitor the bus schedules.",
               },
               {
                 icon: (
                   <Users className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "Community Support",
+                title: "complaint box",
                 description:
-                  "Connect with fellow learners and mentors in our active community.",
+                  "secure complaint system for hall, security, and academic issues.",
               },
               {
                 icon: (
                   <Award className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "Certification",
+                title: "personalized study zone",
                 description:
-                  "Earn certificates upon completing courses and projects.",
+                  "get personalized study zone and learn at your own pace.",
               },
             ].map((feature, index) => (
               <div
@@ -191,28 +216,28 @@ export function Landing() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                name: "Sarah Johnson",
-                role: "Software Developer",
+                name: "Raisa Hasan",
+                role: "CSE 3rd year",
                 image:
                   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
                 quote:
-                  "DoodleDuck helped me transition from a beginner to a confident developer. The AI suggestions are incredibly helpful!",
+                  "UniSphere helped me transition from a beginner to a confident developer. The AI suggestions are incredibly helpful!",
               },
               {
-                name: "Michael Chen",
-                role: "Computer Science Student",
+                name: "Tasnim Akhter",
+                role: "Mechanical 2nd year",
                 image:
                   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
                 quote:
-                  "The interactive coding environment and community support made learning programming enjoyable and effective.",
+                  "The interactive  environment and community support made learning enjoyable and effective.",
               },
               {
-                name: "Emily Rodriguez",
-                role: "Web Developer",
+                name: "Tasnim Hossain Orna",
+                role: "IPE 4rth year",
                 image:
                   "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
                 quote:
-                  "The structured curriculum and progress tracking helped me stay motivated throughout my learning journey.",
+                  "I love the variety of courses available on UniSphere. It's a great platform for students to learn and grow together.",
               },
             ].map((testimonial, index) => (
               <div
@@ -252,24 +277,25 @@ export function Landing() {
           <div className="max-w-3xl mx-auto space-y-6">
             {[
               {
-                question: "What programming languages do you offer?",
+                question: "What features does the campus app offer?",
                 answer:
-                  "We offer courses in Python, JavaScript, Java, C++, C#, and many more. Our curriculum is constantly expanding to include new languages and technologies.",
+                  "It includes cafeteria menus, bus schedules, class timetables, faculty contacts, campus navigation, AR maps, alerts, event management, virtual classrooms, note-taking, and a chatbot.",
               },
               {
-                question: "Is DoodleDuck suitable for complete beginners?",
+                question: "How does the event management system work?",
                 answer:
-                  "Absolutely! Our platform is designed to accommodate learners of all levels, from complete beginners to advanced developers.",
+                  "AI recommends events based on interests, and announcements automatically appear in chatbot prompts for easy access.",
               },
               {
-                question: "How does the AI-powered learning assistance work?",
+                question:
+                  "Can students report complaints or security concerns?",
                 answer:
-                  "Our AI system analyzes your code in real-time, providing personalized suggestions, identifying potential errors, and offering optimization tips.",
+                  "Yes, the complaint box allows reporting of security, hall, and mental health issues, along with career guidance support.",
               },
               {
-                question: "Can I access the platform on mobile devices?",
+                question: "Does the app support real-time collaboration?",
                 answer:
-                  "Yes, DoodleDuck is fully responsive and can be accessed on any device with a web browser.",
+                  "Yes, students can use a collaborative text editor with Socket.io for group coding and learning.",
               },
             ].map((faq, index) => (
               <div
@@ -294,7 +320,7 @@ export function Landing() {
           <div className="grid md:grid-cols-4 gap-8">
             <div className="transform transition-all duration-300 hover:translate-x-2">
               <h3 className="text-xl font-bold text-yellow-600 dark:text-yellow-200 mb-4">
-                DoodleDuck
+                UniSphere
               </h3>
               <p className="text-gray-800 dark:text-gray-400">
                 Empowering developers through interactive learning and
@@ -325,7 +351,7 @@ export function Landing() {
                 links: [
                   {
                     name: "GitHub",
-                    path: "https://github.com/N4M154/Design_Project-I-SWE-4506",
+                    path: "https://github.com/Siyam-Bhuiyan/UniSphere",
                   },
                   { name: "Twitter", path: "#" },
                   { name: "LinkedIn", path: "#" },
@@ -356,11 +382,11 @@ export function Landing() {
             ))}
           </div>
           {/* <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-800 dark:text-gray-400">
-            <p>© 2024 DoodleDuck. All rights reserved.</p>
+            <p>© 2025 UniSphere. All rights reserved.</p>
           </div> */}
         </div>
       </footer>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
