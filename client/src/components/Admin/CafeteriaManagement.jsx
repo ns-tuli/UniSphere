@@ -1,46 +1,18 @@
+//path=> client/src/components/Admin/CafeteriaManagement.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaList, FaPlus, FaEdit, FaTrash, FaArrowLeft } from "react-icons/fa";
-
-// These would normally be connected to your API
-const mockMeals = [
-  { 
-    mealId: 1, 
-    name: "Grilled Chicken Salad", 
-    description: "Fresh greens with grilled chicken breast, tomatoes, and balsamic vinaigrette",
-    price: 8.99,
-    image: "/images/grilled-chicken-salad.jpg",
-    categories: ["Healthy", "Lunch", "Salad"],
-    available: true,
-    prepTime: "10 minutes"
-  },
-  { 
-    mealId: 2, 
-    name: "Spaghetti Bolognese", 
-    description: "Classic Italian pasta with rich meat sauce and parmesan cheese",
-    price: 10.99,
-    image: "/images/spaghetti.jpg",
-    categories: ["Pasta", "Dinner", "Italian"],
-    available: true,
-    prepTime: "15 minutes"
-  },
-  { 
-    mealId: 3, 
-    name: "Vegetable Stir Fry", 
-    description: "Mixed vegetables stir-fried with tofu in a savory sauce, served with rice",
-    price: 9.50,
-    image: "/images/stir-fry.jpg",
-    categories: ["Vegetarian", "Asian", "Dinner"],
-    available: true,
-    prepTime: "12 minutes"
-  }
-];
+import { getMeals, addMeal, updateMeal, deleteMeal } from "../../api/meal";
 
 export default function CafeteriaManagement() {
   // State for current view
   const [activeView, setActiveView] = useState("main");
   // State for meals data
   const [meals, setMeals] = useState([]);
+  // State for loading status
+  const [loading, setLoading] = useState(false);
+  // State for error messages
+  const [error, setError] = useState(null);
   // State for form data
   const [formData, setFormData] = useState({
     name: "",
@@ -55,9 +27,23 @@ export default function CafeteriaManagement() {
 
   // Fetch meals on component mount
   useEffect(() => {
-    // In a real app, this would be an API call
-    setMeals(mockMeals);
+    fetchMeals();
   }, []);
+
+  // Function to fetch meals from API
+  const fetchMeals = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getMeals();
+      setMeals(data);
+    } catch (err) {
+      setError("Failed to load menu items. Please try again later.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -69,81 +55,108 @@ export default function CafeteriaManagement() {
   };
 
   // Handle form submission for adding a meal
-  const handleAddMeal = (e) => {
+  const handleAddMeal = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
     
-    // Create new meal object
-    const newMeal = {
-      ...formData,
-      mealId: meals.length > 0 ? Math.max(...meals.map(meal => meal.mealId)) + 1 : 1,
-      price: parseFloat(formData.price),
-      categories: formData.categories.split(",").map(cat => cat.trim())
-    };
-    
-    // Add to meals state
-    setMeals([...meals, newMeal]);
-    
-    // Reset form
-    setFormData({
-      name: "",
-      description: "",
-      price: "",
-      categories: "",
-      available: true,
-      prepTime: ""
-    });
-    
-    // Return to main view
-    setActiveView("main");
+    try {
+      // Create new meal object
+      const newMeal = {
+        ...formData,
+        price: parseFloat(formData.price),
+        categories: formData.categories.split(",").map(cat => cat.trim())
+      };
+      
+      // Add to API
+      await addMeal(newMeal);
+      
+      // Refresh meals list
+      fetchMeals();
+      
+      // Reset form
+      setFormData({
+        name: "",
+        description: "",
+        price: "",
+        categories: "",
+        available: true,
+        prepTime: ""
+      });
+      
+      // Return to main view
+      setActiveView("main");
+    } catch (err) {
+      setError("Failed to add menu item. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle form submission for updating a meal
-  const handleUpdateMeal = (e) => {
+  const handleUpdateMeal = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
     
-    // Update the meal
-    const updatedMeals = meals.map(meal => {
-      if (meal.mealId === selectedMeal.mealId) {
-        return {
-          ...meal,
-          ...formData,
-          price: parseFloat(formData.price),
-          categories: typeof formData.categories === 'string' 
-            ? formData.categories.split(",").map(cat => cat.trim())
-            : formData.categories
-        };
-      }
-      return meal;
-    });
-    
-    // Update meals state
-    setMeals(updatedMeals);
-    
-    // Reset form and selected meal
-    setFormData({
-      name: "",
-      description: "",
-      price: "",
-      categories: "",
-      available: true,
-      prepTime: ""
-    });
-    setSelectedMeal(null);
-    
-    // Return to main view
-    setActiveView("main");
+    try {
+      // Create updated meal object
+      const updatedMeal = {
+        ...formData,
+        price: parseFloat(formData.price),
+        categories: typeof formData.categories === 'string' 
+          ? formData.categories.split(",").map(cat => cat.trim())
+          : formData.categories
+      };
+      
+      // Update meal in API
+      await updateMeal(selectedMeal.mealId, updatedMeal);
+      
+      // Refresh meals list
+      fetchMeals();
+      
+      // Reset form and selected meal
+      setFormData({
+        name: "",
+        description: "",
+        price: "",
+        categories: "",
+        available: true,
+        prepTime: ""
+      });
+      setSelectedMeal(null);
+      
+      // Return to main view
+      setActiveView("main");
+    } catch (err) {
+      setError("Failed to update menu item. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle meal deletion
-  const handleDeleteMeal = (mealId) => {
-    // Filter out the deleted meal
-    const updatedMeals = meals.filter(meal => meal.mealId !== mealId);
+  const handleDeleteMeal = async (mealId) => {
+    setLoading(true);
+    setError(null);
     
-    // Update meals state
-    setMeals(updatedMeals);
-    
-    // Return to main view
-    setActiveView("main");
+    try {
+      // Delete meal from API
+      await deleteMeal(mealId);
+      
+      // Refresh meals list
+      fetchMeals();
+      
+      // Return to main view
+      setActiveView("main");
+    } catch (err) {
+      setError("Failed to delete menu item. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Set up for updating a meal
@@ -153,7 +166,7 @@ export default function CafeteriaManagement() {
       name: meal.name,
       description: meal.description,
       price: meal.price.toString(),
-      categories: meal.categories.join(", "),
+      categories: Array.isArray(meal.categories) ? meal.categories.join(", ") : meal.categories,
       available: meal.available,
       prepTime: meal.prepTime
     });
@@ -168,6 +181,35 @@ export default function CafeteriaManagement() {
 
   // Render different views based on activeView state
   const renderView = () => {
+    // Show loading indicator
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+      );
+    }
+
+    // Show error message if there is one
+    if (error) {
+      return (
+        <div className="bg-red-50 dark:bg-red-900 p-4 rounded-lg mb-6">
+          <p className="text-red-800 dark:text-red-200 font-medium">{error}</p>
+          <button 
+            onClick={() => {
+              setError(null);
+              if (activeView === "main") {
+                fetchMeals();
+              }
+            }}
+            className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Try Again
+          </button>
+        </div>
+      );
+    }
+
     switch (activeView) {
       case "list":
         return (
@@ -195,40 +237,48 @@ export default function CafeteriaManagement() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {meals.map(meal => (
-                    <tr key={meal.mealId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{meal.mealId}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{meal.name}</td>
-                      <td className="px-6 py-4 text-sm text-gray-900 dark:text-white max-w-xs truncate">{meal.description}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${meal.price.toFixed(2)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                        {meal.categories.join(", ")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          meal.available 
-                            ? "bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100" 
-                            : "bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100"
-                        }`}>
-                          {meal.available ? "Available" : "Not Available"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                        <button 
-                          onClick={() => setupUpdateMeal(meal)}
-                          className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button 
-                          onClick={() => setupDeleteMeal(meal)}
-                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                        >
-                          <FaTrash />
-                        </button>
+                  {meals.length > 0 ? (
+                    meals.map(meal => (
+                      <tr key={meal.mealId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{meal.mealId}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{meal.name}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-white max-w-xs truncate">{meal.description}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${meal.price.toFixed(2)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                          {Array.isArray(meal.categories) ? meal.categories.join(", ") : meal.categories}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            meal.available 
+                              ? "bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100" 
+                              : "bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100"
+                          }`}>
+                            {meal.available ? "Available" : "Not Available"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                          <button 
+                            onClick={() => setupUpdateMeal(meal)}
+                            className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button 
+                            onClick={() => setupDeleteMeal(meal)}
+                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                          >
+                            <FaTrash />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                        No menu items found. Add some items to get started.
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -338,14 +388,16 @@ export default function CafeteriaManagement() {
                   type="button"
                   onClick={() => setActiveView("main")}
                   className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
+                  disabled={loading}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  disabled={loading}
                 >
-                  Add Item
+                  {loading ? "Adding..." : "Add Item"}
                 </button>
               </div>
             </form>
@@ -455,14 +507,16 @@ export default function CafeteriaManagement() {
                   type="button"
                   onClick={() => setActiveView("main")}
                   className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
+                  disabled={loading}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                  disabled={loading}
                 >
-                  Update Item
+                  {loading ? "Updating..." : "Update Item"}
                 </button>
               </div>
             </form>
@@ -492,13 +546,18 @@ export default function CafeteriaManagement() {
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{selectedMeal.name}</h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-2">{selectedMeal.description}</p>
                   <p className="text-gray-600 dark:text-gray-300">Price: ${selectedMeal.price.toFixed(2)}</p>
-                  <p className="text-gray-600 dark:text-gray-300">Categories: {selectedMeal.categories.join(", ")}</p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Categories: {Array.isArray(selectedMeal.categories) 
+                      ? selectedMeal.categories.join(", ") 
+                      : selectedMeal.categories}
+                  </p>
                 </div>
                 <div className="flex justify-end mt-6">
                   <button
                     type="button"
                     onClick={() => setActiveView("main")}
                     className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
+                    disabled={loading}
                   >
                     Cancel
                   </button>
@@ -506,8 +565,9 @@ export default function CafeteriaManagement() {
                     type="button"
                     onClick={() => handleDeleteMeal(selectedMeal.mealId)}
                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    disabled={loading}
                   >
-                    Delete Item
+                    {loading ? "Deleting..." : "Delete Item"}
                   </button>
                 </div>
               </div>
@@ -553,7 +613,7 @@ export default function CafeteriaManagement() {
             </div>
             
             <div 
-              onClick={() => meals.length > 0 ? setActiveView("list") : alert("No items to update")}
+              onClick={() => meals.length > 0 ? setActiveView("list") : setError("No items to update")}
               className="cursor-pointer bg-yellow-50 dark:bg-yellow-900 rounded-lg shadow-md overflow-hidden transition-transform duration-300 transform hover:scale-105 hover:bg-yellow-100 dark:hover:bg-yellow-800 border border-yellow-200 dark:border-yellow-700"
             >
               <div className="p-6">
@@ -570,7 +630,7 @@ export default function CafeteriaManagement() {
             </div>
             
             <div 
-              onClick={() => meals.length > 0 ? setActiveView("list") : alert("No items to delete")}
+              onClick={() => meals.length > 0 ? setActiveView("list") : setError("No items to delete")}
               className="cursor-pointer bg-red-50 dark:bg-red-900 rounded-lg shadow-md overflow-hidden transition-transform duration-300 transform hover:scale-105 hover:bg-red-100 dark:hover:bg-red-800 border border-red-200 dark:border-red-700"
             >
               <div className="p-6">
