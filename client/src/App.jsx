@@ -1,3 +1,4 @@
+//path: client/src/App.jsx
 import BusSchedule from "./components/BusSchedule";
 import CafeteriaMenu from "./components/CafeteriaMenu";
 import Landing from "./components/Landing";
@@ -6,29 +7,36 @@ import ClassSchedule from "./components/ClassSchedule";
 import CampusNavigation from "./components/CampusNavigation";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./components/Homepage";
+import AdminDashboard from "./components/Admin/AdminDashboard";
+import CafeteriaManagement from "./components/Admin/CafeteriaManagement";
+import BusManagement from "./components/Admin/BusManagement";
 import Notes from "./pages/Notes";
 import Roadmap from "./pages/Roadmap";
 import ChatbotPage from "./components/Chatbot"; // Import your chatbot page component
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route index element={<Landing />} />
-          <Route path="/BusSchedule" element={<BusSchedule />} />
-          <Route path="/CafeteriaMenu" element={<CafeteriaMenu />} />
-          <Route path="/EventCalendar" element={<EventCalendar />} />
-          <Route path="/ClassSchedule" element={<ClassSchedule />} />
-          <Route path="/CampusNavigation" element={<CampusNavigation />} />
-          <Route path="/HomePage" element={<HomePage />} />
-          <Route path="/Notes" element={<Notes />} />
-          <Route path="/Roadmap" element={<Roadmap />} />
-          <Route path="/ChatbotPage" element={<ChatbotPage />} /> // Add a route
-          for your chatbot page
-        </Routes>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<Landing />} />
+        <Route path="/BusSchedule" element={<BusSchedule />} />
+        <Route path="/CafeteriaMenu" element={<CafeteriaMenu />} />
+        <Route path="/EventCalendar" element={<EventCalendar />} />
+        <Route path="/ClassSchedule" element={<ClassSchedule />} />
+        <Route path="/CampusNavigation" element={<CampusNavigation />} />
+        <Route path="/HomePage" element={<HomePage />} />
+        <Route path="/Notes" element={<Notes />} />
+        <Route path="/Roadmap" element={<Roadmap />} />
+        <Route path="/ChatbotPage" element={<ChatbotPage />} />
+
+        {/* Nested Admin Routes */}
+        <Route path="/Admin">
+          <Route index element={<AdminDashboard />} />
+          <Route path="CafeteriaManagement" element={<CafeteriaManagement />} />
+          <Route path="BusManagement" element={<BusManagement />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
