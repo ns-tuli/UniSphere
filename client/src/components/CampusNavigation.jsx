@@ -3,15 +3,27 @@ import React, { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { Search, Navigation, Map, Info, Compass, Layers, AlertTriangle, BookOpen } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  Search,
+  Navigation,
+  Map,
+  Info,
+  Compass,
+  Layers,
+  AlertTriangle,
+  BookOpen,
+} from "lucide-react";
+//import { motion } from "framer-motion";
 
 // Fix for default marker icon in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png"
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
 // Custom marker icons
@@ -19,14 +31,14 @@ const buildingIcon = new L.Icon({
   iconUrl: "/building-icon.png", // Replace with actual path
   iconSize: [32, 32],
   iconAnchor: [16, 32],
-  popupAnchor: [0, -32]
+  popupAnchor: [0, -32],
 });
 
 const libraryIcon = new L.Icon({
   iconUrl: "/library-icon.png", // Replace with actual path
   iconSize: [32, 32],
   iconAnchor: [16, 32],
-  popupAnchor: [0, -32]
+  popupAnchor: [0, -32],
 });
 
 // Sample campus data
@@ -36,61 +48,72 @@ const campusBuildings = [
     name: "Main Hall",
     type: "academic",
     coordinates: [34.0522, -118.2437],
-    description: "The primary administrative building with lecture halls and faculty offices.",
+    description:
+      "The primary administrative building with lecture halls and faculty offices.",
     facilities: ["Lecture Halls", "Administrative Offices", "Student Services"],
     hours: "7:00 AM - 10:00 PM",
     image: "https://via.placeholder.com/300x200",
     accessibility: true,
-    events: ["Faculty Meeting (Room 101) - 2:00 PM", "Student Council (Room 204) - 5:00 PM"]
+    events: [
+      "Faculty Meeting (Room 101) - 2:00 PM",
+      "Student Council (Room 204) - 5:00 PM",
+    ],
   },
   {
     id: 2,
     name: "Science Center",
     type: "academic",
-    coordinates: [34.0525, -118.2440],
-    description: "Home to the sciences with modern laboratories and research facilities.",
+    coordinates: [34.0525, -118.244],
+    description:
+      "Home to the sciences with modern laboratories and research facilities.",
     facilities: ["Research Labs", "Computer Labs", "Lecture Halls"],
     hours: "8:00 AM - 9:00 PM",
     image: "https://via.placeholder.com/300x200",
     accessibility: true,
-    events: ["Chemistry Lab (Room 302) - 1:00 PM", "Physics Seminar (Room 405) - 4:00 PM"]
+    events: [
+      "Chemistry Lab (Room 302) - 1:00 PM",
+      "Physics Seminar (Room 405) - 4:00 PM",
+    ],
   },
   {
     id: 3,
     name: "University Library",
     type: "library",
     coordinates: [34.0518, -118.2432],
-    description: "Five-story library with extensive collections and study spaces.",
+    description:
+      "Five-story library with extensive collections and study spaces.",
     facilities: ["Study Rooms", "Computer Lab", "Reading Lounges", "Archives"],
     hours: "7:00 AM - 12:00 AM",
     image: "https://via.placeholder.com/300x200",
     accessibility: true,
-    events: ["Research Workshop - 11:00 AM", "Book Club - 6:00 PM"]
+    events: ["Research Workshop - 11:00 AM", "Book Club - 6:00 PM"],
   },
   {
     id: 4,
     name: "Student Union",
     type: "recreational",
     coordinates: [34.0515, -118.2445],
-    description: "Center for student activities, dining, and social gatherings.",
+    description:
+      "Center for student activities, dining, and social gatherings.",
     facilities: ["Food Court", "Lounges", "Meeting Rooms", "Game Room"],
     hours: "6:00 AM - 11:00 PM",
     image: "https://via.placeholder.com/300x200",
     accessibility: true,
-    events: ["Club Fair - 12:00 PM", "Movie Night - 8:00 PM"]
+    events: ["Club Fair - 12:00 PM", "Movie Night - 8:00 PM"],
   },
   {
     id: 5,
     name: "Recreation Center",
     type: "recreational",
-    coordinates: [34.0510, -118.2450],
-    description: "Modern fitness facility with equipment, courts, and a swimming pool.",
+    coordinates: [34.051, -118.245],
+    description:
+      "Modern fitness facility with equipment, courts, and a swimming pool.",
     facilities: ["Gym", "Swimming Pool", "Basketball Courts", "Yoga Studio"],
     hours: "6:00 AM - 10:00 PM",
     image: "https://via.placeholder.com/300x200",
     accessibility: true,
-    events: ["Yoga Class - 9:00 AM", "Swimming Competition - 3:00 PM"]
-  }
+    events: ["Yoga Class - 9:00 AM", "Swimming Competition - 3:00 PM"],
+  },
 ];
 
 // Component to recenter map on location change
@@ -108,12 +131,12 @@ function ARModeComponent() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices
         .getUserMedia({ video: { facingMode: "environment" } })
-        .then(stream => {
+        .then((stream) => {
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Could not access camera: ", err);
         });
     }
@@ -121,7 +144,7 @@ function ARModeComponent() {
     return () => {
       if (videoRef.current && videoRef.current.srcObject) {
         const tracks = videoRef.current.srcObject.getTracks();
-        tracks.forEach(track => track.stop());
+        tracks.forEach((track) => track.stop());
       }
     };
   }, []);
@@ -137,7 +160,9 @@ function ARModeComponent() {
       />
       <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
         <div className="text-center bg-black bg-opacity-50 p-4 rounded-lg">
-          <p className="text-white text-lg">Point your camera at campus buildings</p>
+          <p className="text-white text-lg">
+            Point your camera at campus buildings
+          </p>
           <p className="text-yellow-300 text-sm mt-2">
             AR navigation currently in demo mode
           </p>
@@ -160,20 +185,21 @@ export default function CampusNavigation() {
   // Filter buildings based on search query and type filter
   useEffect(() => {
     let results = campusBuildings;
-    
+
     // Filter by search query
     if (searchQuery) {
-      results = results.filter(building => 
-        building.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        building.description.toLowerCase().includes(searchQuery.toLowerCase())
+      results = results.filter(
+        (building) =>
+          building.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          building.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-    
+
     // Filter by building type
     if (activeFilter !== "all") {
-      results = results.filter(building => building.type === activeFilter);
+      results = results.filter((building) => building.type === activeFilter);
     }
-    
+
     setFilteredBuildings(results);
   }, [searchQuery, activeFilter]);
 
@@ -181,10 +207,13 @@ export default function CampusNavigation() {
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        position => {
-          setUserLocation([position.coords.latitude, position.coords.longitude]);
+        (position) => {
+          setUserLocation([
+            position.coords.latitude,
+            position.coords.longitude,
+          ]);
         },
-        error => {
+        (error) => {
           console.error("Error getting location:", error);
         }
       );
@@ -361,7 +390,8 @@ export default function CampusNavigation() {
                       <div className="flex items-center mt-2 text-sm text-gray-500 dark:text-gray-400">
                         <span className="mr-4">
                           <Info className="w-4 h-4 inline mr-1" />
-                          {building.type.charAt(0).toUpperCase() + building.type.slice(1)}
+                          {building.type.charAt(0).toUpperCase() +
+                            building.type.slice(1)}
                         </span>
                         <span>
                           <Clock className="w-4 h-4 inline mr-1" />
@@ -403,21 +433,23 @@ export default function CampusNavigation() {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
-                  
+
                   {/* User location marker */}
                   {userLocation && (
                     <Marker
                       position={userLocation}
-                      icon={new L.Icon({
-                        iconUrl: "/user-location.png", // Replace with actual user location icon
-                        iconSize: [30, 30],
-                        iconAnchor: [15, 15]
-                      })}
+                      icon={
+                        new L.Icon({
+                          iconUrl: "/user-location.png", // Replace with actual user location icon
+                          iconSize: [30, 30],
+                          iconAnchor: [15, 15],
+                        })
+                      }
                     >
                       <Popup>You are here</Popup>
                     </Marker>
                   )}
-                  
+
                   {/* Building markers */}
                   {filteredBuildings.map((building) => (
                     <Marker
@@ -439,9 +471,11 @@ export default function CampusNavigation() {
                             {building.description}
                           </p>
                           <div className="mt-2 pt-2 border-t border-gray-200">
-                            <p className="text-sm font-medium">Hours: {building.hours}</p>
+                            <p className="text-sm font-medium">
+                              Hours: {building.hours}
+                            </p>
                           </div>
-                          <button 
+                          <button
                             className="mt-2 bg-yellow-500 text-white px-3 py-1 rounded text-sm"
                             onClick={() => {
                               setSelectedBuilding(building);
@@ -454,9 +488,11 @@ export default function CampusNavigation() {
                       </Popup>
                     </Marker>
                   ))}
-                  
+
                   {/* Update map center when selected building changes */}
-                  {selectedBuilding && <SetViewOnClick coords={selectedBuilding.coordinates} />}
+                  {selectedBuilding && (
+                    <SetViewOnClick coords={selectedBuilding.coordinates} />
+                  )}
                 </MapContainer>
               </div>
             )}
@@ -475,7 +511,7 @@ export default function CampusNavigation() {
                     Directions
                   </h3>
                 </div>
-                
+
                 <div className="p-6">
                   {selectedBuilding ? (
                     <div>
@@ -484,14 +520,12 @@ export default function CampusNavigation() {
                           Directions to {selectedBuilding.name}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 mt-2">
-                          {!userLocation ? (
-                            "Please enable location services to get directions."
-                          ) : (
-                            "Directions from your current location:"
-                          )}
+                          {!userLocation
+                            ? "Please enable location services to get directions."
+                            : "Directions from your current location:"}
                         </p>
                       </div>
-                      
+
                       {userLocation && (
                         <div className="mt-4">
                           <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
@@ -509,9 +543,9 @@ export default function CampusNavigation() {
                               </p>
                             </div>
                           </div>
-                          
+
                           <div className="h-10 w-1 bg-yellow-200 dark:bg-gray-600 ml-8"></div>
-                          
+
                           <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
                             <div className="mr-4 mt-1">
                               <div className="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
@@ -527,9 +561,9 @@ export default function CampusNavigation() {
                               </p>
                             </div>
                           </div>
-                          
+
                           <div className="h-10 w-1 bg-yellow-200 dark:bg-gray-600 ml-8"></div>
-                          
+
                           <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
                             <div className="mr-4 mt-1">
                               <div className="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
@@ -545,9 +579,9 @@ export default function CampusNavigation() {
                               </p>
                             </div>
                           </div>
-                          
+
                           <div className="h-10 w-1 bg-yellow-200 dark:bg-gray-600 ml-8"></div>
-                          
+
                           <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
                             <div className="mr-4 mt-1">
                               <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center text-white">
@@ -565,9 +599,9 @@ export default function CampusNavigation() {
                           </div>
                         </div>
                       )}
-                      
+
                       <div className="mt-6 flex justify-center">
-                        <button 
+                        <button
                           onClick={() => setActiveMode("map")}
                           className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded flex items-center"
                         >
@@ -585,7 +619,8 @@ export default function CampusNavigation() {
                         Select a building to get directions
                       </h3>
                       <p className="text-gray-500 dark:text-gray-400 mt-2 max-w-md mx-auto">
-                        Choose a location from the list on the left to view detailed walking directions.
+                        Choose a location from the list on the left to view
+                        detailed walking directions.
                       </p>
                     </div>
                   )}
@@ -613,7 +648,7 @@ export default function CampusNavigation() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -622,7 +657,7 @@ export default function CampusNavigation() {
                     alt={selectedBuilding.name}
                     className="w-full h-64 object-cover rounded-lg shadow-md"
                   />
-                  
+
                   <div className="mt-4 grid grid-cols-2 gap-4">
                     <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg">
                       <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
@@ -632,7 +667,7 @@ export default function CampusNavigation() {
                         {selectedBuilding.type}
                       </p>
                     </div>
-                    
+
                     <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg">
                       <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
                         Hours
@@ -641,16 +676,18 @@ export default function CampusNavigation() {
                         {selectedBuilding.hours}
                       </p>
                     </div>
-                    
+
                     <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg">
                       <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
                         Accessibility
                       </h4>
                       <p className="text-gray-700 dark:text-gray-300">
-                        {selectedBuilding.accessibility ? "Wheelchair Accessible" : "Limited Accessibility"}
+                        {selectedBuilding.accessibility
+                          ? "Wheelchair Accessible"
+                          : "Limited Accessibility"}
                       </p>
                     </div>
-                    
+
                     <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg">
                       <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
                         Location
@@ -661,7 +698,7 @@ export default function CampusNavigation() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div>
                   <h3 className="text-xl font-medium text-yellow-700 dark:text-yellow-300 mb-4">
                     About {selectedBuilding.name}
@@ -669,7 +706,7 @@ export default function CampusNavigation() {
                   <p className="text-gray-700 dark:text-gray-300 mb-4">
                     {selectedBuilding.description}
                   </p>
-                  
+
                   <div className="mb-4">
                     <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-2">
                       Available Facilities
@@ -685,7 +722,7 @@ export default function CampusNavigation() {
                       ))}
                     </div>
                   </div>
-                  
+
                   <div>
                     <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-2">
                       Today's Events
@@ -696,12 +733,14 @@ export default function CampusNavigation() {
                           key={index}
                           className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg"
                         >
-                          <p className="text-gray-800 dark:text-gray-200">{event}</p>
+                          <p className="text-gray-800 dark:text-gray-200">
+                            {event}
+                          </p>
                         </div>
                       ))}
                     </div>
-                    </div>
-                  
+                  </div>
+
                   <div className="mt-6 flex space-x-3">
                     <button
                       onClick={() => setActiveMode("directions")}
@@ -710,7 +749,7 @@ export default function CampusNavigation() {
                       <Navigation className="w-5 h-5 mr-2" />
                       Get Directions
                     </button>
-                    
+
                     <button
                       onClick={handleARMode}
                       className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg flex items-center"
@@ -738,7 +777,9 @@ export default function CampusNavigation() {
                 <h3 className="text-xl font-bold">AR Mode Activating</h3>
               </div>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
-                AR mode uses your camera to provide navigation assistance. Please allow camera access and point your device at campus buildings to see information overlaid on your view.
+                AR mode uses your camera to provide navigation assistance.
+                Please allow camera access and point your device at campus
+                buildings to see information overlaid on your view.
               </p>
               <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
                 <motion.div
@@ -758,7 +799,7 @@ export default function CampusNavigation() {
             <BookOpen className="w-6 h-6 mr-2" />
             Campus Navigation Guide
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h4 className="text-lg font-medium text-yellow-600 dark:text-yellow-400 mb-3">
@@ -767,43 +808,68 @@ export default function CampusNavigation() {
               <div className="space-y-3">
                 <div className="flex items-center">
                   <div className="w-8 h-8 bg-blue-500 rounded-full mr-3"></div>
-                  <span className="text-gray-700 dark:text-gray-300">Your Current Location</span>
+                  <span className="text-gray-700 dark:text-gray-300">
+                    Your Current Location
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-8 h-8 bg-red-500 rounded-full mr-3"></div>
-                  <span className="text-gray-700 dark:text-gray-300">Academic Buildings</span>
+                  <span className="text-gray-700 dark:text-gray-300">
+                    Academic Buildings
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-8 h-8 bg-green-500 rounded-full mr-3"></div>
-                  <span className="text-gray-700 dark:text-gray-300">Library</span>
+                  <span className="text-gray-700 dark:text-gray-300">
+                    Library
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-8 h-8 bg-purple-500 rounded-full mr-3"></div>
-                  <span className="text-gray-700 dark:text-gray-300">Recreational Facilities</span>
+                  <span className="text-gray-700 dark:text-gray-300">
+                    Recreational Facilities
+                  </span>
                 </div>
               </div>
             </div>
-            
+
             <div>
               <h4 className="text-lg font-medium text-yellow-600 dark:text-yellow-400 mb-3">
                 Navigation Tips
               </h4>
               <ul className="space-y-2 text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
-                  <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 w-6 h-6 rounded-full flex items-center justify-center mr-2 shrink-0">1</span>
-                  <span>Use the search bar to quickly find specific buildings or facilities.</span>
+                  <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 w-6 h-6 rounded-full flex items-center justify-center mr-2 shrink-0">
+                    1
+                  </span>
+                  <span>
+                    Use the search bar to quickly find specific buildings or
+                    facilities.
+                  </span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 w-6 h-6 rounded-full flex items-center justify-center mr-2 shrink-0">2</span>
-                  <span>Filter buildings by type using the category buttons.</span>
+                  <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 w-6 h-6 rounded-full flex items-center justify-center mr-2 shrink-0">
+                    2
+                  </span>
+                  <span>
+                    Filter buildings by type using the category buttons.
+                  </span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 w-6 h-6 rounded-full flex items-center justify-center mr-2 shrink-0">3</span>
-                  <span>Click on a building marker to view detailed information.</span>
+                  <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 w-6 h-6 rounded-full flex items-center justify-center mr-2 shrink-0">
+                    3
+                  </span>
+                  <span>
+                    Click on a building marker to view detailed information.
+                  </span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 w-6 h-6 rounded-full flex items-center justify-center mr-2 shrink-0">4</span>
-                  <span>Try AR mode for an immersive navigation experience.</span>
+                  <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 w-6 h-6 rounded-full flex items-center justify-center mr-2 shrink-0">
+                    4
+                  </span>
+                  <span>
+                    Try AR mode for an immersive navigation experience.
+                  </span>
                 </li>
               </ul>
             </div>
@@ -815,7 +881,7 @@ export default function CampusNavigation() {
           <h3 className="text-2xl font-semibold text-yellow-700 dark:text-yellow-300 mb-4">
             Accessibility Features
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-yellow-50 dark:bg-gray-700 p-4 rounded-lg">
               <div className="h-12 w-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center text-yellow-600 dark:text-yellow-300 mb-3">
@@ -825,10 +891,11 @@ export default function CampusNavigation() {
                 Wheelchair Routes
               </h4>
               <p className="text-gray-700 dark:text-gray-300">
-                Discover wheelchair-accessible paths throughout campus with highlighted routes and ramp locations.
+                Discover wheelchair-accessible paths throughout campus with
+                highlighted routes and ramp locations.
               </p>
             </div>
-            
+
             <div className="bg-yellow-50 dark:bg-gray-700 p-4 rounded-lg">
               <div className="h-12 w-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center text-yellow-600 dark:text-yellow-300 mb-3">
                 <Headphones className="h-6 w-6" />
@@ -837,10 +904,11 @@ export default function CampusNavigation() {
                 Audio Navigation
               </h4>
               <p className="text-gray-700 dark:text-gray-300">
-                Enable voice guidance for turn-by-turn directions and building information read aloud.
+                Enable voice guidance for turn-by-turn directions and building
+                information read aloud.
               </p>
             </div>
-            
+
             <div className="bg-yellow-50 dark:bg-gray-700 p-4 rounded-lg">
               <div className="h-12 w-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center text-yellow-600 dark:text-yellow-300 mb-3">
                 <Eye className="h-6 w-6" />
@@ -849,7 +917,8 @@ export default function CampusNavigation() {
                 High Contrast Mode
               </h4>
               <p className="text-gray-700 dark:text-gray-300">
-                Toggle high contrast display for improved visibility and readability of map elements.
+                Toggle high contrast display for improved visibility and
+                readability of map elements.
               </p>
             </div>
           </div>
@@ -862,7 +931,18 @@ export default function CampusNavigation() {
 // Helper components for missing imports
 function Check(props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
       <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
   );
@@ -870,7 +950,18 @@ function Check(props) {
 
 function Clock(props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
       <circle cx="12" cy="12" r="10"></circle>
       <polyline points="12 6 12 12 16 14"></polyline>
     </svg>
@@ -879,7 +970,18 @@ function Clock(props) {
 
 function Eye(props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
       <circle cx="12" cy="12" r="3"></circle>
     </svg>
@@ -888,7 +990,18 @@ function Eye(props) {
 
 function Headphones(props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
       <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
       <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
     </svg>
@@ -897,7 +1010,18 @@ function Headphones(props) {
 
 function SearchX(props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
       <circle cx="11" cy="11" r="8"></circle>
       <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       <line x1="17" y1="17" x2="21" y2="21"></line>
@@ -907,7 +1031,18 @@ function SearchX(props) {
 
 function Wheelchair(props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
       <circle cx="14" cy="6" r="2"></circle>
       <path d="M10 9h4l-3 6"></path>
       <circle cx="8" cy="17" r="5"></circle>
@@ -919,10 +1054,20 @@ function Wheelchair(props) {
 
 function X(props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
       <line x1="18" y1="6" x2="6" y2="18"></line>
       <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
   );
 }
-                    
