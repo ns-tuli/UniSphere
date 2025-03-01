@@ -7,6 +7,7 @@ import CampusNavigation from "./components/CampusNavigation";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./components/Homepage";
 import Notes from "./pages/Notes";
+import RoadmapForm from "./components/RoadmapForm";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/CampusNavigation" element={<CampusNavigation />} />
           <Route path="/HomePage" element={<HomePage />} />
           <Route path="/Notes" element={<Notes />} />
+          <Route path="/Roadmap" element={<RoadmapForm />} />
         </Routes>
       </BrowserRouter>
     </>

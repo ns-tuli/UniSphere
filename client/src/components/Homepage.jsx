@@ -207,7 +207,7 @@ export default function HomePage() {
                   Personalized learning paths for your academic journey
                 </p>
                 <Link
-                  to="/learning-hub/roadmaps"
+                  to="/Roadmap"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
                   View Roadmaps →
