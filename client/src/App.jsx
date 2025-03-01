@@ -9,6 +9,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./components/Homepage";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import CafeteriaManagement from "./components/Admin/CafeteriaManagement";
+import BusManagement from "./components/Admin/BusManagement";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/Admin">
           <Route index element={<AdminDashboard />} />
           <Route path="CafeteriaManagement" element={<CafeteriaManagement />} />
+          <Route path="BusManagement" element={<BusManagement />} />
         </Route>
       </Routes>
     </BrowserRouter>

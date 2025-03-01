@@ -36,7 +36,7 @@ export default function AdminDashboard() {
       icon: <FaBus className="text-3xl text-blue-600" />,
       description:
         "Configure bus routes, schedules, and manage transportation updates",
-      path: "/admin/transportation",
+      path: "/Admin/BusManagement",
       color: "bg-blue-50",
       hoverColor: "hover:bg-blue-100",
       borderColor: "border-blue-200",
