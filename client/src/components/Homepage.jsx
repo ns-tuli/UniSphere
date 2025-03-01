@@ -182,7 +182,7 @@ export default function HomePage() {
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
                   Take notes that automatically sync to your profile
                 </p>
-                <Link to="/learning-hub/notes" className="text-teal-600 dark:text-teal-400 text-sm hover:underline">
+                <Link to="/notes" className="text-teal-600 dark:text-teal-400 text-sm hover:underline">
                   Open Notes →
                 </Link>
               </div>
@@ -218,12 +218,12 @@ export default function HomePage() {
               </div>
               
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">University News</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Your Notes</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Stay updated with the latest campus news and events
+                  All your notes in one place!
                 </p>
-                <Link to="/learning-hub/news" className="text-teal-600 dark:text-teal-400 text-sm hover:underline">
-                  Read News →
+                <Link to="/uploadNotes" className="text-teal-600 dark:text-teal-400 text-sm hover:underline">
+                  Read your notes →
                 </Link>
               </div>
               
