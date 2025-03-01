@@ -31,7 +31,7 @@ function Notes() {
     .filter((word) => word.length > 0).length;
 
   return (
-    <div className="flex  min-h-screen bg-gray-100 dark:bg-[#18181b] font-['Poppins']">
+    <div className="flex flex-col justify-center min-h-screen bg-gray-100 dark:bg-[#18181b] font-['Poppins']">
       <div
         id="main-content"
         className="flex-1 transition-all duration-300"
@@ -39,7 +39,7 @@ function Notes() {
       >
         <div className="flex flex-col min-h-screen p-8 bg-yellow-50 dark:bg-[#18181b] font-['Poppins'] dark:border dark:border-yellow-200/50 dark:rounded-xl">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl flex items-center justify-center font-bold dark:text-yellow-100">
+            <h1 className="text-2xl flex flex-col justify-center items-center  font-bold dark:text-yellow-100">
               Notes
             </h1>
             <div className="flex items-center gap-2">
