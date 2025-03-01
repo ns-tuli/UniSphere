@@ -6,7 +6,7 @@ import { MapPin, Clock, Bus, AlertTriangle, Calendar, Search, Filter } from "luc
 const routes = [
   {
     id: 1,
-    name: "Route A: Main Campus → Downtown",
+    name: "Route: Main Campus → Downtown",
     schedule: [
       { time: "7:30 AM", status: "On Time" },
       { time: "8:15 AM", status: "Delayed (5 min)" },
@@ -24,7 +24,7 @@ const routes = [
   },
   {
     id: 2,
-    name: "Route B: Residence Halls → Medical Campus",
+    name: "Route: Residence Halls → Medical Campus",
     schedule: [
       { time: "7:45 AM", status: "On Time" },
       { time: "9:15 AM", status: "On Time" },
@@ -42,7 +42,7 @@ const routes = [
   },
   {
     id: 3,
-    name: "Route C: Athletic Complex → Engineering Buildings",
+    name: "Route: Athletic Complex → Engineering Buildings",
     schedule: [
       { time: "8:00 AM", status: "On Time" },
       { time: "10:00 AM", status: "On Time" },
@@ -60,7 +60,7 @@ const routes = [
   },
   {
     id: 4,
-    name: "Route D: West Campus → Arts District",
+    name: "Route: West Campus → Arts District",
     schedule: [
       { time: "7:15 AM", status: "On Time" },
       { time: "9:30 AM", status: "On Time" },
@@ -307,11 +307,11 @@ export default function BusSchedule() {
                   <div className="flex items-center">
                     <Bus className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2" />
                     <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                      {route.name}
+                    Bus {route.busNumber} • {route.capacity} • {route.estimatedTime} trip
                     </h3>
                   </div>
                   <p className="text-gray-600 dark:text-gray-400 mt-1">
-                    Bus {route.busNumber} • {route.capacity} • {route.estimatedTime} trip
+                    {route.name}
                   </p>
                 </div>
                 <div 
