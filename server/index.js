@@ -1,15 +1,28 @@
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import express from 'express';
 import connectDB from './config/db.js';
-const app = express()
-const port = 3000
+import errorHandler from './middlewares/error.js';
+import authRoutes from './routes/auth.js';
 
-
-// Load environment variables from .env file
+// Load environment variables
 dotenv.config();
 
-// Connect to the database
-connectDB();
+const app = express();
+const port = process.env.PORT || 3000;
 
-app.get('/', (req, res) => res.send('Hello World!'))
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+// Middleware
+app.use(express.json());
+app.use(cookieParser());
+
+// Connect to database
+await connectDB();
+
+// Routes
+app.get('/', (req, res) => res.send('Hello World!'));
+app.use('/api/v1/auth', authRoutes);
+
+// Error handler
+app.use(errorHandler);
+
+app.listen(port, () => console.log(`Server running on port ${port}`));
