@@ -12,23 +12,29 @@ import ChatbotPage from "./components/Chatbot"; // Import your chatbot page comp
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route index element={<Landing />} />
-          <Route path="/BusSchedule" element={<BusSchedule />} />
-          <Route path="/CafeteriaMenu" element={<CafeteriaMenu />} />
-          <Route path="/EventCalendar" element={<EventCalendar />} />
-          <Route path="/ClassSchedule" element={<ClassSchedule />} />
-          <Route path="/CampusNavigation" element={<CampusNavigation />} />
-          <Route path="/HomePage" element={<HomePage />} />
-          <Route path="/Notes" element={<Notes />} />
-          <Route path="/Roadmap" element={<Roadmap />} />
-          <Route path="/ChatbotPage" element={<ChatbotPage />} /> // Add a route
-          for your chatbot page
-        </Routes>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<Landing />} />
+        <Route path="/BusSchedule" element={<BusSchedule />} />
+        <Route path="/MapConponent" element={<BusSchedule />} />
+
+        <Route path="/CafeteriaMenu" element={<CafeteriaMenu />} />
+        <Route path="/EventCalendar" element={<EventCalendar />} />
+        <Route path="/ClassSchedule" element={<ClassSchedule />} />
+        <Route path="/CampusNavigation" element={<CampusNavigation />} />
+        <Route path="/HomePage" element={<HomePage />} />
+        <Route path="/Notes" element={<Notes />} />
+        <Route path="/Roadmap" element={<Roadmap />} />
+        <Route path="/ChatbotPage" element={<ChatbotPage />} />
+
+        {/* Nested Admin Routes */}
+        <Route path="/Admin">
+          <Route index element={<AdminDashboard />} />
+          <Route path="CafeteriaManagement" element={<CafeteriaManagement />} />
+          <Route path="BusManagement" element={<BusManagement />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
