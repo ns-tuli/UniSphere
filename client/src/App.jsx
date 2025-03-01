@@ -16,12 +16,13 @@ import Roadmap from "./pages/Roadmap";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route index element={<Landing />} />
-        <Route path="/BusSchedule" element={<BusSchedule />} />
-        <Route path="/MapConponent" element={<BusSchedule />} />
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route index element={<Landing />} />
 
+
+        <Route path="/BusSchedule" element={<BusSchedule />} />
         <Route path="/CafeteriaMenu" element={<CafeteriaMenu />} />
         <Route path="/EventCalendar" element={<EventCalendar />} />
         <Route path="/ClassSchedule" element={<ClassSchedule />} />
@@ -30,14 +31,15 @@ function App() {
         <Route path="/Notes" element={<Notes />} />
         <Route path="/Roadmap" element={<Roadmap />} />
 
-        {/* Nested Admin Routes */}
-        <Route path="/Admin">
-          <Route index element={<AdminDashboard />} />
-          <Route path="CafeteriaManagement" element={<CafeteriaManagement />} />
-          <Route path="BusManagement" element={<BusManagement />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+          {/* Nested Admin Routes */}
+          <Route path="/Admin">
+            <Route index element={<AdminDashboard />} />
+            <Route path="CafeteriaManagement" element={<CafeteriaManagement />} />
+            <Route path="BusManagement" element={<BusManagement />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
