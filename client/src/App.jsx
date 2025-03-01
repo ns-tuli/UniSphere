@@ -4,8 +4,8 @@ import Landing from "./components/Landing";
 import EventCalendar from "./components/EventCalendar";
 import ClassSchedule from "./components/ClassSchedule";
 import CampusNavigation from "./components/CampusNavigation";
-import login from "./components/login"
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import HomePage from "./components/Homepage";
 
 function App() {
   return (
@@ -19,7 +19,7 @@ function App() {
           <Route path="/EventCalendar" element={<EventCalendar />} />
           <Route path="/ClassSchedule" element={<ClassSchedule />} />
           <Route path="/CampusNavigation" element={<CampusNavigation />} />
-          <Route path="/login" element={<login />} />
+          <Route path="/HomePage" element={<HomePage />} />
         </Routes>
       </BrowserRouter>
     </>

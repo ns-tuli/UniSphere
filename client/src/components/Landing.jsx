@@ -14,7 +14,7 @@ export function Landing() {
           </h1>
           <nav className="hidden md:flex space-x-6"></nav>
           <div className="flex space-x-4">
-            <Link to="/home">
+            <Link to="/HomePage">
               <button className="bg-yellow-600 dark:bg-yellow-200 hover:bg-yellow-500 dark:hover:bg-yellow-100 text-[#f5f5f5] dark:text-black px-4 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-200/20">
                 Get Started
               </button>
@@ -49,7 +49,7 @@ export function Landing() {
                   Let's Get Started
                 </button>
               </Link>
-              <Link to="/home">
+              <Link to="/HomePage">
                 <button className="w-full sm:w-auto bg-transparent border-2 border-yellow-200 hover:bg-yellow-200/10 text-yellow-200 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-200/20">
                   Explore
                 </button>
