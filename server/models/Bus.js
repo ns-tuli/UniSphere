@@ -3,7 +3,7 @@ import mongooseSequence from "mongoose-sequence";
 
 // Define the schema for the bus schedule
 const busScheduleSchema = new mongoose.Schema({
-    busId: { type: String, unique: true },
+    busId: { type: Number, unique: true },
     name: { type: String, required: true },
     schedule: [
         {

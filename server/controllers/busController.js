@@ -1,4 +1,4 @@
-import BusSchedule from "../models/BusSchedule.js"; // Adjust path as necessary
+import BusSchedule from "../models/Bus.js"; // Adjust path as necessary
 
 // Get all bus schedules
 const getBusSchedules = async (req, res) => {
