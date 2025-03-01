@@ -8,9 +8,9 @@ import mealController from "../controllers/mealController.js";
 const router = express.Router();
 
 router.get("/", mealController.getMeals);
-router.get("/:mealId", mealController.getMealById);
+router.get("/:id", mealController.getMealById);
 router.post("/", mealController.addMeal);
-router.put("/:mealId", mealController.updateMeal);
-router.delete("/:mealId", mealController.deleteMeal);
+router.put("/:id", mealController.updateMeal);
+router.delete("/:id", mealController.deleteMeal);
 
 export default router;

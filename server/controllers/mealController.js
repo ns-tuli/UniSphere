@@ -15,7 +15,7 @@ const getMeals = async (req, res) => {
 // Get a single meal by ID
 const getMealById = async (req, res) => {
   try {
-    const meal = await Meal.findOne({ mealId: req.params.mealId });
+    const meal = await Meal.findById(req.params.id);
     if (!meal) {
       return res.status(404).json({ message: "Meal not found" });
     }
@@ -39,7 +39,7 @@ const addMeal = async (req, res) => {
 // Update a meal
 const updateMeal = async (req, res) => {
   try {
-    const updatedMeal = await Meal.findOneAndUpdate({ mealId: req.params.mealId }, req.body, {
+    const updatedMeal = await Meal.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
     if (!updatedMeal) {
@@ -54,7 +54,7 @@ const updateMeal = async (req, res) => {
 // Delete a meal
 const deleteMeal = async (req, res) => {
   try {
-    const deletedMeal = await Meal.findOneAndDelete({ mealId: req.params.mealId });
+    const deletedMeal = await Meal.findByIdAndDelete(req.params.id);
     if (!deletedMeal) {
       return res.status(404).json({ message: "Meal not found" });
     }

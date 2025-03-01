@@ -1,6 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
+  "description": "",
   "license": "ISC",
   "author": "",
   "type": "module",
@@ -19,11 +20,6 @@
     "groq-js": "^1.15.0",
     "groq-sdk": "^0.15.0",
     "mongoose": "^8.11.0",
-    "mongoose-sequence": "^6.0.1",
-    "bcryptjs": "^3.0.2",
-    "cookie-parser": "^1.4.7",
-    "dev": "nodemon index.js",
-    "jsonwebtoken": "^9.0.2"
-  },
-  "description": ""
+    "nodemon": "^3.1.9"
+  }
 }

@@ -2,11 +2,6 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import connectDB from "./config/db.js";
-import mealRoutes from "./routes/mealRoutes.js";
-import busRoutes from "./routes/busRoutes.js"
-import roadmapRoutes from "./routes/roadmapRoutes.js"; // Import roadmap routes
-
 
 // Load environment variables
 dotenv.config();
@@ -14,6 +9,9 @@ dotenv.config();
 const app = express();
 const GEMINI_AI_KEY = process.env.GEMINI_AI; // Access the environment variable
 
+// Initialize Gemini AI
+const genAI = new GoogleGenerativeAI(GEMINI_AI_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 // Middleware
 app.use(cors({
@@ -22,7 +20,10 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Handle preflight requests
+app.options('/api/chat', cors());
 
+// Routes
 app.post('/api/chat', async (req, res) => {
   const { message } = req.body;
   if (!message) {
@@ -44,11 +45,6 @@ app.post('/api/chat', async (req, res) => {
     return res.status(500).json({ error: 'Failed to process your message' });
   }
 });
-
-app.use("/api/meals", mealRoutes);
-app.use("/api/bus", busRoutes);
-app.use("/api/roadmap", roadmapRoutes); // Use roadmap routes
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

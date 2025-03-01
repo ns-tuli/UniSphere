@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiClock, FiDollarSign, FiHeart, FiFilter, FiSearch } from "react-icons/fi";
 import { motion } from "framer-motion";
-import { getMeals } from "../api/meal"; // Adjust path as necessary
+
 
 const categories = [
   { id: "all", name: "All" },
@@ -14,6 +14,122 @@ const categories = [
 ];
 
 // Sample meal data with expanded details
+const mealData = [
+  {
+    id: 1,
+    name: "Grilled Herb Chicken",
+    description: "Juicy grilled chicken breast seasoned with fresh herbs, served with roasted vegetables and quinoa.",
+    price: 8.99,
+    image: "https://via.placeholder.com/400x300?text=Grilled+Chicken",
+    nutrition: {
+      calories: 350,
+      protein: 40,
+      carbs: 25,
+      fat: 12,
+      fiber: 6
+    },
+    allergens: ["none"],
+    categories: ["lunch", "dinner"],
+    available: true,
+    popularity: 4.8,
+    prepTime: "15 min"
+  },
+  {
+    id: 2,
+    name: "Mediterranean Veggie Bowl",
+    description: "Fresh mixed greens, cherry tomatoes, cucumber, red onions, kalamata olives, feta cheese, and hummus with olive oil dressing.",
+    price: 7.99,
+    image: "https://via.placeholder.com/400x300?text=Veggie+Bowl",
+    nutrition: {
+      calories: 280,
+      protein: 12,
+      carbs: 32,
+      fat: 14,
+      fiber: 8
+    },
+    allergens: ["dairy"],
+    categories: ["lunch", "vegetarian"],
+    available: true,
+    popularity: 4.6,
+    prepTime: "10 min"
+  },
+  {
+    id: 3,
+    name: "Quinoa Breakfast Bowl",
+    description: "Warm quinoa topped with sliced bananas, mixed berries, honey, and toasted almonds.",
+    price: 6.49,
+    image: "https://via.placeholder.com/400x300?text=Breakfast+Bowl",
+    nutrition: {
+      calories: 310,
+      protein: 8,
+      carbs: 54,
+      fat: 9,
+      fiber: 7
+    },
+    allergens: ["nuts"],
+    categories: ["breakfast", "vegetarian", "vegan"],
+    available: true,
+    popularity: 4.3,
+    prepTime: "8 min"
+  },
+  {
+    id: 4,
+    name: "Teriyaki Salmon Bowl",
+    description: "Grilled salmon glazed with house-made teriyaki sauce, served over brown rice with steamed broccoli and carrots.",
+    price: 10.99,
+    image: "https://via.placeholder.com/400x300?text=Salmon+Bowl",
+    nutrition: {
+      calories: 420,
+      protein: 32,
+      carbs: 40,
+      fat: 16,
+      fiber: 5
+    },
+    allergens: ["fish", "soy"],
+    categories: ["lunch", "dinner"],
+    available: true,
+    popularity: 4.9,
+    prepTime: "18 min"
+  },
+  {
+    id: 5,
+    name: "Avocado Toast",
+    description: "Multigrain toast topped with smashed avocado, cherry tomatoes, microgreens, and a sprinkle of everything bagel seasoning.",
+    price: 5.99,
+    image: "https://via.placeholder.com/400x300?text=Avocado+Toast",
+    nutrition: {
+      calories: 250,
+      protein: 6,
+      carbs: 28,
+      fat: 14,
+      fiber: 8
+    },
+    allergens: ["gluten"],
+    categories: ["breakfast", "vegetarian", "vegan"],
+    available: true,
+    popularity: 4.7,
+    prepTime: "5 min"
+  },
+  {
+    id: 6,
+    name: "Southwest Chicken Wrap",
+    description: "Grilled chicken, black beans, corn, romaine lettuce, avocado, and chipotle ranch dressing in a spinach tortilla.",
+    price: 8.49,
+    image: "https://via.placeholder.com/400x300?text=Chicken+Wrap",
+    nutrition: {
+      calories: 380,
+      protein: 28,
+      carbs: 42,
+      fat: 14,
+      fiber: 7
+    },
+    allergens: ["gluten", "dairy"],
+    categories: ["lunch"],
+    available: true,
+    popularity: 4.5,
+    prepTime: "12 min"
+  }
+];
 
 // Nutrition info component
 const NutritionModal = ({ nutrition, onClose }) => {
@@ -65,45 +181,32 @@ const NutritionModal = ({ nutrition, onClose }) => {
 };
 
 const CafeteriaMenu = () => {
-  const [meals, setMeals] = useState([]);
+  const [meals, setMeals] = useState(mealData);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMeal, setSelectedMeal] = useState(null);
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
 
-  useEffect(() => {
-    const fetchMeals = async () => {
-      try {
-        const fetchedMeals = await getMeals(); // Fetch meals from the API
-        setMeals(fetchedMeals); // Set the fetched meals in state
-      } catch (error) {
-        console.error("Error fetching meals:", error.message);
-      }
-    };
-    fetchMeals();
-  }, []);
-
   // Filter meals based on category and search query
   useEffect(() => {
-    let filteredMeals = meals;
-
+    let filteredMeals = mealData;
+    
     if (selectedCategory !== "all") {
-      filteredMeals = filteredMeals.filter((meal) =>
+      filteredMeals = filteredMeals.filter(meal => 
         meal.categories.includes(selectedCategory)
       );
     }
-
+    
     if (searchQuery) {
-      filteredMeals = filteredMeals.filter(
-        (meal) =>
-          meal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          meal.description.toLowerCase().includes(searchQuery.toLowerCase())
+      filteredMeals = filteredMeals.filter(meal =>
+        meal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        meal.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-
+    
     setMeals(filteredMeals);
-  }, [selectedCategory, searchQuery, meals]);
+  }, [selectedCategory, searchQuery]);
 
   // Add meal to cart
   const addToCart = (meal) => {
@@ -289,7 +392,15 @@ const CafeteriaMenu = () => {
                   ))}
                 </div>
                 
-                
+                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  <FiClock className="mr-1" />
+                  <span>{meal.prepTime}</span>
+                  {meal.allergens[0] !== "none" && (
+                    <span className="ml-3">
+                      Allergens: {meal.allergens.join(", ")}
+                    </span>
+                  )}
+                </div>
                 
                 <div className="flex space-x-2">
                   <button
