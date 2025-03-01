@@ -216,13 +216,13 @@ export default function HomePage() {
 
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  Smart Notes
+                  Notes
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Take notes that automatically sync to your profile
+                  Take notes, switch to code mode, and export as PDF.
                 </p>
                 <Link
-                  to="/learning-hub/notes"
+                  to="/notes"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
                   Open Notes →

@@ -6,6 +6,7 @@ import ClassSchedule from "./components/ClassSchedule";
 import CampusNavigation from "./components/CampusNavigation";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./components/Homepage";
+import Notes from "./pages/Notes";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/ClassSchedule" element={<ClassSchedule />} />
           <Route path="/CampusNavigation" element={<CampusNavigation />} />
           <Route path="/HomePage" element={<HomePage />} />
+          <Route path="/Notes" element={<Notes />} />
         </Routes>
       </BrowserRouter>
     </>
