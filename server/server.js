@@ -26,7 +26,7 @@ app.use(cookieParser())
 // Routes
 app.use("/api/meals", mealRoutes);
 app.get('/', (req, res) => res.send('Hello World!'));
-app.use('/api/v1/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
