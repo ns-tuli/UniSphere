@@ -1,3 +1,5 @@
+//path: client/src/components/ThemeToggle.jsx
+
 import React, { useEffect, useState } from "react";
 import { FaSun } from "react-icons/fa6";
 import { BsMoonStarsFill } from "react-icons/bs";
