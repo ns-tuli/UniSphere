@@ -297,7 +297,7 @@ export default function HomePage() {
                   Voice-enabled chatbot for learning assistance and notes
                 </p>
                 <Link
-                  to="/learning-hub/chatbot"
+                  to="/ChatbotPage"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
                   Talk to Assistant →
