@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import {
@@ -11,10 +11,8 @@ import {
   Target,
   PenTool as Tool,
 } from "lucide-react";
-import { useSelector } from "react-redux";
 
 const RoadmapForm = () => {
-  const { currentUser } = useSelector((state) => state.roadmap);
   const [isExpanded, setIsExpanded] = useState(true);
   const [step, setStep] = useState(1);
   const roadmapRef = useRef(null);
@@ -43,6 +41,14 @@ const RoadmapForm = () => {
   const [generatedRoadmap, setGeneratedRoadmap] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null); // Local state for user
+
+  // Simulate fetching the current user (replace with your actual logic)
+  useEffect(() => {
+    // Example: Fetch the current user from localStorage or an API
+    const user = JSON.parse(localStorage.getItem("currentUser")) || null;
+    setCurrentUser(user);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -230,7 +236,8 @@ const RoadmapForm = () => {
                         Your Learning Goals
                       </h2>
                       <p className="text-amber-700 mt-2">
-                        Lets start by understanding what you want to achieve
+                        Let&apos;s start by understanding what you want to
+                        achieve
                       </p>
                     </div>
                     <div className="space-y-4">

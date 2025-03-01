@@ -1,3 +1,4 @@
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import {
@@ -10,22 +11,19 @@ import {
   Target,
   PenTool as Tool,
 } from "lucide-react";
-import { useRef, useState } from "react";
-import { useSelector } from "react-redux";
 
-const RoadmapForm = () => {
-  const { currentUser } = useSelector((state) => state.user);
-  const [isExpanded, setIsExpanded] = useState(true);
+const Roadmap = () => {
   const [step, setStep] = useState(1);
   const roadmapRef = useRef(null);
   const [formData, setFormData] = useState({
+    course: "",
     goals: {
       primaryGoal: "",
       specificArea: "",
     },
     experience: {
-      quiz: [],
       description: "",
+      coursesCompleted: 0,
     },
     timeCommitment: {
       hoursPerWeek: "2-5",
@@ -35,36 +33,35 @@ const RoadmapForm = () => {
       learningStyle: "interactive",
       difficulty: "fundamentals",
     },
-    languages: [],
     tools: "",
-    demographics: {
-      ageRange: "",
-      status: "",
-    },
     feedback: "",
   });
 
   const [generatedRoadmap, setGeneratedRoadmap] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      const response = await axios.post("/api/roadmap/generate", {
-        userId: currentUser._id,
-        ...formData,
-      });
-      setGeneratedRoadmap(response.data.roadmap.generatedRoadmap);
+      const response = await axios.post(
+        "http://localhost:5000/api/roadmap/generate",
+        {
+          userId: "anonymous",
+          ...formData,
+        }
+      );
+      setGeneratedRoadmap(response.data.roadmap.generatedContent);
       setSuccessMessage("Your learning roadmap has been successfully created!");
     } catch (error) {
       console.error("Submission error:", error);
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to submit form";
-      alert(`Error: ${errorMessage}`);
+      alert(`Error: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
+
   const handleDownloadPDF = () => {
     const element = roadmapRef.current;
     const opt = {
@@ -76,16 +73,6 @@ const RoadmapForm = () => {
     };
     html2pdf().set(opt).from(element).save();
   };
-
-  // const handleDownloadTxt = () => {
-  //   const element = document.createElement("a");
-  //   const file = new Blob([generatedRoadmap], {type: 'text/plain'});
-  //   element.href = URL.createObjectURL(file);
-  //   element.download = "my-learning-roadmap.txt";
-  //   document.body.appendChild(element);
-  //   element.click();
-  //   document.body.removeChild(element);
-  // };
 
   const StepIcon = ({ step }) => {
     const icons = {
@@ -102,32 +89,20 @@ const RoadmapForm = () => {
 
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-[#FFFDF7] to-[#FFF9E6]">
-      <SideButtons />
       <div
-        id="main-content"
         className="flex-1 transition-all duration-300"
-        style={{ marginLeft: isExpanded ? "260px" : "80px" }}
+        style={{ marginLeft: "260px" }}
       >
-        {/* Compact Hero Section */}
+        {/* Header Section */}
         <div className="bg-gradient-to-r from-[#FFF9E6] to-[#FFFDF7] border-b border-amber-100 py-8 px-6 mb-8">
-          <div className="max-w-4xl mx-auto flex items-center gap-8">
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-amber-900 mb-3">
-                Your Programming Journey Starts Here
-              </h1>
-              <p className="text-amber-800 leading-relaxed">
-                Tell us about your goals and preferences, and we'll create your
-                personalized learning roadmap.
-              </p>
-            </div>
-            <div className="flex gap-4">
-              <div className="px-4 py-2 bg-amber-50 rounded-lg border border-amber-200 text-center">
-                <p className="text-amber-700 text-sm">7-step process</p>
-              </div>
-              <div className="px-4 py-2 bg-amber-50 rounded-lg border border-amber-200 text-center">
-                <p className="text-amber-700 text-sm">Personalized plan</p>
-              </div>
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-3xl font-bold text-amber-900 mb-3">
+              University Course Excellence Roadmap
+            </h1>
+            <p className="text-amber-800 leading-relaxed">
+              Create a personalized learning plan to master your chosen
+              university course
+            </p>
           </div>
         </div>
 
@@ -137,37 +112,21 @@ const RoadmapForm = () => {
               <p className="font-semibold text-xl">{successMessage}</p>
             </div>
           )}
+
           {generatedRoadmap ? (
             <div className="bg-white rounded-lg shadow-sm p-8" ref={roadmapRef}>
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold text-amber-900">
-                  Your Learning Roadmap
-                </h2>
+              <h2 className="text-2xl font-semibold text-amber-900 mb-4">
+                Generated Roadmap
+              </h2>
+              <p>{generatedRoadmap}</p>
+              <div className="mt-6">
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition-colors"
+                  className="flex items-center px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
                 >
-                  <Download className="w-4 h-4" />
-                  Download PDF
+                  <Download className="w-6 h-6 mr-2" /> Download as PDF
                 </button>
               </div>
-
-              <div className="bg-amber-50/50 rounded-lg p-6">
-                <pre className="whitespace-pre-wrap font-sans text-amber-900 leading-relaxed">
-                  {generatedRoadmap}
-                </pre>
-              </div>
-
-              <button
-                onClick={() => {
-                  setGeneratedRoadmap(null);
-                  setSuccessMessage("");
-                  setStep(1);
-                }}
-                className="mt-8 px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
-              >
-                Create New Roadmap
-              </button>
             </div>
           ) : (
             <div className="bg-white rounded-lg shadow-lg p-8">
@@ -201,485 +160,40 @@ const RoadmapForm = () => {
                   </div>
                 </div>
 
-                {/* Step 1: Goals & Interests */}
+                {/* Step Forms */}
+                {/* Step 1: Course Selection */}
                 {step === 1 && (
-                  <div className="space-y-6 transition-all duration-300">
+                  <div className="space-y-6">
                     <div className="text-center mb-6">
                       <Target className="w-12 h-12 text-amber-600 mx-auto mb-4" />
                       <h2 className="text-3xl font-bold text-amber-900">
-                        Your Learning Goals
+                        Select Your Course
                       </h2>
-                      <p className="text-amber-700 mt-2">
-                        Let's start by understanding what you want to achieve
-                      </p>
-                    </div>
-                    <div className="space-y-4">
-                      <label className="block">
-                        <span className="text-amber-800">Primary Goal:</span>
-                        <select
-                          value={formData.goals.primaryGoal}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              goals: {
-                                ...formData.goals,
-                                primaryGoal: e.target.value,
-                              },
-                            })
-                          }
-                          className="w-full p-2 border border-amber-200 rounded mt-1 focus:ring-amber-500 focus:border-amber-500"
-                          required
-                        >
-                          <option value="">Select your primary goal</option>
-                          <option value="job">Land a job in tech</option>
-                          <option value="projects">
-                            Build personal projects
-                          </option>
-                          <option value="exams">
-                            Prepare for college/coding exams
-                          </option>
-                          <option value="basics">Learn coding basics</option>
-                          <option value="other">Other</option>
-                        </select>
-                      </label>
-
-                      {formData.goals.primaryGoal === "other" ? (
-                        <label className="block">
-                          <span className="text-amber-800">
-                            Please specify:
-                          </span>
-                          <input
-                            type="text"
-                            value={formData.goals.specificArea}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                goals: {
-                                  ...formData.goals,
-                                  specificArea: e.target.value,
-                                },
-                              })
-                            }
-                            className="w-full p-2 border border-amber-200 rounded mt-1 focus:ring-amber-500 focus:border-amber-500"
-                            required
-                          />
-                        </label>
-                      ) : (
-                        <label className="block">
-                          <span className="text-amber-800">
-                            Specific Area of Interest:
-                          </span>
-                          <input
-                            type="text"
-                            value={formData.goals.specificArea}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                goals: {
-                                  ...formData.goals,
-                                  specificArea: e.target.value,
-                                },
-                              })
-                            }
-                            className="w-full p-2 border border-amber-200 rounded mt-1 focus:ring-amber-500 focus:border-amber-500"
-                            placeholder="e.g., AI/Data Science, Game Development"
-                          />
-                        </label>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Your existing steps 2-7 remain exactly the same */}
-                {/* ... (keep all your existing step components) ... */}
-
-                {/* Step 2: Experience Level */}
-                {step === 2 && (
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold">
-                      Your Experience Level
-                    </h2>
-
-                    <div className="space-y-4">
-                      <fieldset className="space-y-2">
-                        <legend className="text-gray-700 mb-2">
-                          Self-assessment:
-                        </legend>
-                        {[
-                          "Do you understand variables and loops?",
-                          "Have you written code before?",
-                          "Are you familiar with object-oriented programming?",
-                          "Can you solve basic algorithmic problems?",
-                        ].map((question, index) => (
-                          <label
-                            key={index}
-                            className="flex items-center space-x-2"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={formData.experience.quiz.includes(
-                                question
-                              )}
-                              onChange={(e) => {
-                                const quiz = e.target.checked
-                                  ? [...formData.experience.quiz, question]
-                                  : formData.experience.quiz.filter(
-                                      (q) => q !== question
-                                    );
-                                setFormData({
-                                  ...formData,
-                                  experience: { ...formData.experience, quiz },
-                                });
-                              }}
-                              className="rounded"
-                            />
-                            <span>{question}</span>
-                          </label>
-                        ))}
-                      </fieldset>
-
-                      <label className="block">
-                        <span className="text-gray-700">
-                          Additional Experience Description:
-                        </span>
-                        <textarea
-                          value={formData.experience.description}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              experience: {
-                                ...formData.experience,
-                                description: e.target.value,
-                              },
-                            })
-                          }
-                          className="w-full p-2 border rounded mt-1 h-32"
-                          placeholder="Briefly describe your coding experience..."
-                        />
-                      </label>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 3: Time Commitment */}
-                {step === 3 && (
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold">Time Commitment</h2>
-
-                    <div className="space-y-4">
-                      <fieldset className="space-y-2">
-                        <legend className="text-gray-700">Weekly Hours:</legend>
-                        {["2-5", "5-10", "10+"].map((option) => (
-                          <label
-                            key={option}
-                            className="flex items-center space-x-2"
-                          >
-                            <input
-                              type="radio"
-                              name="hours"
-                              value={option}
-                              checked={
-                                formData.timeCommitment.hoursPerWeek === option
-                              }
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  timeCommitment: {
-                                    ...formData.timeCommitment,
-                                    hoursPerWeek: e.target.value,
-                                  },
-                                })
-                              }
-                              className="rounded"
-                            />
-                            <span>{option} hours/week</span>
-                          </label>
-                        ))}
-                      </fieldset>
-
-                      <label className="block">
-                        <span className="text-gray-700">Learning Pace:</span>
-                        <select
-                          value={formData.timeCommitment.pace}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              timeCommitment: {
-                                ...formData.timeCommitment,
-                                pace: e.target.value,
-                              },
-                            })
-                          }
-                          className="w-full p-2 border rounded mt-1"
-                        >
-                          <option value="relaxed">Relaxed</option>
-                          <option value="moderate">Moderate</option>
-                          <option value="intensive">Intensive</option>
-                        </select>
-                      </label>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 4: Learning Preferences */}
-                {step === 4 && (
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold">Learning Preferences</h2>
-
-                    <div className="space-y-4">
-                      <fieldset className="space-y-2">
-                        <legend className="text-gray-700">
-                          Preferred Learning Style:
-                        </legend>
-                        {[
-                          { value: "videos", label: "Video Tutorials" },
-                          { value: "text", label: "Text/Articles" },
-                          { value: "interactive", label: "Interactive Coding" },
-                          {
-                            value: "projects",
-                            label: "Project-Based Learning",
-                          },
-                          { value: "theory", label: "Theory-First Approach" },
-                        ].map((option) => (
-                          <label
-                            key={option.value}
-                            className="flex items-center space-x-2"
-                          >
-                            <input
-                              type="radio"
-                              name="learningStyle"
-                              value={option.value}
-                              checked={
-                                formData.preferences.learningStyle ===
-                                option.value
-                              }
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  preferences: {
-                                    ...formData.preferences,
-                                    learningStyle: e.target.value,
-                                  },
-                                })
-                              }
-                              className="rounded"
-                            />
-                            <span>{option.label}</span>
-                          </label>
-                        ))}
-                      </fieldset>
-
-                      <fieldset className="space-y-2">
-                        <legend className="text-gray-700">
-                          Difficulty Preference:
-                        </legend>
-                        {[
-                          "Stick to fundamentals first",
-                          "Challenge me with advanced topics early",
-                        ].map((option) => (
-                          <label
-                            key={option}
-                            className="flex items-center space-x-2"
-                          >
-                            <input
-                              type="radio"
-                              name="difficulty"
-                              value={option.toLowerCase().replace(/ /g, "-")}
-                              checked={
-                                formData.preferences.difficulty ===
-                                option.toLowerCase().replace(/ /g, "-")
-                              }
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  preferences: {
-                                    ...formData.preferences,
-                                    difficulty: e.target.value,
-                                  },
-                                })
-                              }
-                              className="rounded"
-                            />
-                            <span>{option}</span>
-                          </label>
-                        ))}
-                      </fieldset>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 5: Language Focus */}
-                {step === 5 && (
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold">Language Focus</h2>
-
-                    <div className="space-y-4">
-                      <fieldset className="space-y-2">
-                        <legend className="text-gray-700">
-                          Select Languages:
-                        </legend>
-                        {["C", "C++", "Java", "Python"].map((lang) => (
-                          <label
-                            key={lang}
-                            className="flex items-center space-x-2"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={formData.languages.some(
-                                (l) => l.name === lang
-                              )}
-                              onChange={(e) => {
-                                const languages = e.target.checked
-                                  ? [
-                                      ...formData.languages,
-                                      {
-                                        name: lang,
-                                        priority: formData.languages.length + 1,
-                                      },
-                                    ]
-                                  : formData.languages.filter(
-                                      (l) => l.name !== lang
-                                    );
-                                setFormData({ ...formData, languages });
-                              }}
-                              className="rounded"
-                            />
-                            <span>{lang}</span>
-                          </label>
-                        ))}
-                      </fieldset>
-
-                      {formData.languages.length > 0 && (
-                        <div className="space-y-2">
-                          <span className="text-gray-700">Set Priorities:</span>
-                          {formData.languages.map((lang, index) => (
-                            <div
-                              key={lang.name}
-                              className="flex items-center space-x-2"
-                            >
-                              <span>{lang.name}</span>
-                              <select
-                                value={lang.priority}
-                                onChange={(e) => {
-                                  const newLanguages = [...formData.languages];
-                                  newLanguages[index].priority = parseInt(
-                                    e.target.value
-                                  );
-                                  setFormData({
-                                    ...formData,
-                                    languages: newLanguages,
-                                  });
-                                }}
-                                className="p-1 border rounded"
-                              >
-                                {formData.languages.map((_, i) => (
-                                  <option key={i + 1} value={i + 1}>
-                                    {i + 1}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 6: Tools & Demographics */}
-                {step === 6 && (
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold">
-                      Additional Information
-                    </h2>
-
-                    <div className="space-y-4">
-                      <label className="block">
-                        <span className="text-gray-700">
-                          Specific Tools/Projects:
-                        </span>
-                        <input
-                          type="text"
-                          value={formData.tools}
-                          onChange={(e) =>
-                            setFormData({ ...formData, tools: e.target.value })
-                          }
-                          className="w-full p-2 border rounded mt-1"
-                          placeholder="e.g., Android Studio, Django, Arduino"
-                        />
-                      </label>
-
-                      <div className="space-y-2">
-                        <label className="block">
-                          <span className="text-gray-700">Age Range:</span>
-                          <select
-                            value={formData.demographics.ageRange}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                demographics: {
-                                  ...formData.demographics,
-                                  ageRange: e.target.value,
-                                },
-                              })
-                            }
-                            className="w-full p-2 border rounded mt-1"
-                          >
-                            <option value="">Prefer not to say</option>
-                            <option value="<18">Under 18</option>
-                            <option value="18-25">18-25</option>
-                            <option value="25+">25+</option>
-                          </select>
-                        </label>
-
-                        <label className="block">
-                          <span className="text-gray-700">Status:</span>
-                          <select
-                            value={formData.demographics.status}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                demographics: {
-                                  ...formData.demographics,
-                                  status: e.target.value,
-                                },
-                              })
-                            }
-                            className="w-full p-2 border rounded mt-1"
-                          >
-                            <option value="">Prefer not to say</option>
-                            <option value="student">Student</option>
-                            <option value="professional">
-                              Working Professional
-                            </option>
-                            <option value="other">Other</option>
-                          </select>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 7: Final Feedback */}
-                {step === 7 && (
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold">Final Touches</h2>
-
-                    <label className="block">
-                      <span className="text-gray-700">
-                        Anything else we should know?
-                      </span>
-                      <textarea
-                        value={formData.feedback}
+                      <select
+                        value={formData.course}
                         onChange={(e) =>
-                          setFormData({ ...formData, feedback: e.target.value })
+                          setFormData({ ...formData, course: e.target.value })
                         }
-                        className="w-full p-2 border rounded mt-1 h-32"
-                        placeholder="Additional information to help customize your roadmap..."
-                      />
-                    </label>
+                        className="w-full p-3 border border-amber-200 rounded-lg mt-1 focus:ring-amber-500 focus:border-amber-500"
+                        required
+                      >
+                        <option value="">Choose your university course</option>
+                        <option value="Artificial Intelligence">
+                          Artificial Intelligence
+                        </option>
+                        <option value="Business Management">
+                          Business Management
+                        </option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="Software Engineering">
+                          Software Engineering
+                        </option>
+                      </select>
+                    </div>
                   </div>
                 )}
+
+                {/* ... (Include all the other steps as you already have them) ... */}
 
                 {/* Navigation Controls */}
                 <div className="flex justify-between pt-6">
@@ -693,12 +207,348 @@ const RoadmapForm = () => {
                     </button>
                   )}
 
+                  {/* Step 2: Learning Goals */}
+                  {step === 2 && (
+                    <div className="space-y-6">
+                      <div className="text-center mb-6">
+                        <BookOpen className="w-12 h-12 text-amber-600 mx-auto mb-4" />
+                        <h2 className="text-3xl font-bold text-amber-900">
+                          Learning Objectives
+                        </h2>
+                        <div className="space-y-4">
+                          <label className="block">
+                            <span className="text-amber-800">
+                              Primary Goal:
+                            </span>
+                            <select
+                              value={formData.goals.primaryGoal}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  goals: {
+                                    ...formData.goals,
+                                    primaryGoal: e.target.value,
+                                  },
+                                })
+                              }
+                              className="w-full p-3 border border-amber-200 rounded-lg mt-1"
+                              required
+                            >
+                              <option value="">Select main objective</option>
+                              <option value="Academic Excellence">
+                                Academic Excellence
+                              </option>
+                              <option value="Career Preparation">
+                                Career Preparation
+                              </option>
+                              <option value="Research Focus">
+                                Research Focus
+                              </option>
+                            </select>
+                          </label>
+                          <label className="block">
+                            <span className="text-amber-800">
+                              Specific Focus Area:
+                            </span>
+                            <input
+                              type="text"
+                              value={formData.goals.specificArea}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  goals: {
+                                    ...formData.goals,
+                                    specificArea: e.target.value,
+                                  },
+                                })
+                              }
+                              className="w-full p-3 border border-amber-200 rounded-lg mt-1"
+                              placeholder="e.g., Neural Networks, Financial Analysis"
+                              required
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 3: Current Experience */}
+                  {step === 3 && (
+                    <div className="space-y-6">
+                      <div className="text-center mb-6">
+                        <Clock className="w-12 h-12 text-amber-600 mx-auto mb-4" />
+                        <h2 className="text-3xl font-bold text-amber-900">
+                          Current Knowledge Level
+                        </h2>
+                        <div className="space-y-4">
+                          <label className="block">
+                            <span className="text-amber-800">
+                              Experience Level:
+                            </span>
+                            <select
+                              value={formData.experience.description}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  experience: {
+                                    ...formData.experience,
+                                    description: e.target.value,
+                                  },
+                                })
+                              }
+                              className="w-full p-3 border border-amber-200 rounded-lg mt-1"
+                              required
+                            >
+                              <option value="">
+                                Select your current level
+                              </option>
+                              <option value="Beginner">
+                                Beginner (0-1 courses completed)
+                              </option>
+                              <option value="Intermediate">
+                                Intermediate (2-3 courses completed)
+                              </option>
+                              <option value="Advanced">
+                                Advanced (4+ courses completed)
+                              </option>
+                            </select>
+                          </label>
+                          <label className="block">
+                            <span className="text-amber-800">
+                              Related Courses Completed:
+                            </span>
+                            <input
+                              type="number"
+                              min="0"
+                              value={formData.experience.coursesCompleted}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  experience: {
+                                    ...formData.experience,
+                                    coursesCompleted: e.target.value,
+                                  },
+                                })
+                              }
+                              className="w-full p-3 border border-amber-200 rounded-lg mt-1"
+                              placeholder="Number of relevant courses taken"
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 4: Time Commitment */}
+                  {step === 4 && (
+                    <div className="space-y-6">
+                      <div className="text-center mb-6">
+                        <Brain className="w-12 h-12 text-amber-600 mx-auto mb-4" />
+                        <h2 className="text-3xl font-bold text-amber-900">
+                          Study Plan Configuration
+                        </h2>
+                        <div className="grid grid-cols-2 gap-6 mt-6">
+                          <div className="space-y-2">
+                            <label className="block">
+                              <span className="text-amber-800">
+                                Weekly Study Hours:
+                              </span>
+                              <select
+                                value={formData.timeCommitment.hoursPerWeek}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    timeCommitment: {
+                                      ...formData.timeCommitment,
+                                      hoursPerWeek: e.target.value,
+                                    },
+                                  })
+                                }
+                                className="w-full p-3 border border-amber-200 rounded-lg mt-1"
+                                required
+                              >
+                                <option value="2-5">2-5 hours</option>
+                                <option value="5-10">5-10 hours</option>
+                                <option value="10-15">10-15 hours</option>
+                                <option value="15+">15+ hours</option>
+                              </select>
+                            </label>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="block">
+                              <span className="text-amber-800">
+                                Learning Pace:
+                              </span>
+                              <select
+                                value={formData.timeCommitment.pace}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    timeCommitment: {
+                                      ...formData.timeCommitment,
+                                      pace: e.target.value,
+                                    },
+                                  })
+                                }
+                                className="w-full p-3 border border-amber-200 rounded-lg mt-1"
+                                required
+                              >
+                                <option value="relaxed">
+                                  Relaxed (Long-term focus)
+                                </option>
+                                <option value="moderate">
+                                  Moderate (Balanced pace)
+                                </option>
+                                <option value="intensive">
+                                  Intensive (Fast-track learning)
+                                </option>
+                              </select>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 5: Learning Preferences */}
+                  {step === 5 && (
+                    <div className="space-y-6">
+                      <div className="text-center mb-6">
+                        <Code className="w-12 h-12 text-amber-600 mx-auto mb-4" />
+                        <h2 className="text-3xl font-bold text-amber-900">
+                          Learning Preferences
+                        </h2>
+                        <div className="grid grid-cols-2 gap-6 mt-6">
+                          <div className="space-y-2">
+                            <label className="block">
+                              <span className="text-amber-800">
+                                Learning Style:
+                              </span>
+                              <select
+                                value={formData.preferences.learningStyle}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    preferences: {
+                                      ...formData.preferences,
+                                      learningStyle: e.target.value,
+                                    },
+                                  })
+                                }
+                                className="w-full p-3 border border-amber-200 rounded-lg mt-1"
+                                required
+                              >
+                                <option value="interactive">
+                                  Interactive (Labs/Projects)
+                                </option>
+                                <option value="theoretical">
+                                  Theoretical (Lectures/Reading)
+                                </option>
+                                <option value="mixed">Mixed Approach</option>
+                              </select>
+                            </label>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="block">
+                              <span className="text-amber-800">
+                                Difficulty Level:
+                              </span>
+                              <select
+                                value={formData.preferences.difficulty}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    preferences: {
+                                      ...formData.preferences,
+                                      difficulty: e.target.value,
+                                    },
+                                  })
+                                }
+                                className="w-full p-3 border border-amber-200 rounded-lg mt-1"
+                                required
+                              >
+                                <option value="fundamentals">
+                                  Core Fundamentals
+                                </option>
+                                <option value="intermediate">
+                                  Intermediate Concepts
+                                </option>
+                                <option value="advanced">
+                                  Advanced Topics
+                                </option>
+                              </select>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 6: Tools & Resources */}
+                  {step === 6 && (
+                    <div className="space-y-6">
+                      <div className="text-center mb-6">
+                        <Tool className="w-12 h-12 text-amber-600 mx-auto mb-4" />
+                        <h2 className="text-3xl font-bold text-amber-900">
+                          Tools & Resources
+                        </h2>
+                        <div className="space-y-4">
+                          <label className="block">
+                            <span className="text-amber-800">
+                              Preferred Tools/Software:
+                            </span>
+                            <input
+                              type="text"
+                              value={formData.tools}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  tools: e.target.value,
+                                })
+                              }
+                              className="w-full p-3 border border-amber-200 rounded-lg mt-1"
+                              placeholder="e.g., Python, Tableau, TensorFlow"
+                            />
+                          </label>
+                          <label className="block">
+                            <span className="text-amber-800">
+                              University Resources Available:
+                            </span>
+                            <select
+                              className="w-full p-3 border border-amber-200 rounded-lg mt-1"
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  universityResources: e.target.value,
+                                })
+                              }
+                            >
+                              <option value="standard">
+                                Standard Library Access
+                              </option>
+                              <option value="premium">
+                                Premium Software Licenses
+                              </option>
+                              <option value="research">
+                                Research Lab Access
+                              </option>
+                            </select>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {step < 7 ? (
                     <button
                       type="button"
                       onClick={() => setStep(step + 1)}
                       className="flex items-center px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors ml-auto"
-                      disabled={step === 1 && !formData.goals.primaryGoal}
+                      disabled={
+                        (step === 1 && !formData.course) ||
+                        (step === 2 && !formData.goals.primaryGoal) ||
+                        (step === 3 && !formData.experience.description)
+                      }
                     >
                       Next →
                     </button>
@@ -706,8 +556,11 @@ const RoadmapForm = () => {
                     <button
                       type="submit"
                       className="flex items-center px-8 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors ml-auto"
+                      disabled={loading}
                     >
-                      Generate My Roadmap →
+                      {loading
+                        ? "Generating Roadmap..."
+                        : "Create My Learning Plan"}
                     </button>
                   )}
                 </div>
