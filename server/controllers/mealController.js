@@ -1,4 +1,5 @@
-const Meal = require("../models/Meal");
+// const Meal = require("../models/Meal");
+import Meal from "../models/Meal.js";
 
 // Get all meals
 const getMeals = async (req, res) => {
@@ -9,6 +10,7 @@ const getMeals = async (req, res) => {
     res.status(500).json({ message: "Error fetching meals", error });
   }
 };
+
 
 // Get a single meal by ID
 const getMealById = async (req, res) => {
@@ -62,10 +64,12 @@ const deleteMeal = async (req, res) => {
   }
 };
 
-module.exports = {
-  getMeals,
-  getMealById,
-  addMeal,
-  updateMeal,
-  deleteMeal,
-};
+// ...existing code...
+
+export default {
+    getMeals,
+    getMealById,
+    addMeal,
+    updateMeal,
+    deleteMeal,
+  };

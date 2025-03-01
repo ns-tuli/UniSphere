@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const mealSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -19,4 +20,5 @@ const mealSchema = new mongoose.Schema({
   prepTime: { type: String, required: true },
 });
 
-module.exports = mongoose.model("Meal", mealSchema);
+// module.exports = mongoose.model("Meal", mealSchema);
+export default mongoose.model("Meal", mealSchema);
