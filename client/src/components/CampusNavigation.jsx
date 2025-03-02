@@ -1,41 +1,41 @@
 // src/components/CampusNavigation.jsx
-import React, { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+import { motion } from 'framer-motion';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import {
-  Search,
-  Navigation,
-  Map,
-  Info,
-  Compass,
-  Layers,
   AlertTriangle,
   BookOpen,
-} from "lucide-react";
-//import { motion } from "framer-motion";
+  Compass,
+  Info,
+  Layers,
+  Map,
+  Navigation,
+  Search,
+} from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 
 // Fix for default marker icon in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
   iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
 // Custom marker icons
 const buildingIcon = new L.Icon({
-  iconUrl: "/building-icon.png", // Replace with actual path
+  iconUrl: '/building-icon.png', // Replace with actual path
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
 });
 
 const libraryIcon = new L.Icon({
-  iconUrl: "/library-icon.png", // Replace with actual path
+  iconUrl: '/library-icon.png', // Replace with actual path
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
@@ -45,74 +45,74 @@ const libraryIcon = new L.Icon({
 const campusBuildings = [
   {
     id: 1,
-    name: "Main Hall",
-    type: "academic",
+    name: 'Main Hall',
+    type: 'academic',
     coordinates: [34.0522, -118.2437],
     description:
-      "The primary administrative building with lecture halls and faculty offices.",
-    facilities: ["Lecture Halls", "Administrative Offices", "Student Services"],
-    hours: "7:00 AM - 10:00 PM",
-    image: "https://via.placeholder.com/300x200",
+      'The primary administrative building with lecture halls and faculty offices.',
+    facilities: ['Lecture Halls', 'Administrative Offices', 'Student Services'],
+    hours: '7:00 AM - 10:00 PM',
+    image: 'https://via.placeholder.com/300x200',
     accessibility: true,
     events: [
-      "Faculty Meeting (Room 101) - 2:00 PM",
-      "Student Council (Room 204) - 5:00 PM",
+      'Faculty Meeting (Room 101) - 2:00 PM',
+      'Student Council (Room 204) - 5:00 PM',
     ],
   },
   {
     id: 2,
-    name: "Science Center",
-    type: "academic",
+    name: 'Science Center',
+    type: 'academic',
     coordinates: [34.0525, -118.244],
     description:
-      "Home to the sciences with modern laboratories and research facilities.",
-    facilities: ["Research Labs", "Computer Labs", "Lecture Halls"],
-    hours: "8:00 AM - 9:00 PM",
-    image: "https://via.placeholder.com/300x200",
+      'Home to the sciences with modern laboratories and research facilities.',
+    facilities: ['Research Labs', 'Computer Labs', 'Lecture Halls'],
+    hours: '8:00 AM - 9:00 PM',
+    image: 'https://via.placeholder.com/300x200',
     accessibility: true,
     events: [
-      "Chemistry Lab (Room 302) - 1:00 PM",
-      "Physics Seminar (Room 405) - 4:00 PM",
+      'Chemistry Lab (Room 302) - 1:00 PM',
+      'Physics Seminar (Room 405) - 4:00 PM',
     ],
   },
   {
     id: 3,
-    name: "University Library",
-    type: "library",
+    name: 'University Library',
+    type: 'library',
     coordinates: [34.0518, -118.2432],
     description:
-      "Five-story library with extensive collections and study spaces.",
-    facilities: ["Study Rooms", "Computer Lab", "Reading Lounges", "Archives"],
-    hours: "7:00 AM - 12:00 AM",
-    image: "https://via.placeholder.com/300x200",
+      'Five-story library with extensive collections and study spaces.',
+    facilities: ['Study Rooms', 'Computer Lab', 'Reading Lounges', 'Archives'],
+    hours: '7:00 AM - 12:00 AM',
+    image: 'https://via.placeholder.com/300x200',
     accessibility: true,
-    events: ["Research Workshop - 11:00 AM", "Book Club - 6:00 PM"],
+    events: ['Research Workshop - 11:00 AM', 'Book Club - 6:00 PM'],
   },
   {
     id: 4,
-    name: "Student Union",
-    type: "recreational",
+    name: 'Student Union',
+    type: 'recreational',
     coordinates: [34.0515, -118.2445],
     description:
-      "Center for student activities, dining, and social gatherings.",
-    facilities: ["Food Court", "Lounges", "Meeting Rooms", "Game Room"],
-    hours: "6:00 AM - 11:00 PM",
-    image: "https://via.placeholder.com/300x200",
+      'Center for student activities, dining, and social gatherings.',
+    facilities: ['Food Court', 'Lounges', 'Meeting Rooms', 'Game Room'],
+    hours: '6:00 AM - 11:00 PM',
+    image: 'https://via.placeholder.com/300x200',
     accessibility: true,
-    events: ["Club Fair - 12:00 PM", "Movie Night - 8:00 PM"],
+    events: ['Club Fair - 12:00 PM', 'Movie Night - 8:00 PM'],
   },
   {
     id: 5,
-    name: "Recreation Center",
-    type: "recreational",
+    name: 'Recreation Center',
+    type: 'recreational',
     coordinates: [34.051, -118.245],
     description:
-      "Modern fitness facility with equipment, courts, and a swimming pool.",
-    facilities: ["Gym", "Swimming Pool", "Basketball Courts", "Yoga Studio"],
-    hours: "6:00 AM - 10:00 PM",
-    image: "https://via.placeholder.com/300x200",
+      'Modern fitness facility with equipment, courts, and a swimming pool.',
+    facilities: ['Gym', 'Swimming Pool', 'Basketball Courts', 'Yoga Studio'],
+    hours: '6:00 AM - 10:00 PM',
+    image: 'https://via.placeholder.com/300x200',
     accessibility: true,
-    events: ["Yoga Class - 9:00 AM", "Swimming Competition - 3:00 PM"],
+    events: ['Yoga Class - 9:00 AM', 'Swimming Competition - 3:00 PM'],
   },
 ];
 
@@ -130,21 +130,21 @@ function ARModeComponent() {
   useEffect(() => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: "environment" } })
-        .then((stream) => {
+        .getUserMedia({ video: { facingMode: 'environment' } })
+        .then(stream => {
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
           }
         })
-        .catch((err) => {
-          console.error("Could not access camera: ", err);
+        .catch(err => {
+          console.error('Could not access camera: ', err);
         });
     }
 
     return () => {
       if (videoRef.current && videoRef.current.srcObject) {
         const tracks = videoRef.current.srcObject.getTracks();
-        tracks.forEach((track) => track.stop());
+        tracks.forEach(track => track.stop());
       }
     };
   }, []);
@@ -174,11 +174,11 @@ function ARModeComponent() {
 
 export default function CampusNavigation() {
   const [selectedBuilding, setSelectedBuilding] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [filteredBuildings, setFilteredBuildings] = useState(campusBuildings);
   const [mapCenter, setMapCenter] = useState([34.0522, -118.2437]);
-  const [activeMode, setActiveMode] = useState("map"); // "map", "ar", "directions"
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeMode, setActiveMode] = useState('map'); // "map", "ar", "directions"
+  const [activeFilter, setActiveFilter] = useState('all');
   const [showARWarning, setShowARWarning] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
 
@@ -189,15 +189,17 @@ export default function CampusNavigation() {
     // Filter by search query
     if (searchQuery) {
       results = results.filter(
-        (building) =>
+        building =>
           building.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          building.description.toLowerCase().includes(searchQuery.toLowerCase())
+          building.description
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()),
       );
     }
 
     // Filter by building type
-    if (activeFilter !== "all") {
-      results = results.filter((building) => building.type === activeFilter);
+    if (activeFilter !== 'all') {
+      results = results.filter(building => building.type === activeFilter);
     }
 
     setFilteredBuildings(results);
@@ -207,15 +209,15 @@ export default function CampusNavigation() {
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        position => {
           setUserLocation([
             position.coords.latitude,
             position.coords.longitude,
           ]);
         },
-        (error) => {
-          console.error("Error getting location:", error);
-        }
+        error => {
+          console.error('Error getting location:', error);
+        },
       );
     }
   }, []);
@@ -225,20 +227,20 @@ export default function CampusNavigation() {
     setShowARWarning(true);
     setTimeout(() => {
       setShowARWarning(false);
-      setActiveMode("ar");
+      setActiveMode('ar');
     }, 2000);
   };
 
   // Handle building selection
-  const handleBuildingSelect = (building) => {
+  const handleBuildingSelect = building => {
     setSelectedBuilding(building);
     setMapCenter(building.coordinates);
   };
 
   // Get icon based on building type
-  const getBuildingIcon = (type) => {
+  const getBuildingIcon = type => {
     switch (type) {
-      case "library":
+      case 'library':
         return libraryIcon;
       default:
         return buildingIcon;
@@ -261,11 +263,11 @@ export default function CampusNavigation() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 mb-6">
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => setActiveMode("map")}
+              onClick={() => setActiveMode('map')}
               className={`flex items-center px-4 py-2 rounded-lg ${
-                activeMode === "map"
-                  ? "bg-yellow-500 text-white"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                activeMode === 'map'
+                  ? 'bg-yellow-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200'
               } transition-colors duration-200`}
             >
               <Map className="w-5 h-5 mr-2" />
@@ -274,20 +276,20 @@ export default function CampusNavigation() {
             <button
               onClick={handleARMode}
               className={`flex items-center px-4 py-2 rounded-lg ${
-                activeMode === "ar"
-                  ? "bg-yellow-500 text-white"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                activeMode === 'ar'
+                  ? 'bg-yellow-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200'
               } transition-colors duration-200`}
             >
               <Compass className="w-5 h-5 mr-2" />
               AR Navigation
             </button>
             <button
-              onClick={() => setActiveMode("directions")}
+              onClick={() => setActiveMode('directions')}
               className={`flex items-center px-4 py-2 rounded-lg ${
-                activeMode === "directions"
-                  ? "bg-yellow-500 text-white"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                activeMode === 'directions'
+                  ? 'bg-yellow-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200'
               } transition-colors duration-200`}
             >
               <Navigation className="w-5 h-5 mr-2" />
@@ -308,47 +310,47 @@ export default function CampusNavigation() {
                 placeholder="Search buildings, facilities..."
                 className="pl-10 pr-4 py-2 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
 
             <div className="flex space-x-2">
               <button
-                onClick={() => setActiveFilter("all")}
+                onClick={() => setActiveFilter('all')}
                 className={`px-3 py-2 rounded-lg ${
-                  activeFilter === "all"
-                    ? "bg-yellow-500 text-white"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                  activeFilter === 'all'
+                    ? 'bg-yellow-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200'
                 } transition-colors duration-200`}
               >
                 All
               </button>
               <button
-                onClick={() => setActiveFilter("academic")}
+                onClick={() => setActiveFilter('academic')}
                 className={`px-3 py-2 rounded-lg ${
-                  activeFilter === "academic"
-                    ? "bg-yellow-500 text-white"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                  activeFilter === 'academic'
+                    ? 'bg-yellow-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200'
                 } transition-colors duration-200`}
               >
                 Academic
               </button>
               <button
-                onClick={() => setActiveFilter("library")}
+                onClick={() => setActiveFilter('library')}
                 className={`px-3 py-2 rounded-lg ${
-                  activeFilter === "library"
-                    ? "bg-yellow-500 text-white"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                  activeFilter === 'library'
+                    ? 'bg-yellow-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200'
                 } transition-colors duration-200`}
               >
                 Library
               </button>
               <button
-                onClick={() => setActiveFilter("recreational")}
+                onClick={() => setActiveFilter('recreational')}
                 className={`px-3 py-2 rounded-lg ${
-                  activeFilter === "recreational"
-                    ? "bg-yellow-500 text-white"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                  activeFilter === 'recreational'
+                    ? 'bg-yellow-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200'
                 } transition-colors duration-200`}
               >
                 Recreational
@@ -370,15 +372,15 @@ export default function CampusNavigation() {
               </div>
               <div className="overflow-y-auto max-h-[500px]">
                 {filteredBuildings.length > 0 ? (
-                  filteredBuildings.map((building) => (
+                  filteredBuildings.map(building => (
                     <motion.div
                       key={building.id}
                       whileHover={{ scale: 1.02 }}
                       onClick={() => handleBuildingSelect(building)}
                       className={`p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors duration-200 ${
                         selectedBuilding?.id === building.id
-                          ? "bg-yellow-100 dark:bg-gray-700"
-                          : ""
+                          ? 'bg-yellow-100 dark:bg-gray-700'
+                          : ''
                       }`}
                     >
                       <h3 className="text-lg font-medium text-yellow-700 dark:text-yellow-300">
@@ -406,8 +408,8 @@ export default function CampusNavigation() {
                     <p>No buildings found matching your search.</p>
                     <button
                       onClick={() => {
-                        setSearchQuery("");
-                        setActiveFilter("all");
+                        setSearchQuery('');
+                        setActiveFilter('all');
                       }}
                       className="mt-2 text-yellow-600 dark:text-yellow-400 underline"
                     >
@@ -421,7 +423,7 @@ export default function CampusNavigation() {
 
           {/* Map or AR View */}
           <div className="lg:col-span-2">
-            {activeMode === "map" && (
+            {activeMode === 'map' && (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden h-[600px]">
                 <MapContainer
                   center={mapCenter}
@@ -440,7 +442,7 @@ export default function CampusNavigation() {
                       position={userLocation}
                       icon={
                         new L.Icon({
-                          iconUrl: "/user-location.png", // Replace with actual user location icon
+                          iconUrl: '/user-location.png', // Replace with actual user location icon
                           iconSize: [30, 30],
                           iconAnchor: [15, 15],
                         })
@@ -451,7 +453,7 @@ export default function CampusNavigation() {
                   )}
 
                   {/* Building markers */}
-                  {filteredBuildings.map((building) => (
+                  {filteredBuildings.map(building => (
                     <Marker
                       key={building.id}
                       position={building.coordinates}
@@ -479,7 +481,7 @@ export default function CampusNavigation() {
                             className="mt-2 bg-yellow-500 text-white px-3 py-1 rounded text-sm"
                             onClick={() => {
                               setSelectedBuilding(building);
-                              setActiveMode("directions");
+                              setActiveMode('directions');
                             }}
                           >
                             Get Directions
@@ -497,13 +499,13 @@ export default function CampusNavigation() {
               </div>
             )}
 
-            {activeMode === "ar" && (
+            {activeMode === 'ar' && (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden h-[600px]">
                 <ARModeComponent />
               </div>
             )}
 
-            {activeMode === "directions" && (
+            {activeMode === 'directions' && (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden h-[600px]">
                 <div className="p-4 bg-yellow-500 dark:bg-yellow-600 text-white">
                   <h3 className="text-xl font-semibold flex items-center">
@@ -521,8 +523,8 @@ export default function CampusNavigation() {
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 mt-2">
                           {!userLocation
-                            ? "Please enable location services to get directions."
-                            : "Directions from your current location:"}
+                            ? 'Please enable location services to get directions.'
+                            : 'Directions from your current location:'}
                         </p>
                       </div>
 
@@ -602,7 +604,7 @@ export default function CampusNavigation() {
 
                       <div className="mt-6 flex justify-center">
                         <button
-                          onClick={() => setActiveMode("map")}
+                          onClick={() => setActiveMode('map')}
                           className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded flex items-center"
                         >
                           <Map className="w-5 h-5 mr-2" />
@@ -683,8 +685,8 @@ export default function CampusNavigation() {
                       </h4>
                       <p className="text-gray-700 dark:text-gray-300">
                         {selectedBuilding.accessibility
-                          ? "Wheelchair Accessible"
-                          : "Limited Accessibility"}
+                          ? 'Wheelchair Accessible'
+                          : 'Limited Accessibility'}
                       </p>
                     </div>
 
@@ -743,7 +745,7 @@ export default function CampusNavigation() {
 
                   <div className="mt-6 flex space-x-3">
                     <button
-                      onClick={() => setActiveMode("directions")}
+                      onClick={() => setActiveMode('directions')}
                       className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center"
                     >
                       <Navigation className="w-5 h-5 mr-2" />
@@ -784,7 +786,7 @@ export default function CampusNavigation() {
               <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
+                  animate={{ width: '100%' }}
                   transition={{ duration: 2 }}
                   className="h-full bg-yellow-500"
                 />
