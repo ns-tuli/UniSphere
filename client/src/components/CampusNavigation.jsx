@@ -275,9 +275,9 @@ export default function CampusNavigation() {
   const [showARWarning, setShowARWarning] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [viewState, setViewState] = useState({
-    longitude: -118.2437,
-    latitude: 34.0522,
-    zoom: 15,
+    longitude: 90.37925253472153,
+    latitude: 23.948114973032546,
+    zoom: 17,
   });
   const [isLocatingUser, setIsLocatingUser] = useState(false);
   const [arPermissionGranted, setArPermissionGranted] = useState(false);
@@ -308,87 +308,106 @@ export default function CampusNavigation() {
 
   // Get user location
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation([
-            position.coords.latitude,
-            position.coords.longitude,
-          ]);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
+    const getLocation = () => {
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser");
+        return;
+      }
+
+      setIsLocatingUser(true);
+
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      };
+
+      const success = (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation([latitude, longitude]);
+        setLocationAccuracy(position.coords.accuracy);
+        
+        setViewState(prev => ({
+          ...prev,
+          latitude,
+          longitude,
+          zoom: 17
+        }));
+        
+        setIsLocatingUser(false);
+      };
+
+      const error = (err) => {
+        setIsLocatingUser(false);
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+        
+        switch (err.code) {
+          case err.PERMISSION_DENIED:
+            alert("Please enable location access in your browser settings to use this feature.");
+            break;
+          case err.POSITION_UNAVAILABLE:
+            alert("Location information is unavailable. Please check your device's GPS settings.");
+            break;
+          case err.TIMEOUT:
+            alert("Location request timed out. Please try again.");
+            break;
+          default:
+            alert("An unknown error occurred while getting your location.");
         }
-      );
-    }
-  }, []);
+      };
+
+      // Get initial position
+      navigator.geolocation.getCurrentPosition(success, error, options);
+
+      // Watch position for updates
+      const watchId = navigator.geolocation.watchPosition(success, error, options);
+
+      // Cleanup
+      return () => {
+        if (watchId) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+      };
+    };
+
+    getLocation();
+  }, []); // Empty dependency array means this runs once on mount
 
   // Update the location tracking function
   const getUserLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+
     setIsLocatingUser(true);
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation([
-            position.coords.latitude,
-            position.coords.longitude,
-          ]);
-          setLocationAccuracy(position.coords.accuracy);
-          // Update map view to center on user with appropriate zoom based on accuracy
-          setViewState({
-            longitude: position.coords.longitude,
-            latitude: position.coords.latitude,
-            zoom: position.coords.accuracy > 100 ? 15 : 17, // Adjust zoom based on accuracy
-          });
-          setIsLocatingUser(false);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          setIsLocatingUser(false);
-          // Show error notification
-          alert(
-            "Could not get your location. Please check your device settings."
-          );
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        }
-      );
-    }
-  };
 
-  // Improve real-time location tracking
-  useEffect(() => {
-    let watchId;
-    if (navigator.geolocation) {
-      watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          setUserLocation([
-            position.coords.latitude,
-            position.coords.longitude,
-          ]);
-          setLocationAccuracy(position.coords.accuracy);
-        },
-        (error) => {
-          console.error("Error tracking location:", error);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        }
-      );
-    }
-
-    // Add location button to the page
-    return () => {
-      if (watchId) {
-        navigator.geolocation.clearWatch(watchId);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation([latitude, longitude]);
+        setLocationAccuracy(position.coords.accuracy);
+        
+        setViewState({
+          longitude,
+          latitude,
+          zoom: 17
+        });
+        
+        setIsLocatingUser(false);
+      },
+      (error) => {
+        setIsLocatingUser(false);
+        alert("Could not get your location. Please check your device settings.");
+        console.error("Error getting location:", error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
       }
-    };
-  }, []);
+    );
+  };
 
   // Add this function to check camera permissions
   const checkCameraPermissions = async () => {
@@ -609,69 +628,6 @@ export default function CampusNavigation() {
       )}
     </div>
   );
-
-  // Update the location tracking function with better error handling and immediate location fetch
-  useEffect(() => {
-    const getInitialLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const newLocation = [
-              position.coords.latitude,
-              position.coords.longitude,
-            ];
-            setUserLocation(newLocation);
-            setViewState({
-              longitude: position.coords.longitude,
-              latitude: position.coords.latitude,
-              zoom: 17,
-            });
-          },
-          (error) => {
-            console.error("Error getting location:", error);
-            // More user-friendly error handling
-            switch (error.code) {
-              case error.PERMISSION_DENIED:
-                alert(
-                  "Please enable location services to use navigation features"
-                );
-                break;
-              case error.POSITION_UNAVAILABLE:
-                alert("Location information is unavailable");
-                break;
-              case error.TIMEOUT:
-                alert("Location request timed out");
-                break;
-              default:
-                alert("An unknown error occurred");
-            }
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0,
-          }
-        );
-      }
-    };
-
-    getInitialLocation();
-
-    // Start watching position after initial location
-    const watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        setUserLocation([position.coords.latitude, position.coords.longitude]);
-      },
-      null,
-      { enableHighAccuracy: true }
-    );
-
-    return () => {
-      if (watchId) {
-        navigator.geolocation.clearWatch(watchId);
-      }
-    };
-  }, []);
 
   return (
     <div className="bg-gradient-to-br from-yellow-50 to-amber-100 dark:from-gray-900 dark:to-gray-800 min-h-screen p-4 md:p-8">
@@ -1030,6 +986,8 @@ export default function CampusNavigation() {
                   ))}
                 </div>
               </div>
+
+              
 
               {/* Action Buttons */}
               <div className="flex gap-3">

@@ -370,7 +370,7 @@ export function Landing() {
           </div>
         </div>
       </footer>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

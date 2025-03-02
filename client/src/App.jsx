@@ -15,10 +15,11 @@ import Roadmap from "./pages/Roadmap";
 import Chatbot from "./components/Chatbot";
 import UploadNotes from "./components/UploadNotes";
 import FacultyContact from "./components/FacultyContact";
-import Auth from './components/Auth';
-import StudentProfile from './components/StudentProfile';
-import FacultyEntry from './components/Admin/FacultyEntry';
+import Auth from "./components/Auth";
+import StudentProfile from "./components/StudentProfile";
+import FacultyEntry from "./components/Admin/FacultyEntry";
 import ClassManagement from "./components/Admin/ClassManagement";
+import Alert from "./components/Alert";
 
 function App() {
   return (
@@ -49,7 +50,7 @@ function App() {
           <Route path="/Roadmap" element={<Roadmap />} />
           <Route path="/Chatbot" element={<Chatbot />} />
           <Route path="/uploadNotes" element={<UploadNotes />} />
-
+          <Route path="/Alert" element={<Alert />} />
           <Route path="/FacultyContact" element={<FacultyContact />} />
           <Route path="/Auth" element={<Auth />} />
           <Route path="/profile" element={<StudentProfile />} />

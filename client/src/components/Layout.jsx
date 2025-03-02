@@ -7,7 +7,7 @@ function Layout() {
   return (
     <div>
       <Header />
-      <main className="pt-16"> {/* Add padding to account for fixed header */}
+      <main className="pt-16">
         <Outlet />
       </main>
       <Chatbot />

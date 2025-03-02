@@ -72,7 +72,7 @@ export default function HomePage() {
       title: "Alerts & Notifications",
       icon: <FaBell className="text-3xl text-orange-600" />,
       description: "Important announcements and personalized notifications",
-      path: "/Alerts",
+      path: "/Alert",
       color: "bg-orange-50",
       hoverColor: "hover:bg-orange-100",
       borderColor: "border-orange-200",
