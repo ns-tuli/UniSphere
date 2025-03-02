@@ -16,6 +16,7 @@ import Chatbot from "./components/Chatbot"; // Import your chatbot page componen
 import UploadNotes from "./components/UploadNotes";
 import FacultyContact from "./components/FacultyContact";
 import Auth from './components/Auth';
+import StudentProfile from './components/StudentProfile';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
 
           <Route path="/FacultyContact" element={<FacultyContact />} />
           <Route path="/Auth" element={<Auth />} />
+          <Route path="/profile" element={<StudentProfile />} />
         </Route>
       </Routes>
     </Router>
