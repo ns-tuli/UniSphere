@@ -46,7 +46,7 @@ export default function AdminDashboard() {
       title: "Class Management",
       icon: <FaCalendarAlt className="text-3xl text-green-600" />,
       description: "Manage course schedules, classrooms, and academic calendar",
-      path: "/admin/classes",
+      path: "/Admin/ClassManagement",
       color: "bg-green-50",
       hoverColor: "hover:bg-green-100",
       borderColor: "border-green-200",

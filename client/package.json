@@ -10,11 +10,17 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.0",
         "@fortawesome/free-solid-svg-icons": "^6.7.2",
         "@fortawesome/react-fontawesome": "^0.2.2",
+        "@mui/icons-material": "^6.4.6",
+        "@mui/material": "^6.4.6",
+        "@mui/x-date-pickers": "^7.27.1",
         "@react-oauth/google": "^0.12.1",
         "@tailwindcss/vite": "^4.0.9",
         "axios": "^1.8.1",
+        "dayjs": "^1.11.13",
         "fortawesome": "^0.0.1-security",
         "framer-motion": "^12.4.7",
         "html2pdf.js": "^0.10.3",
