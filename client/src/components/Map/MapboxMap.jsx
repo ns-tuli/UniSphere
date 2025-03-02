@@ -42,15 +42,18 @@ const MapboxMap = ({
     >
       <NavigationControl position="top-right" />
 
-      {/* User Location Marker */}
+      {/* Enhanced User Location Marker */}
       {userLocation && (
-        <Marker
-          longitude={userLocation[1]}
-          latitude={userLocation[0]}
-          color="#4B9CD3"
-        >
-          <div className="animate-pulse">
-            <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white" />
+        <Marker longitude={userLocation[1]} latitude={userLocation[0]}>
+          <div className="relative">
+            {/* Outer pulsing circle */}
+            <div className="absolute w-12 h-12 bg-blue-500/30 rounded-full animate-ping" />
+            {/* Middle circle */}
+            <div className="absolute w-8 h-8 bg-blue-500/50 rounded-full top-2 left-2" />
+            {/* Inner dot */}
+            <div className="absolute w-4 h-4 bg-blue-500 rounded-full top-4 left-4 border-2 border-white shadow-lg" />
+            {/* Accuracy circle */}
+            <div className="absolute w-16 h-16 border-2 border-blue-500/20 rounded-full -top-2 -left-2" />
           </div>
         </Marker>
       )}

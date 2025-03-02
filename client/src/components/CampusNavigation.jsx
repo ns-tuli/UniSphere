@@ -188,6 +188,9 @@ export default function CampusNavigation() {
     latitude: 34.0522,
     zoom: 15,
   });
+  const [isLocatingUser, setIsLocatingUser] = useState(false);
+  const [arPermissionGranted, setArPermissionGranted] = useState(false);
+  const [locationAccuracy, setLocationAccuracy] = useState(null);
 
   // Filter buildings based on search query and type filter
   useEffect(() => {
@@ -227,13 +230,97 @@ export default function CampusNavigation() {
     }
   }, []);
 
+  // Update the location tracking function
+  const getUserLocation = () => {
+    setIsLocatingUser(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation([
+            position.coords.latitude,
+            position.coords.longitude,
+          ]);
+          setLocationAccuracy(position.coords.accuracy);
+          // Update map view to center on user with appropriate zoom based on accuracy
+          setViewState({
+            longitude: position.coords.longitude,
+            latitude: position.coords.latitude,
+            zoom: position.coords.accuracy > 100 ? 15 : 17, // Adjust zoom based on accuracy
+          });
+          setIsLocatingUser(false);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          setIsLocatingUser(false);
+          // Show error notification
+          alert(
+            "Could not get your location. Please check your device settings."
+          );
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        }
+      );
+    }
+  };
+
+  // Improve real-time location tracking
+  useEffect(() => {
+    let watchId;
+    if (navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          setUserLocation([
+            position.coords.latitude,
+            position.coords.longitude,
+          ]);
+          setLocationAccuracy(position.coords.accuracy);
+        },
+        (error) => {
+          console.error("Error tracking location:", error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        }
+      );
+    }
+
+    // Add location button to the page
+    return () => {
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
+  }, []);
+
+  // Add this function to check camera permissions
+  const checkCameraPermissions = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach((track) => track.stop());
+      setArPermissionGranted(true);
+      setActiveMode("ar");
+    } catch (err) {
+      console.error("Camera permission denied:", err);
+      alert("Camera access is required for AR navigation");
+    }
+  };
+
   // Handle AR mode activation
   const handleARMode = () => {
-    setShowARWarning(true);
-    setTimeout(() => {
-      setShowARWarning(false);
-      setActiveMode("ar");
-    }, 2000);
+    if (!arPermissionGranted) {
+      checkCameraPermissions();
+    } else {
+      setShowARWarning(true);
+      setTimeout(() => {
+        setShowARWarning(false);
+        setActiveMode("ar");
+      }, 2000);
+    }
   };
 
   // Handle building selection
@@ -253,7 +340,7 @@ export default function CampusNavigation() {
   };
 
   const renderMapView = () => (
-    <div className="h-[600px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+    <div className="h-[600px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden relative">
       <MapboxMap
         buildings={filteredBuildings}
         selectedBuilding={selectedBuilding}
@@ -262,6 +349,31 @@ export default function CampusNavigation() {
         viewState={viewState}
         onViewStateChange={setViewState}
       />
+
+      {/* Location accuracy indicator */}
+      {locationAccuracy && (
+        <div className="absolute top-4 left-4 bg-white/90 dark:bg-gray-800/90 px-3 py-2 rounded-lg shadow-lg text-sm">
+          <p className="text-gray-600 dark:text-gray-300">
+            Location accuracy: ±{Math.round(locationAccuracy)}m
+          </p>
+        </div>
+      )}
+
+      {/* Enhanced location button */}
+      <button
+        onClick={getUserLocation}
+        className="absolute bottom-4 right-4 bg-yellow-500 hover:bg-yellow-600 text-white p-3 rounded-full shadow-lg z-10 transition-all duration-200 transform hover:scale-105"
+        disabled={isLocatingUser}
+        title="Center on my location"
+      >
+        {isLocatingUser ? (
+          <div className="animate-spin">
+            <Loader className="w-6 h-6" />
+          </div>
+        ) : (
+          <Navigation className="w-6 h-6" />
+        )}
+      </button>
     </div>
   );
 
@@ -453,10 +565,9 @@ export default function CampusNavigation() {
             {activeMode === "directions" && (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden h-[600px]">
                 <div className="p-4 bg-yellow-500 dark:bg-yellow-600 text-white">
-                  <h3 className="text-xl font-semibold flex items-center">
-                    <Navigation className="w-5 h-5 mr-2" />
-                    Directions
-                  </h3>
+                  <h3 className="text-xl font-semibold flex items-center"></h3>
+                  <Navigation className="w-5 h-5 mr-2" />
+                  Directions
                 </div>
 
                 <div className="p-6">
@@ -615,96 +726,97 @@ export default function CampusNavigation() {
                       </p>
                     </div>
 
-                    <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg">
-                      <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                        Hours
-                      </h4>
-                      <p className="text-gray-700 dark:text-gray-300">
-                        {selectedBuilding.hours}
-                      </p>
-                    </div>
-
-                    <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg">
-                      <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                        Accessibility
-                      </h4>
-                      <p className="text-gray-700 dark:text-gray-300">
-                        {selectedBuilding.accessibility
-                          ? "Wheelchair Accessible"
-                          : "Limited Accessibility"}
-                      </p>
-                    </div>
-
-                    <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg">
-                      <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                        Location
-                      </h4>
-                      <p className="text-gray-700 dark:text-gray-300">
-                        Central Campus
-                      </p>
-                    </div>
+                    <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg"></div>
+                    <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                      Hours
+                    </h4>
+                    <p className="text-gray-700 dark:text-gray-300">
+                      {selectedBuilding.hours}
+                    </p>
                   </div>
-                </div>
 
-                <div>
-                  <h3 className="text-xl font-medium text-yellow-700 dark:text-yellow-300 mb-4">
-                    About {selectedBuilding.name}
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">
-                    {selectedBuilding.description}
+                  <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg">
+                    <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                      Accessibility
+                    </h4>
+                    <p className="text-gray-700 dark:text-gray-300">
+                      {selectedBuilding.accessibility
+                        ? "Wheelchair Accessible"
+                        : "Limited Accessibility"}
+                    </p>
+                  </div>
+
+                  <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg"></div>
+                  <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                    Location
+                  </h4>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    Central Campus
                   </p>
+                </div>
+              </div>
+            </div>
 
-                  <div className="mb-4">
-                    <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-2">
-                      Available Facilities
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedBuilding.facilities.map((facility, index) => (
-                        <span
-                          key={index}
-                          className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-3 py-1 rounded-full text-sm"
-                        >
-                          {facility}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+            <div>
+              <h3 className="text-xl font-medium text-yellow-700 dark:text-yellow-300 mb-4">
+                About {selectedBuilding.name}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
+                {selectedBuilding.description}
+              </p>
 
-                  <div>
-                    <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-2">
-                      Today's Events
-                    </h4>
-                    <div className="space-y-2">
-                      {selectedBuilding.events.map((event, index) => (
-                        <div
-                          key={index}
-                          className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg"
-                        >
-                          <p className="text-gray-800 dark:text-gray-200">
-                            {event}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mt-6 flex space-x-3">
-                    <button
-                      onClick={() => setActiveMode("directions")}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center"
+              <div className="mb-4">
+                <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-2">
+                  Available Facilities
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedBuilding.facilities.map((facility, index) => (
+                    <span
+                      key={index}
+                      className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-3 py-1 rounded-full text-sm"
                     >
-                      <Navigation className="w-5 h-5 mr-2" />
-                      Get Directions
-                    </button>
+                      {facility}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
-                    <button
-                      onClick={handleARMode}
-                      className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg flex items-center"
+              <div>
+                <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-2">
+                  Today's Events
+                </h4>
+                <div className="space-y-2">
+                  {selectedBuilding.events.map((event, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg"
                     >
-                      <Compass className="w-5 h-5 mr-2" />
-                      AR View
-                    </button>
-                  </div>
+                      <p className="text-gray-800 dark:text-gray-200">
+                        {event}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-6 flex space-x-3">
+                <button
+                  onClick={() => setActiveMode("directions")}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center"
+                ></button>
+                <div>
+                  <button>
+                    <Navigation className="w-5 h-5 mr-2" />
+                    Get Directions
+                  </button>
+
+                  <button
+                    onClick={handleARMode}
+                    className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg flex items-center"
+                  >
+                    <Compass className="w-5 h-5 mr-2" />
+                    AR View
+                  </button>
                 </div>
               </div>
             </div>
@@ -1015,6 +1127,32 @@ function X(props) {
     >
       <line x1="18" y1="6" x2="6" y2="18"></line>
       <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  );
+}
+
+function Loader(props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <line x1="12" y1="2" x2="12" y2="6" />
+      <line x1="12" y1="18" x2="12" y2="22" />
+      <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" />
+      <line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
+      <line x1="2" y1="12" x2="6" y2="12" />
+      <line x1="18" y1="12" x2="22" y2="12" />
+      <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" />
+      <line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
     </svg>
   );
 }
