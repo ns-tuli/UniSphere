@@ -13,7 +13,11 @@ import busRoutes from "./routes/busRoutes.js"
 import classRoutes from "./routes/classRoutes.js"
 import departmentRoutes from "./routes/departmentRoutes.js"
 import roadmapRoutes from "./routes/roadmapRoutes.js";
+import faculty from "./routes/facultyRoutes.js";
 import { GoogleGenerativeAI } from '@google/generative-ai';
+
+import facultyRoutes from "./routes/facultyRoutes.js";
+
 dotenv.config();
 
 connectDB();
@@ -60,6 +64,7 @@ app.use("/api/bus", busRoutes);
 app.use("/api/class", classRoutes);
 app.use("/api/department", departmentRoutes);
 app.use("/api/roadmap", roadmapRoutes); // Use roadmap routes
+app.use("/api/faculty", faculty);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

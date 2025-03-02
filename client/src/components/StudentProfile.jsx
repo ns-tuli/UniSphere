@@ -1,5 +1,4 @@
-//path: client/src/components/StudentProfile.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaPhone, FaGraduationCap, FaIdCard, FaCalendar, FaMapMarkerAlt, FaBook } from 'react-icons/fa';
 import { useUser } from '../context/UserContext';
@@ -7,11 +6,71 @@ import { useUser } from '../context/UserContext';
 const StudentProfile = () => {
   const navigate = useNavigate();
   const { user, logout } = useUser();
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    studentId: user?.studentId || "",
+    department: user?.department || "",
+    semester: "Spring 2024",
+    phone: user?.phone || "",
+    address: user?.address || "",
+    cgpa: "3.85",
+    credits: "45",
+    enrollmentDate: user?.joinDate || "",
+    currentCourses: [
+      { code: "", name: "", credits: "" }
+    ],
+    achievements: [""]
+  });
 
   if (!user) {
     return navigate('/auth');
   }
-  
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleCourseChange = (index, field, value) => {
+    setFormData(prev => {
+      const newCourses = [...prev.currentCourses];
+      newCourses[index] = { ...newCourses[index], [field]: value };
+      return { ...prev, currentCourses: newCourses };
+    });
+  };
+
+  const handleAchievementChange = (index, value) => {
+    setFormData(prev => {
+      const newAchievements = [...prev.achievements];
+      newAchievements[index] = value;
+      return { ...prev, achievements: newAchievements };
+    });
+  };
+
+  const addCourse = () => {
+    setFormData(prev => ({
+      ...prev,
+      currentCourses: [...prev.currentCourses, { code: "", name: "", credits: "" }]
+    }));
+  };
+
+  const addAchievement = () => {
+    setFormData(prev => ({
+      ...prev,
+      achievements: [...prev.achievements, ""]
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Add your API call here to update the user profile
+    console.log(formData);
+    setIsEditing(false);
+  };
+
   const studentData = {
     name: user.name,
     email: user.email,
@@ -24,7 +83,7 @@ const StudentProfile = () => {
     cgpa: "3.85",
     credits: "45",
     enrollmentDate: user.joinDate || "January 2024",
-    currentCourses:  [
+    currentCourses: [
       { code: "CSE303", name: "Database Management Systems", credits: 3 },
       { code: "CSE310", name: "Object Oriented Programming", credits: 3 },
       { code: "CSE315", name: "Web Technologies", credits: 3 },
@@ -43,6 +102,12 @@ const StudentProfile = () => {
         {/* Profile Header */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
           <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-4 py-2 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700 mr-4"
+            >
+              Edit Profile
+            </button>
             <button
               onClick={logout}
               className="px-4 py-2 text-sm text-red-600 hover:text-red-700"
@@ -73,6 +138,158 @@ const StudentProfile = () => {
           </div>
         </div>
 
+        {/* Edit Profile Modal */}
+        {isEditing && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Profile</h2>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Student ID</label>
+                    <input
+                      type="text"
+                      name="studentId"
+                      value={formData.studentId}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Department</label>
+                    <input
+                      type="text"
+                      name="department"
+                      value={formData.department}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
+                    <input
+                      type="text"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">CGPA</label>
+                    <input
+                      type="text"
+                      name="cgpa"
+                      value={formData.cgpa}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                    />
+                  </div>
+
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
+                    <input
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Current Courses Section */}
+                <div className="mt-6">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Courses</label>
+                  {formData.currentCourses.map((course, index) => (
+                    <div key={index} className="grid grid-cols-3 gap-2 mb-2">
+                      <input
+                        type="text"
+                        placeholder="Course Code"
+                        value={course.code}
+                        onChange={(e) => handleCourseChange(index, 'code', e.target.value)}
+                        className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Course Name"
+                        value={course.name}
+                        onChange={(e) => handleCourseChange(index, 'name', e.target.value)}
+                        className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Credits"
+                        value={course.credits}
+                        onChange={(e) => handleCourseChange(index, 'credits', e.target.value)}
+                        className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                      />
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addCourse}
+                    className="mt-2 text-sm text-yellow-600 hover:text-yellow-700"
+                  >
+                    + Add Course
+                  </button>
+                </div>
+
+                {/* Achievements Section */}
+                <div className="mt-6">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Achievements</label>
+                  {formData.achievements.map((achievement, index) => (
+                    <div key={index} className="mb-2">
+                      <input
+                        type="text"
+                        value={achievement}
+                        onChange={(e) => handleAchievementChange(index, e.target.value)}
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
+                      />
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addAchievement}
+                    className="mt-2 text-sm text-yellow-600 hover:text-yellow-700"
+                  >
+                    + Add Achievement
+                  </button>
+                </div>
+
+                <div className="flex justify-end space-x-4 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+        
         {/* Academic Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
