@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Map, { Marker, Popup, NavigationControl } from "react-map-gl";
+import MapboxDirections from "./MapboxDirections";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 const MapboxMap = ({
@@ -9,6 +10,8 @@ const MapboxMap = ({
   onBuildingSelect,
   viewState,
   onViewStateChange,
+  routeStart,
+  routeEnd,
 }) => {
   const [mapError, setMapError] = useState(null);
 
@@ -42,18 +45,41 @@ const MapboxMap = ({
     >
       <NavigationControl position="top-right" />
 
+      {/* Add Directions Component */}
+      {routeStart && routeEnd && (
+        <MapboxDirections start={routeStart} end={routeEnd} />
+      )}
+
       {/* Enhanced User Location Marker */}
       {userLocation && (
-        <Marker longitude={userLocation[1]} latitude={userLocation[0]}>
+        <Marker
+          longitude={userLocation[1]}
+          latitude={userLocation[0]}
+          color="#4B9CD3"
+        >
           <div className="relative">
-            {/* Outer pulsing circle */}
-            <div className="absolute w-12 h-12 bg-blue-500/30 rounded-full animate-ping" />
-            {/* Middle circle */}
-            <div className="absolute w-8 h-8 bg-blue-500/50 rounded-full top-2 left-2" />
-            {/* Inner dot */}
-            <div className="absolute w-4 h-4 bg-blue-500 rounded-full top-4 left-4 border-2 border-white shadow-lg" />
-            {/* Accuracy circle */}
-            <div className="absolute w-16 h-16 border-2 border-blue-500/20 rounded-full -top-2 -left-2" />
+            {/* Faster outer pulse with larger spread */}
+            <div className="absolute -inset-6 bg-blue-500/10 rounded-full animate-ping"></div>
+
+            {/* Medium pulse with faster animation */}
+            <div
+              className="absolute -inset-6 bg-blue-500/20 rounded-full animate-pulse"
+              style={{ animationDuration: "1.2s" }}
+            ></div>
+
+            {/* Inner pulse with quick bounce effect */}
+            <div
+              className="absolute -inset-3 bg-blue-500/30 rounded-full animate"
+              style={{ animationDuration: "0.8s" }}
+            ></div>
+
+            {/* Core marker with subtle hover effect */}
+            <div
+              className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg 
+                    hover:scale-110 transition-transform duration-300"
+            >
+              <div className="w-1 h-1 bg-white rounded-full m-auto mt-1"></div>
+            </div>
           </div>
         </Marker>
       )}

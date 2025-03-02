@@ -47,74 +47,165 @@ const libraryIcon = new L.Icon({
 const campusBuildings = [
   {
     id: 1,
-    name: "Main Hall",
-    type: "academic",
-    coordinates: [34.0522, -118.2437],
+    name: "Administrative Building",
+    type: "administrative",
+    coordinates: [23.948114973032546, 90.37925253472153],
     description:
-      "The primary administrative building with lecture halls and faculty offices.",
-    facilities: ["Lecture Halls", "Administrative Offices", "Student Services"],
-    hours: "7:00 AM - 10:00 PM",
-    image: "https://via.placeholder.com/300x200",
+      "The central hub for university administration and management.",
+    facilities: ["Administrative Offices", "Meeting Rooms"],
+    hours: "8:00 AM - 4:00 PM",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/8/8e/Structure_of_the_administrative_building.jpg",
     accessibility: true,
-    events: [
-      "Faculty Meeting (Room 101) - 2:00 PM",
-      "Student Council (Room 204) - 5:00 PM",
-    ],
+    events: ["Administrative Meeting - 10:00 AM"],
   },
   {
     id: 2,
-    name: "Science Center",
-    type: "academic",
-    coordinates: [34.0525, -118.244],
+    name: "Central Library",
+    type: "library",
+    coordinates: [23.94814173569619, 90.37964298257778],
     description:
-      "Home to the sciences with modern laboratories and research facilities.",
-    facilities: ["Research Labs", "Computer Labs", "Lecture Halls"],
-    hours: "8:00 AM - 9:00 PM",
-    image: "https://via.placeholder.com/300x200",
+      "A comprehensive library offering extensive resources and study spaces.",
+    facilities: ["Reading Rooms", "Digital Resources", "Archives"],
+    hours: "8:00 AM - 10:00 PM",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/3/3e/A_view_of_IUT.jpg",
     accessibility: true,
-    events: [
-      "Chemistry Lab (Room 302) - 1:00 PM",
-      "Physics Seminar (Room 405) - 4:00 PM",
-    ],
+    events: ["Research Workshop - 2:00 PM"],
   },
   {
     id: 3,
-    name: "University Library",
-    type: "library",
-    coordinates: [34.0518, -118.2432],
+    name: "First Academic Building",
+    type: "academic",
+    coordinates: [23.94848295916611, 90.37917932573376],
     description:
-      "Five-story library with extensive collections and study spaces.",
-    facilities: ["Study Rooms", "Computer Lab", "Reading Lounges", "Archives"],
-    hours: "7:00 AM - 12:00 AM",
-    image: "https://via.placeholder.com/300x200",
+      "Houses classrooms and laboratories for various engineering departments.",
+    facilities: ["Lecture Halls", "Laboratories", "Faculty Offices"],
+    hours: "8:00 AM - 6:00 PM",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/3/3e/A_view_of_IUT.jpg",
     accessibility: true,
-    events: ["Research Workshop - 11:00 AM", "Book Club - 6:00 PM"],
+    events: ["Physics Lecture (Room 101) - 9:00 AM"],
   },
   {
     id: 4,
-    name: "Student Union",
+    name: "CDS",
     type: "recreational",
-    coordinates: [34.0515, -118.2445],
+    coordinates: [23.948175189019622, 90.38036531117172],
     description:
-      "Center for student activities, dining, and social gatherings.",
-    facilities: ["Food Court", "Lounges", "Meeting Rooms", "Game Room"],
-    hours: "6:00 AM - 11:00 PM",
-    image: "https://via.placeholder.com/300x200",
+      "A place for student activities, dining, and social gatherings.",
+    facilities: ["Cafeteria", "Lounges", "Game Room"],
+    hours: "9:00 AM - 9:00 PM",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/3/3e/A_view_of_IUT.jpg",
     accessibility: true,
-    events: ["Club Fair - 12:00 PM", "Movie Night - 8:00 PM"],
+    events: ["Debate Club Meeting - 5:00 PM"],
   },
   {
     id: 5,
-    name: "Recreation Center",
-    type: "recreational",
-    coordinates: [34.051, -118.245],
-    description:
-      "Modern fitness facility with equipment, courts, and a swimming pool.",
-    facilities: ["Gym", "Swimming Pool", "Basketball Courts", "Yoga Studio"],
-    hours: "6:00 AM - 10:00 PM",
-    image: "https://via.placeholder.com/300x200",
+    name: "Masjid E Zainab, IUT",
+    type: "religious",
+    coordinates: [23.9475316499381, 90.37927741662267],
+    description: "A serene place for prayer and reflection within the campus.",
+    facilities: ["Prayer Hall", "Ablution Area"],
+    hours: "Open during prayer times",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwhmTOTfTjifLtc54zp4J4YxT2XKiIHHXI2UuUnvr3V9WSW3ZCG6pNQzHh7htqrk7V9MI&usqp=CAU",
     accessibility: true,
-    events: ["Yoga Class - 9:00 AM", "Swimming Competition - 3:00 PM"],
+    events: ["Friday Sermon - 1:00 PM"],
+  },
+  {
+    id: 6,
+    name: "Second Academic Building",
+    type: "academic",
+    coordinates: [23.948937940662567, 90.37922477970379],
+    description:
+      "A modern facility equipped with advanced laboratories and lecture halls.",
+    facilities: ["Laboratories", "Lecture Halls"],
+    hours: "8:00 AM - 6:00 PM",
+    image:
+      "https://www.iutoic-dhaka.edu/assets/images/second_academic_building.jpg",
+    accessibility: true,
+    events: ["Chemistry Lab Session (Lab 3) - 2:00 PM"],
+  },
+  {
+    id: 7,
+    name: "Third Academic Building",
+    type: "academic",
+    coordinates: [23.949017989978323, 90.3777367955881],
+    description:
+      "Dedicated to research and postgraduate studies with specialized facilities.",
+    facilities: ["Research Labs", "Postgraduate Study Rooms"],
+    hours: "8:00 AM - 6:00 PM",
+    image:
+      "https://www.iutoic-dhaka.edu/assets/images/third_academic_building.jpg",
+    accessibility: true,
+    events: ["Research Seminar - 3:00 PM"],
+  },
+  {
+    id: 9,
+    name: "North Hall of Residence",
+    type: "residential",
+    coordinates: [23.94854241625172, 90.38013575271341],
+    description:
+      "Accommodation facility for male students with fully furnished rooms.",
+    facilities: ["Dormitories", "Common Rooms", "Study Areas"],
+    hours: "24/7",
+    image: "https://www.iutoic-dhaka.edu/assets/images/north_hall.jpg",
+    accessibility: true,
+    events: ["Hall Meeting - 8:00 PM"],
+  },
+  {
+    id: 10,
+    name: "South Hall of Residence",
+    type: "residential",
+    coordinates: [23.94900190458333, 90.38009004610988],
+    description:
+      "Another accommodation facility for male students with modern amenities.",
+    facilities: ["Dormitories", "Recreation Rooms", "Laundry Facilities"],
+    hours: "24/7",
+    image: "https://www.iutoic-dhaka.edu/assets/images/south_hall.jpg",
+    accessibility: true,
+    events: ["Movie Night - 9:00 PM"],
+  },
+  {
+    id: 11,
+    name: "Female Hall of Residence",
+    type: "residential",
+    coordinates: [23.947147274302093, 90.37726046429204],
+    description:
+      "Accommodation facility for female students with secure and comfortable living spaces.",
+    facilities: ["Dormitories", "Common Rooms", "Study Areas"],
+    hours: "24/7",
+    image: "https://www.iutoic-dhaka.edu/assets/images/female_hall.jpg",
+    accessibility: true,
+    events: ["Yoga Session - 6:00 PM"],
+  },
+  {
+    id: 12,
+    name: "Central Cafeteria",
+    type: "dining",
+    coordinates: [23.94790088298137, 90.37982207811837],
+    description:
+      "Main dining facility offering a variety of meals for students and staff.",
+    facilities: ["Dining Hall", "Food Stalls", "Seating Area"],
+    hours: "7:00 AM - 10:00 PM",
+    image: "https://www.iutoic-dhaka.edu/assets/images/central_cafeteria.jpg",
+    accessibility: true,
+    events: ["Special Dinner - 7:00 PM"],
+  },
+  {
+    id: 13,
+    name: "Auditorium",
+    type: "event",
+    coordinates: [23.947695819688935, 90.37903319079666],
+    description:
+      "A multi-purpose auditorium for seminars, cultural functions, and examinations.",
+    facilities: ["Stage", "Seating for 600", "Projection Facilities"],
+    hours: "8:00 AM - 8:00 PM",
+    image: "https://www.iutoic-dhaka.edu/assets/images/auditorium.jpg",
+    accessibility: true,
+    events: ["Annual Cultural Fest - 5:00 PM"],
   },
 ];
 
@@ -191,6 +282,8 @@ export default function CampusNavigation() {
   const [isLocatingUser, setIsLocatingUser] = useState(false);
   const [arPermissionGranted, setArPermissionGranted] = useState(false);
   const [locationAccuracy, setLocationAccuracy] = useState(null);
+  const [routeStart, setRouteStart] = useState(null);
+  const [routeEnd, setRouteEnd] = useState(null);
 
   // Filter buildings based on search query and type filter
   useEffect(() => {
@@ -339,6 +432,135 @@ export default function CampusNavigation() {
     }
   };
 
+  // Add this function to handle route selection
+  const handleRouteSelect = (building) => {
+    if (!routeStart) {
+      setRouteStart(building ? building.coordinates : userLocation);
+    } else if (!routeEnd) {
+      setRouteEnd(building.coordinates);
+    } else {
+      // Reset and start new route
+      setRouteStart(building.coordinates);
+      setRouteEnd(null);
+    }
+  };
+
+  // Modify the renderRouteControls function
+  const renderRouteControls = (building) => (
+    <div className="mt-4 bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+      <h4 className="text-lg font-medium text-yellow-600 dark:text-yellow-400 mb-4">
+        Route Planning
+      </h4>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        {/* Start Location Box */}
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+            Start
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="font-medium">
+              {routeStart
+                ? routeStart === userLocation
+                  ? "Current Location"
+                  : campusBuildings.find(
+                      (b) =>
+                        b.coordinates[0] === routeStart[0] &&
+                        b.coordinates[1] === routeStart[1]
+                    )?.name || "Selected Location"
+                : "Not Set"}
+            </span>
+            {routeStart && (
+              <button
+                onClick={() => setRouteStart(null)}
+                className="text-red-500 hover:text-red-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Destination Box */}
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+            Destination
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="font-medium">
+              {routeEnd
+                ? campusBuildings.find(
+                    (b) =>
+                      b.coordinates[0] === routeEnd[0] &&
+                      b.coordinates[1] === routeEnd[1]
+                  )?.name || "Selected Location"
+                : "Not Set"}
+            </span>
+            {routeEnd && (
+              <button
+                onClick={() => setRouteEnd(null)}
+                className="text-red-500 hover:text-red-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        {!routeStart && (
+          <>
+            <button
+              onClick={() => handleRouteSelect({ coordinates: userLocation })}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+            >
+              <Navigation className="w-5 h-5" />
+              Start from Current Location
+            </button>
+            <button
+              onClick={() => handleRouteSelect(building)}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+            >
+              <Map className="w-5 h-5" />
+              Set as Start
+            </button>
+          </>
+        )}
+        {routeStart && !routeEnd && (
+          <button
+            onClick={() => handleRouteSelect(building)}
+            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+          >
+            <Navigation className="w-5 h-5" />
+            Set as Destination
+          </button>
+        )}
+        {routeStart && routeEnd && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                setRouteStart(null);
+                setRouteEnd(null);
+              }}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+            >
+              <X className="w-5 h-5" />
+              Clear Route
+            </button>
+            <button
+              onClick={() => setActiveMode("map")}
+              className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+            >
+              <Map className="w-5 h-5" />
+              View on Map
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   const renderMapView = () => (
     <div className="h-[600px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden relative">
       <MapboxMap
@@ -348,6 +570,8 @@ export default function CampusNavigation() {
         onBuildingSelect={setSelectedBuilding}
         viewState={viewState}
         onViewStateChange={setViewState}
+        routeStart={routeStart}
+        routeEnd={routeEnd}
       />
 
       {/* Location accuracy indicator */}
@@ -374,8 +598,80 @@ export default function CampusNavigation() {
           <Navigation className="w-6 h-6" />
         )}
       </button>
+
+      {/* Add route status indicator */}
+      {routeStart && (
+        <div className="absolute top-4 left-4 bg-white/90 dark:bg-gray-800/90 px-3 py-2 rounded-lg shadow-lg">
+          <p className="text-sm font-medium">
+            {!routeEnd ? "Select destination" : "Route displayed"}
+          </p>
+        </div>
+      )}
     </div>
   );
+
+  // Update the location tracking function with better error handling and immediate location fetch
+  useEffect(() => {
+    const getInitialLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const newLocation = [
+              position.coords.latitude,
+              position.coords.longitude,
+            ];
+            setUserLocation(newLocation);
+            setViewState({
+              longitude: position.coords.longitude,
+              latitude: position.coords.latitude,
+              zoom: 17,
+            });
+          },
+          (error) => {
+            console.error("Error getting location:", error);
+            // More user-friendly error handling
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                alert(
+                  "Please enable location services to use navigation features"
+                );
+                break;
+              case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable");
+                break;
+              case error.TIMEOUT:
+                alert("Location request timed out");
+                break;
+              default:
+                alert("An unknown error occurred");
+            }
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          }
+        );
+      }
+    };
+
+    getInitialLocation();
+
+    // Start watching position after initial location
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        setUserLocation([position.coords.latitude, position.coords.longitude]);
+      },
+      null,
+      { enableHighAccuracy: true }
+    );
+
+    return () => {
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
+  }, []);
 
   return (
     <div className="bg-gradient-to-br from-yellow-50 to-amber-100 dark:from-gray-900 dark:to-gray-800 min-h-screen p-4 md:p-8">
@@ -707,73 +1003,27 @@ export default function CampusNavigation() {
               </button>
             </div>
 
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <img
-                    src={selectedBuilding.image}
-                    alt={selectedBuilding.name}
-                    className="w-full h-64 object-cover rounded-lg shadow-md"
-                  />
-
-                  <div className="mt-4 grid grid-cols-2 gap-4">
-                    <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg">
-                      <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                        Type
-                      </h4>
-                      <p className="text-gray-700 dark:text-gray-300 capitalize">
-                        {selectedBuilding.type}
-                      </p>
-                    </div>
-
-                    <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg"></div>
-                    <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                      Hours
-                    </h4>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      {selectedBuilding.hours}
-                    </p>
-                  </div>
-
-                  <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg">
-                    <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                      Accessibility
-                    </h4>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      {selectedBuilding.accessibility
-                        ? "Wheelchair Accessible"
-                        : "Limited Accessibility"}
-                    </p>
-                  </div>
-
-                  <div className="bg-yellow-50 dark:bg-gray-700 p-3 rounded-lg"></div>
-                  <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                    Location
-                  </h4>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Central Campus
-                  </p>
-                </div>
+            <div className="space-y-6 p-6">
+              {/* About Section */}
+              <div>
+                <h3 className="text-xl font-medium text-yellow-700 dark:text-yellow-300">
+                  About {selectedBuilding.name}
+                </h3>
+                <p className="mt-2 text-gray-700 dark:text-gray-300">
+                  {selectedBuilding.description}
+                </p>
               </div>
-            </div>
 
-            <div>
-              <h3 className="text-xl font-medium text-yellow-700 dark:text-yellow-300 mb-4">
-                About {selectedBuilding.name}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
-                {selectedBuilding.description}
-              </p>
-
-              <div className="mb-4">
-                <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-2">
+              {/* Facilities Section */}
+              <div>
+                <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-3">
                   Available Facilities
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedBuilding.facilities.map((facility, index) => (
                     <span
                       key={index}
-                      className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-3 py-1 rounded-full text-sm"
+                      className="bg-yellow-50 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-200 px-3 py-1 rounded-full text-sm font-medium"
                     >
                       {facility}
                     </span>
@@ -781,45 +1031,27 @@ export default function CampusNavigation() {
                 </div>
               </div>
 
-              <div>
-                <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-2">
-                  Today's Events
-                </h4>
-                <div className="space-y-2">
-                  {selectedBuilding.events.map((event, index) => (
-                    <div
-                      key={index}
-                      className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg"
-                    >
-                      <p className="text-gray-800 dark:text-gray-200">
-                        {event}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-6 flex space-x-3">
+              {/* Action Buttons */}
+              <div className="flex gap-3">
                 <button
                   onClick={() => setActiveMode("directions")}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center"
-                ></button>
-                <div>
-                  <button>
-                    <Navigation className="w-5 h-5 mr-2" />
-                    Get Directions
-                  </button>
+                  className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Navigation className="w-5 h-5" />
+                  Get Directions
+                </button>
 
-                  <button
-                    onClick={handleARMode}
-                    className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg flex items-center"
-                  >
-                    <Compass className="w-5 h-5 mr-2" />
-                    AR View
-                  </button>
-                </div>
+                <button
+                  onClick={handleARMode}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Compass className="w-5 h-5" />
+                  AR View
+                </button>
               </div>
             </div>
+
+            {renderRouteControls(selectedBuilding)}
           </motion.div>
         )}
 
@@ -931,54 +1163,6 @@ export default function CampusNavigation() {
                   </span>
                 </li>
               </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Accessibility Features */}
-        <div className="mt-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-          <h3 className="text-2xl font-semibold text-yellow-700 dark:text-yellow-300 mb-4">
-            Accessibility Features
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-yellow-50 dark:bg-gray-700 p-4 rounded-lg">
-              <div className="h-12 w-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center text-yellow-600 dark:text-yellow-300 mb-3">
-                <Wheelchair className="h-6 w-6" />
-              </div>
-              <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-2">
-                Wheelchair Routes
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300">
-                Discover wheelchair-accessible paths throughout campus with
-                highlighted routes and ramp locations.
-              </p>
-            </div>
-
-            <div className="bg-yellow-50 dark:bg-gray-700 p-4 rounded-lg">
-              <div className="h-12 w-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center text-yellow-600 dark:text-yellow-300 mb-3">
-                <Headphones className="h-6 w-6" />
-              </div>
-              <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-2">
-                Audio Navigation
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300">
-                Enable voice guidance for turn-by-turn directions and building
-                information read aloud.
-              </p>
-            </div>
-
-            <div className="bg-yellow-50 dark:bg-gray-700 p-4 rounded-lg">
-              <div className="h-12 w-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center text-yellow-600 dark:text-yellow-300 mb-3">
-                <Eye className="h-6 w-6" />
-              </div>
-              <h4 className="text-lg font-medium text-yellow-700 dark:text-yellow-300 mb-2">
-                High Contrast Mode
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300">
-                Toggle high contrast display for improved visibility and
-                readability of map elements.
-              </p>
             </div>
           </div>
         </div>

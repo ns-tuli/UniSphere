@@ -29,7 +29,7 @@ function Header() {
         </nav> */}
 
         <div className="flex items-center space-x-4">
-          <Link to="/Profile">
+          <Link to="/Auth">
             <button className="bg-yellow-600 dark:bg-yellow-200 hover:bg-yellow-500 dark:hover:bg-yellow-100 text-[#f5f5f5] dark:text-black px-4 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-200/20">
               SignIn
             </button>
