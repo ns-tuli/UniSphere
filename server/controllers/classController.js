@@ -14,18 +14,26 @@ const getClasses = async (req, res) => {
 // Get a single class by ID
 const getClassById = async (req, res) => {
   try {
-    // Change to find by classId instead of _id
-    const classData = await Class.findOne({
-      classId: parseInt(req.params.classId),
-    });
+    console.log("Fetching class with ID:", req.params.classId); // Add this for debugging
+    
+    // First try finding by _id
+    let classData = await Class.findById(req.params.classId);
+    
+    // If not found, try finding by classId
+    if (!classData) {
+      classData = await Class.findOne({ classId: req.params.classId });
+    }
 
     if (!classData) {
+      console.log("Class not found"); // Add this for debugging
       return res.status(404).json({ message: "Class not found" });
     }
+
+    console.log("Found class:", classData); // Add this for debugging
     res.status(200).json(classData);
   } catch (error) {
-    console.error("Get class by ID error:", error); // Add this for debugging
-    res.status(500).json({ message: "Error fetching class", error });
+    console.error("Get class by ID error:", error);
+    res.status(500).json({ message: "Error fetching class", error: error.message });
   }
 };
 
@@ -55,21 +63,30 @@ const addClass = async (req, res) => {
 // Update a class
 const updateClass = async (req, res) => {
   try {
-    const updatedClass = await Class.findOneAndUpdate(
-      { classId: parseInt(req.params.classId) },
+    console.log("Updating class with ID:", req.params.classId); // Add this for debugging
+    
+    // First try finding by _id
+    let classData = await Class.findById(req.params.classId);
+    
+    // If not found, try finding by classId
+    if (!classData) {
+      classData = await Class.findOne({ classId: req.params.classId });
+    }
+
+    if (!classData) {
+      return res.status(404).json({ message: "Class not found" });
+    }
+
+    const updatedClass = await Class.findByIdAndUpdate(
+      classData._id,
       req.body,
       { new: true }
     );
 
-    if (!updatedClass) {
-      return res.status(404).json({ message: "Class not found" });
-    }
-    res
-      .status(200)
-      .json({ message: "Class updated successfully", class: updatedClass });
+    res.status(200).json({ message: "Class updated successfully", class: updatedClass });
   } catch (error) {
-    console.error("Update class error:", error); // Add this for debugging
-    res.status(500).json({ message: "Error updating class", error });
+    console.error("Update class error:", error);
+    res.status(500).json({ message: "Error updating class", error: error.message });
   }
 };
 

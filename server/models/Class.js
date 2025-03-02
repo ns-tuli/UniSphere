@@ -3,6 +3,7 @@ import mongooseSequence from "mongoose-sequence";
 
 // Define Class Schema
 const classSchema = new mongoose.Schema({
+  _id: { type: mongoose.Schema.Types.ObjectId, auto: true }, // Explicitly define _id
   classId: { type: Number, unique: true },
   department: { type: String, required: true },  // Reference to Department
   courseCode: { type: String},
@@ -30,6 +31,19 @@ const classSchema = new mongoose.Schema({
       status: { type: String, enum: ["completed", "upcoming", "ongoing"], default: "upcoming" }
     }
   ]
+});
+
+// Add a pre-save hook to generate classId if not present
+classSchema.pre('save', async function(next) {
+  if (!this.classId) {
+    try {
+      const lastClass = await this.constructor.findOne({}, {}, { sort: { classId: -1 } });
+      this.classId = lastClass ? lastClass.classId + 1 : 1;
+    } catch (error) {
+      return next(error);
+    }
+  }
+  next();
 });
 
 classSchema.plugin(mongooseSequence(mongoose), {

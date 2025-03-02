@@ -218,20 +218,49 @@ const ClassManagement = () => {
   const openEditForm = async (classId) => {
     setLoading(true);
     try {
-      // Change from _id to classId in the request
+      console.log("Editing class with ID:", classId); // Add this for debugging
       const response = await axios.get(
         `http://localhost:5000/api/class/${classId}`
       );
       if (response.data) {
-        setFormData(response.data);
+        // Ensure all required fields are present in formData
+        setFormData({
+          ...formData, // Keep default values
+          ...response.data, // Override with received data
+          // Ensure arrays are initialized even if not present in response
+          days: response.data.days || [],
+          learningOutcomes: response.data.learningOutcomes || [""],
+          materials: response.data.materials || [""],
+          textbooks: response.data.textbooks || [
+            {
+              title: "",
+              author: "",
+              isbn: "",
+              required: true,
+            },
+          ],
+          assignments: response.data.assignments || [
+            {
+              name: "",
+              dueDate: null,
+              points: "",
+              status: "upcoming",
+            },
+          ],
+          gradeBreakdown: response.data.gradeBreakdown || {
+            assignments: "30",
+            midterm: "30",
+            final: "40",
+          },
+        });
         setCurrentClassId(classId);
         setIsFormOpen(true);
         setIsEditing(true);
         setActiveCard("edit");
       }
     } catch (err) {
-      console.error("Edit error:", err); // Add this for debugging
-      showNotification("Failed to load class details", "error");
+      console.error("Edit error:", err.response || err); // Enhanced error logging
+      showNotification(`Failed to load class details: ${err.message}`, "error");
     } finally {
       setLoading(false);
     }
@@ -574,7 +603,7 @@ const ClassManagement = () => {
 
                       <div className="flex mt-4 md:mt-0 space-x-2">
                         <button
-                          onClick={() => openEditForm(cls.classId)} // Change from _id to classId
+                          onClick={() => openEditForm(cls._id)} // Use _id instead of classId
                           className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg transition-colors"
                           title="Edit"
                         >
