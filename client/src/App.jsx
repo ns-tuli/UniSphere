@@ -12,7 +12,7 @@ import BusManagement from "./components/Admin/BusManagement";
 import CafeteriaManagement from "./components/Admin/CafeteriaManagement";
 import Notes from "./pages/Notes";
 import Roadmap from "./pages/Roadmap";
-import Chatbot from "./components/Chatbot"; // Import your chatbot page component
+import Chatbot from "./components/Chatbot";
 import UploadNotes from "./components/UploadNotes";
 import FacultyContact from "./components/FacultyContact";
 import Auth from './components/Auth';

@@ -365,9 +365,9 @@ export function Landing() {
               </div>
             ))}
           </div>
-          {/* <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-800 dark:text-gray-400">
+          <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-800 dark:text-gray-400">
             <p>© 2025 UniSphere. All rights reserved.</p>
-          </div> */}
+          </div>
         </div>
       </footer>
       <Footer />
