@@ -1,50 +1,51 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/user.js';
-import ErrorResponse from '../utils/errorResponse.js';
-import asyncHandler from './async.js';
+import jwt from "jsonwebtoken";
 
-// Protect routes
-export const protect = asyncHandler(async (req, res, next) => {
-    let token;
-
-    if (req.headers.authorization?.startsWith('Bearer')) {
-        token = req.headers.authorization.split(' ')[1];
-    } else if (req.cookies?.token) {
-        token = req.cookies.token;
+// Authenticate User Middleware
+export const authenticateUser = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Unauthorized access" });
     }
 
-    if (!token) {
-        return next(new ErrorResponse('Not authorized to access this route', 401));
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = decoded; 
+    console.log(req.user)// Attach user info (userId and role) to request
+    next();
+  } catch (error) {
+    res.status(401).json({ error: "Invalid or expired token" });
+  }
+};
+
+// Authorize Role Middleware
+export const authorizeRole = (requiredRole) => {
+  return (req, res, next) => {
+    if (req.user.role === requiredRole) {
+      next(); // User has the required role
+    } else {
+      res.status(403).json({ error: "Access denied. Insufficient permissions." });
     }
+  };
+};
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById(decoded.id);
-        next();
-    } catch (err) {
-        return next(new ErrorResponse('Not authorized to access this route', 401));
-    }
-});
+// Verify Token Middleware (For Additional Validation if Needed)
 
-// Grant access to specific roles
-export const authorize = (...roles) => {
-    return (req, res, next) => {
-        if (!req.user || !req.user.role) {
-            return next(new ErrorResponse('User role is not defined', 403));
-        }
 
-        // Check if any role of the user matches the authorized roles
-        const isAuthorized = req.user.role.some(userRole => roles.includes(userRole));
+export const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(" ")[1];
 
-        if (!isAuthorized) {
-            return next(
-                new ErrorResponse(
-                    `User role ${req.user.role.join(', ')} is not authorized to access this route`,
-                    403
-                )
-            );
-        }
+  if (!token) {
+    return res.status(403).json({ error: "No token provided." });
+  }
 
-        next();
-    };
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // Populate req.user
+    next();
+  } catch (err) {
+    res.status(401).json({ error: "Invalid token." });
+  }
 };

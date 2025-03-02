@@ -1,340 +1,66 @@
 // src/components/ClassSchedule.jsx
-import React, { useState } from "react";
-import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  Book, 
-  User, 
-  ChevronDown, 
-  ChevronUp, 
-  Bell, 
-  FileText, 
-  Award, 
-  Check, 
+import React, { useState, useEffect } from "react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Book,
+  User,
+  ChevronDown,
+  ChevronUp,
+  Bell,
+  FileText,
+  Award,
+  Check,
   Layers,
   BookOpen,
   CreditCard,
   Bookmark,
   AlertCircle
 } from "lucide-react";
+import axios from "axios";
+import { getClasses } from "../api/class"; // Assuming the classes API functions are imported
+import { getDepartments } from "../api/department"; // Assuming the departments API functions are imported
 
-const classes = [
-  {
-    id: 1,
-    name: "Introduction to Programming",
-    courseCode: "CS101",
-    time: "9:00 AM - 10:30 AM",
-    days: ["Monday", "Wednesday"],
-    location: "Science Building, Room 101",
-    professor: "Dr. Jane Smith",
-    email: "jsmith@university.edu",
-    officehours: "Tuesdays 2-4 PM",
-    officeLocation: "Science Building, Room 305B",
-    description: "Fundamentals of programming using Python, covering variables, control structures, functions, and basic data structures.",
-    learningOutcomes: [
-      "Understand basic programming concepts",
-      "Write and debug simple Python programs",
-      "Implement basic data structures and algorithms",
-      "Develop problem-solving skills in computing"
-    ],
-    materials: ["Laptop", "Python installed", "Textbook: 'Python Programming' by J. Rodriguez"],
-    textbooks: [
-      {
-        title: "Python Programming: A Comprehensive Guide",
-        author: "J. Rodriguez",
-        required: true,
-        isbn: "978-1234567890"
-      },
-      {
-        title: "Algorithms in Python",
-        author: "M. Johnson",
-        required: false,
-        isbn: "978-0987654321"
-      }
-    ],
-    assignments: [
-      {
-        name: "Lab Assignment 1",
-        dueDate: "2024-10-15",
-        points: 25,
-        status: "completed"
-      },
-      {
-        name: "Project Proposal",
-        dueDate: "2024-10-30",
-        points: 50,
-        status: "upcoming"
-      }
-    ],
-    color: "bg-blue-100 dark:bg-blue-900",
-    borderColor: "border-blue-300 dark:border-blue-700",
-    textColor: "text-blue-800 dark:text-blue-200",
-    accentColor: "bg-blue-600 dark:bg-blue-400",
-    credits: 3,
-    gradeBreakdown: {
-      assignments: "30%",
-      midterm: "25%",
-      finalExam: "35%",
-      participation: "10%"
-    },
-    nextClass: "Tomorrow",
-    classProgress: 35
-  },
-  {
-    id: 2,
-    name: "Organic Chemistry",
-    courseCode: "CHEM245",
-    time: "11:00 AM - 12:30 PM",
-    days: ["Tuesday", "Thursday"],
-    location: "Chemistry Building, Room 305",
-    professor: "Dr. Michael Chen",
-    email: "mchen@university.edu",
-    officehours: "Wednesdays 1-3 PM",
-    officeLocation: "Chemistry Building, Room 210",
-    description: "Study of carbon compounds, their properties, reactions, and synthesis with emphasis on reaction mechanisms.",
-    learningOutcomes: [
-      "Understand organic compound structures and properties",
-      "Predict organic reaction outcomes",
-      "Apply spectroscopic methods for structure determination",
-      "Develop laboratory skills in synthesis and analysis"
-    ],
-    materials: ["Lab coat", "Safety goggles", "Molecular model kit", "Lab notebook"],
-    textbooks: [
-      {
-        title: "Organic Chemistry: Structure and Function",
-        author: "L. Williams",
-        required: true,
-        isbn: "978-5678901234"
-      }
-    ],
-    assignments: [
-      {
-        name: "Lab Report 1",
-        dueDate: "2024-10-12",
-        points: 50,
-        status: "completed"
-      },
-      {
-        name: "Problem Set 3",
-        dueDate: "2024-10-18",
-        points: 30,
-        status: "upcoming"
-      },
-      {
-        name: "Reaction Mechanism Quiz",
-        dueDate: "2024-10-24",
-        points: 20,
-        status: "upcoming"
-      }
-    ],
-    color: "bg-green-100 dark:bg-green-900",
-    borderColor: "border-green-300 dark:border-green-700",
-    textColor: "text-green-800 dark:text-green-200",
-    accentColor: "bg-green-600 dark:bg-green-400",
-    credits: 4,
-    gradeBreakdown: {
-      labs: "40%",
-      midterm: "20%",
-      finalExam: "30%",
-      quizzes: "10%"
-    },
-    nextClass: "Today",
-    classProgress: 42
-  },
-  {
-    id: 3,
-    name: "Modern Literature",
-    courseCode: "ENG220",
-    time: "2:00 PM - 3:30 PM",
-    days: ["Monday", "Wednesday", "Friday"],
-    location: "Humanities Building, Room 210",
-    professor: "Dr. Sarah Johnson",
-    email: "sjohnson@university.edu",
-    officehours: "Mondays and Fridays 4-5 PM",
-    officeLocation: "Humanities Building, Room 305",
-    description: "Analysis of major literary works from the 20th and 21st centuries, exploring themes, styles, and cultural contexts.",
-    learningOutcomes: [
-      "Critically analyze modern literary texts",
-      "Understand cultural and historical contexts",
-      "Develop advanced writing skills",
-      "Apply literary theory to textual analysis"
-    ],
-    materials: ["Course reader", "Laptop for in-class writing"],
-    textbooks: [
-      {
-        title: "The Norton Anthology of Modern Literature",
-        author: "Various",
-        required: true,
-        isbn: "978-1357924680"
-      },
-      {
-        title: "Critical Theory Today",
-        author: "L. Tyson",
-        required: true,
-        isbn: "978-0246813579"
-      }
-    ],
-    assignments: [
-      {
-        name: "Essay Outline",
-        dueDate: "2024-10-20",
-        points: 15,
-        status: "upcoming"
-      },
-      {
-        name: "Critical Analysis Paper",
-        dueDate: "2024-11-10",
-        points: 100,
-        status: "upcoming"
-      }
-    ],
-    color: "bg-purple-100 dark:bg-purple-900",
-    borderColor: "border-purple-300 dark:border-purple-700",
-    textColor: "text-purple-800 dark:text-purple-200",
-    accentColor: "bg-purple-600 dark:bg-purple-400",
-    credits: 3,
-    gradeBreakdown: {
-      essays: "50%",
-      finalPaper: "30%",
-      participation: "20%"
-    },
-    nextClass: "Tomorrow",
-    classProgress: 38
-  },
-  {
-    id: 4,
-    name: "Calculus II",
-    courseCode: "MATH152",
-    time: "10:00 AM - 11:30 AM",
-    days: ["Monday", "Wednesday", "Friday"],
-    location: "Mathematics Building, Room 405",
-    professor: "Dr. Robert Taylor",
-    email: "rtaylor@university.edu",
-    officehours: "Thursdays 1-4 PM",
-    officeLocation: "Mathematics Building, Room 410",
-    description: "Integration techniques, applications of integration, infinite sequences and series, parametric equations and polar coordinates.",
-    learningOutcomes: [
-      "Master integration techniques and applications",
-      "Analyze convergence of infinite series",
-      "Work with parametric equations and polar coordinates",
-      "Apply calculus to solve real-world problems"
-    ],
-    materials: ["Graphing calculator", "Textbook", "Notebook for problem sets"],
-    textbooks: [
-      {
-        title: "Calculus: Early Transcendentals",
-        author: "J. Stewart",
-        required: true,
-        isbn: "978-0123456789"
-      }
-    ],
-    assignments: [
-      {
-        name: "Problem Set 4",
-        dueDate: "2024-10-14",
-        points: 25,
-        status: "upcoming"
-      },
-      {
-        name: "Midterm Exam",
-        dueDate: "2024-10-28",
-        points: 100,
-        status: "upcoming"
-      }
-    ],
-    color: "bg-red-100 dark:bg-red-900",
-    borderColor: "border-red-300 dark:border-red-700",
-    textColor: "text-red-800 dark:text-red-200",
-    accentColor: "bg-red-600 dark:bg-red-400",
-    credits: 4,
-    gradeBreakdown: {
-      homeworks: "25%",
-      midterm: "30%",
-      finalExam: "40%",
-      quizzes: "5%"
-    },
-    nextClass: "Today",
-    classProgress: 45
-  },
-  {
-    id: 5,
-    name: "Introduction to Psychology",
-    courseCode: "PSYC101",
-    time: "1:00 PM - 2:30 PM",
-    days: ["Tuesday", "Thursday"],
-    location: "Social Sciences Building, Room 120",
-    professor: "Dr. Emily Rodriguez",
-    email: "erodriguez@university.edu",
-    officehours: "Tuesdays and Thursdays 3-4:30 PM",
-    officeLocation: "Social Sciences Building, Room 215",
-    description: "Survey of major topics in psychology, including biological bases of behavior, learning, memory, development, personality, and psychological disorders.",
-    learningOutcomes: [
-      "Understand core psychological concepts and theories",
-      "Analyze factors influencing human behavior",
-      "Recognize applications of psychology in daily life",
-      "Evaluate psychological research methods"
-    ],
-    materials: ["Notebook", "APA style guide"],
-    textbooks: [
-      {
-        title: "Introduction to Psychology: Mind and Behavior",
-        author: "R. Thompson",
-        required: true,
-        isbn: "978-6789012345"
-      }
-    ],
-    assignments: [
-      {
-        name: "Research Participation",
-        dueDate: "2024-11-30",
-        points: 20,
-        status: "ongoing"
-      },
-      {
-        name: "Literature Review",
-        dueDate: "2024-11-05",
-        points: 75,
-        status: "upcoming"
-      }
-    ],
-    color: "bg-amber-100 dark:bg-amber-900",
-    borderColor: "border-amber-300 dark:border-amber-700",
-    textColor: "text-amber-800 dark:text-amber-200",
-    accentColor: "bg-amber-600 dark:bg-amber-400",
-    credits: 3,
-    gradeBreakdown: {
-      research: "15%",
-      midterm: "25%",
-      finalExam: "30%",
-      papers: "30%"
-    },
-    nextClass: "Tomorrow",
-    classProgress: 30
-  }
-];
 
 export default function ClassSchedule() {
   const [expandedId, setExpandedId] = useState(null);
   const [filter, setFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("details");
+  const [classes, setClasses] = useState([]); // State to hold classes data
+  const [departments, setDepartments] = useState([]); // State to hold departments data
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const classesData = await getClasses();
+        const departmentsData = await getDepartments();
+        setClasses(classesData); // Update state with fetched classes
+        setDepartments(departmentsData); // Update state with fetched departments
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const toggleExpand = (id) => {
     setExpandedId(expandedId === id ? null : id);
     setActiveTab("details");
   };
-  
+
   const filterClasses = () => {
     if (filter === "all") return classes;
     return classes.filter(cls => cls.days.includes(filter));
   };
 
   const filteredClasses = filterClasses();
-  
+
   // Get all upcoming assignments across all classes
   const upcomingAssignments = classes
-    .flatMap(cls => 
+    .flatMap(cls =>
       cls.assignments
         .filter(assignment => assignment.status === "upcoming")
         .map(assignment => ({
@@ -347,7 +73,7 @@ export default function ClassSchedule() {
         }))
     )
     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-  
+
   return (
     <div className="p-8 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 min-h-screen">
       <div className="max-w-5xl mx-auto">
@@ -356,11 +82,11 @@ export default function ClassSchedule() {
             <h2 className="text-3xl font-bold mb-2">My Academic Schedule</h2>
             <p className="opacity-90">Fall Semester 2024</p>
           </div>
-          
+
           <div className="p-6">
             <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
               <div className="flex flex-wrap gap-2">
-                <button 
+                <button
                   className={`px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 ${filter === 'all' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
                   onClick={() => setFilter('all')}
                 >
@@ -368,28 +94,29 @@ export default function ClassSchedule() {
                 </button>
                 {daysOfWeek.map(day => (
                   <button
-                    key={day}
+                    key={day} // Add key prop
                     className={`px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 ${filter === day ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
                     onClick={() => setFilter(day)}
                   >
                     {day}
                   </button>
                 ))}
+
               </div>
-              
+
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-sm">
                 <Calendar size={16} />
                 <span>Current Term: Fall 2024</span>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
               <div className="lg:col-span-2">
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
                   <Calendar size={20} />
                   <span>Class Overview</span>
                 </h3>
-                
+
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="min-w-full">
@@ -397,8 +124,8 @@ export default function ClassSchedule() {
                         <tr>
                           <th className="px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider rounded-tl-lg">Time</th>
                           {daysOfWeek.map((day, index) => (
-                            <th 
-                              key={day} 
+                            <th
+                              key={day}
                               className={`px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider ${index === daysOfWeek.length - 1 ? 'rounded-tr-lg' : ''}`}
                             >
                               {day}
@@ -411,14 +138,14 @@ export default function ClassSchedule() {
                           <tr key={index} className={index % 2 === 0 ? "bg-white dark:bg-gray-800" : "bg-gray-50 dark:bg-gray-900"}>
                             <td className="px-3 py-3 border-b border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-900 dark:text-gray-100">{time}</td>
                             {daysOfWeek.map(day => {
-                              const classForTimeAndDay = classes.find(cls => 
+                              const classForTimeAndDay = classes.find(cls =>
                                 cls.time.includes(time) && cls.days.includes(day)
                               );
-                              
+
                               return (
                                 <td key={day} className="px-3 py-3 border-b border-gray-200 dark:border-gray-700 text-sm">
                                   {classForTimeAndDay && (
-                                    <div 
+                                    <div
                                       className={`px-2 py-1 rounded ${classForTimeAndDay.color} ${classForTimeAndDay.textColor} text-xs font-medium cursor-pointer hover:opacity-90 transition-opacity duration-200`}
                                       onClick={() => toggleExpand(classForTimeAndDay.id)}
                                     >
@@ -435,13 +162,13 @@ export default function ClassSchedule() {
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
                   <Bell size={20} />
                   <span>Upcoming Deadlines</span>
                 </h3>
-                
+
                 <div className="space-y-3 bg-gray-50 dark:bg-gray-900 rounded-xl p-4 max-h-64 overflow-y-auto">
                   {upcomingAssignments.length > 0 ? (
                     upcomingAssignments.slice(0, 5).map((assignment, index) => {
@@ -449,10 +176,10 @@ export default function ClassSchedule() {
                       const today = new Date();
                       const diffTime = Math.abs(dueDate - today);
                       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                      
+
                       let urgencyClass = "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800";
                       let dotClass = "bg-green-500";
-                      
+
                       if (diffDays <= 2) {
                         urgencyClass = "bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800";
                         dotClass = "bg-red-500";
@@ -460,9 +187,9 @@ export default function ClassSchedule() {
                         urgencyClass = "bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800";
                         dotClass = "bg-amber-500";
                       }
-                      
+
                       return (
-                        <div key={index} className={`flex items-center gap-3 p-3 rounded-lg border ${urgencyClass}`}>
+                        <div key={assignment._id} className={`flex items-center gap-3 p-3 rounded-lg border ${urgencyClass}`}>
                           <span className={`w-2 h-2 ${dotClass} rounded-full flex-shrink-0`}></span>
                           <div className="flex-grow">
                             <div className="flex items-center gap-2">
@@ -482,7 +209,8 @@ export default function ClassSchedule() {
                   ) : (
                     <p className="text-center text-gray-500 dark:text-gray-400 py-4">No upcoming deadlines</p>
                   )}
-                  
+
+
                   {upcomingAssignments.length > 5 && (
                     <button className="w-full text-center text-sm font-medium text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 py-2">
                       View all {upcomingAssignments.length} assignments
@@ -493,14 +221,14 @@ export default function ClassSchedule() {
             </div>
           </div>
         </div>
-        
+
         <div className="space-y-6">
           {filteredClasses.map((cls) => (
             <div
-              key={cls.id}
+              key={cls._id}
               className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg transition-all duration-300 overflow-hidden ${expandedId === cls.id ? 'ring-2 ring-yellow-400 dark:ring-yellow-600' : 'hover:shadow-xl'}`}
             >
-              <div 
+              <div
                 className={`relative border-l-4 ${cls.borderColor} p-6 cursor-pointer`}
                 onClick={() => toggleExpand(cls.id)}
               >
@@ -535,7 +263,7 @@ export default function ClassSchedule() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-4">
                     <div className="hidden md:block">
                       <div className="flex items-center mb-1">
@@ -543,28 +271,28 @@ export default function ClassSchedule() {
                         <span className="ml-auto text-xs font-medium text-gray-700 dark:text-gray-300">{cls.classProgress}%</span>
                       </div>
                       <div className="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full ${cls.accentColor}`} 
+                        <div
+                          className={`h-full ${cls.accentColor}`}
                           style={{ width: `${cls.classProgress}%` }}
                         ></div>
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-col items-center">
-                      {expandedId === cls.id ? 
-                        <ChevronUp className="text-yellow-600 dark:text-yellow-400" /> : 
+                      {expandedId === cls.id ?
+                        <ChevronUp className="text-yellow-600 dark:text-yellow-400" /> :
                         <ChevronDown className="text-gray-400 dark:text-gray-600" />
                       }
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               {expandedId === cls.id && (
                 <div className="border-t border-gray-100 dark:border-gray-700">
                   <div className="bg-gray-50 dark:bg-gray-900 px-4 py-2 border-b border-gray-100 dark:border-gray-700">
                     <div className="flex overflow-x-auto">
-                      <button 
+                      <button
                         className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${activeTab === 'details' ? 'text-yellow-600 dark:text-yellow-400 border-b-2 border-yellow-500 dark:border-yellow-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}
                         onClick={() => setActiveTab('details')}
                       >
@@ -573,8 +301,8 @@ export default function ClassSchedule() {
                           <span>Course Details</span>
                         </span>
                       </button>
-                      
-                      <button 
+
+                      <button
                         className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${activeTab === 'assignments' ? 'text-yellow-600 dark:text-yellow-400 border-b-2 border-yellow-500 dark:border-yellow-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}
                         onClick={() => setActiveTab('assignments')}
                       >
@@ -583,8 +311,8 @@ export default function ClassSchedule() {
                           <span>Assignments</span>
                         </span>
                       </button>
-                      
-                      <button 
+
+                      <button
                         className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${activeTab === 'materials' ? 'text-yellow-600 dark:text-yellow-400 border-b-2 border-yellow-500 dark:border-yellow-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}
                         onClick={() => setActiveTab('materials')}
                       >
@@ -593,8 +321,8 @@ export default function ClassSchedule() {
                           <span>Materials</span>
                         </span>
                       </button>
-                      
-                      <button 
+
+                      <button
                         className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${activeTab === 'grading' ? 'text-yellow-600 dark:text-yellow-400 border-b-2 border-yellow-500 dark:border-yellow-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}
                         onClick={() => setActiveTab('grading')}
                       >
@@ -605,7 +333,7 @@ export default function ClassSchedule() {
                       </button>
                     </div>
                   </div>
-                  
+
                   <div className="p-6">
                     {activeTab === 'details' && (
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -617,7 +345,7 @@ export default function ClassSchedule() {
                           <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
                             {cls.description}
                           </p>
-                          
+
                           <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
                             <Check size={18} />
                             <span>Learning Outcomes</span>
@@ -628,14 +356,14 @@ export default function ClassSchedule() {
                             ))}
                           </ul>
                         </div>
-                        
+
                         <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
                           <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
                             <User size={18} />
                             <span>Instructor</span>
                           </h4>
                           <div className="space-y-3 text-gray-600 dark:text-gray-400 text-sm">
-                          <div className="flex flex-col">
+                            <div className="flex flex-col">
                               <span className="font-medium text-gray-800 dark:text-gray-200">{cls.professor}</span>
                               <span>{cls.email}</span>
                             </div>
@@ -651,14 +379,14 @@ export default function ClassSchedule() {
                         </div>
                       </div>
                     )}
-                    
+
                     {activeTab === 'assignments' && (
                       <div>
                         <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
                           <FileText size={18} />
                           <span>Assignments & Assessments</span>
                         </h4>
-                        
+
                         <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead className="bg-gray-50 dark:bg-gray-800">
@@ -671,51 +399,55 @@ export default function ClassSchedule() {
                             </thead>
                             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                               {cls.assignments.map((assignment, index) => (
-                                <tr key={index} className={index % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800"}>
+                                <tr key={assignment.id} className={index % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800"}>
                                   <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200 font-medium">{assignment.name}</td>
                                   <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{new Date(assignment.dueDate).toLocaleDateString()}</td>
                                   <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{assignment.points} pts</td>
                                   <td className="px-4 py-3 text-sm">
-                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                      assignment.status === 'completed' 
-                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                                        : assignment.status === 'upcoming' 
-                                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
-                                          : 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
-                                    }`}>
+                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${assignment.status === 'completed'
+                                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                      : assignment.status === 'upcoming'
+                                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                                        : 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                                      }`}>
                                       {assignment.status.charAt(0).toUpperCase() + assignment.status.slice(1)}
                                     </span>
                                   </td>
                                 </tr>
                               ))}
+
                             </tbody>
                           </table>
                         </div>
                       </div>
                     )}
-                    
+
                     {activeTab === 'materials' && (
                       <div>
                         <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
                           <BookOpen size={18} />
                           <span>Required Materials</span>
                         </h4>
-                        
+
                         <div className="mb-6">
                           <div className="flex flex-wrap gap-2 mb-4">
-                            {cls.materials.map((material, index) => (
-                              <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                                {material}
-                              </span>
-                            ))}
+                            {
+                              cls.materials.map((material, index) => (
+                                <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                                  {material}
+                                </span>
+                              ))
+}: {(
+                              <p className="text-gray-500 dark:text-gray-400">No materials available</p> // Display a fallback message if no materials
+                            )}
                           </div>
                         </div>
-                        
+
                         <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
                           <Bookmark size={18} />
                           <span>Textbooks</span>
                         </h4>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {cls.textbooks.map((book, index) => (
                             <div key={index} className="flex items-start gap-4 p-4 border border-gray-100 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
@@ -739,14 +471,14 @@ export default function ClassSchedule() {
                         </div>
                       </div>
                     )}
-                    
+
                     {activeTab === 'grading' && (
                       <div>
                         <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
                           <Award size={18} />
                           <span>Grade Breakdown</span>
                         </h4>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
                             <div className="space-y-3">
@@ -757,8 +489,8 @@ export default function ClassSchedule() {
                                   </span>
                                   <span className="ml-auto text-sm font-medium text-gray-800 dark:text-gray-200">{percentage}</span>
                                   <div className="w-24 h-2 ml-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                    <div 
-                                      className={`h-full ${cls.accentColor}`} 
+                                    <div
+                                      className={`h-full ${cls.accentColor}`}
                                       style={{ width: `${parseInt(percentage)}%` }}
                                     ></div>
                                   </div>
@@ -766,7 +498,7 @@ export default function ClassSchedule() {
                               ))}
                             </div>
                           </div>
-                          
+
                           <div>
                             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-700">
                               <div className="flex items-center mb-4 gap-2">
