@@ -464,15 +464,16 @@ export default function ClassSchedule() {
 
                           <div className="mb-6">
                             <div className="flex flex-wrap gap-2 mb-4">
-                              {
+                              {cls.materials.length > 0 ? (
                                 cls.materials.map((material, index) => (
                                   <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                                    {material}
+                                    {material.material}
                                   </span>
                                 ))
-                              }: {(
-                                <p className="text-gray-500 dark:text-gray-400">No materials available</p> // Display a fallback message if no materials
+                              ) : (
+                                <p className="text-gray-500 dark:text-gray-400">No materials available</p>
                               )}
+
                             </div>
                           </div>
 
@@ -482,25 +483,30 @@ export default function ClassSchedule() {
                           </h4>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {cls.textbooks.map((book, index) => (
-                              <div key={index} className="flex items-start gap-4 p-4 border border-gray-100 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
-                                <div className={`w-12 h-16 flex-shrink-0 ${cls.color} rounded flex items-center justify-center`}>
-                                  <Book size={24} className={cls.textColor} />
-                                </div>
-                                <div>
-                                  <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-1">{book.title}</h5>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">by {book.author}</p>
-                                  <div className="flex flex-wrap gap-2">
-                                    <span className={`text-xs px-2 py-0.5 rounded ${book.required ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'}`}>
-                                      {book.required ? 'Required' : 'Optional'}
-                                    </span>
-                                    <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                                      ISBN: {book.isbn}
-                                    </span>
+                            {cls.textbooks.length > 0 ? (
+                              cls.textbooks.map((book, index) => (
+                                <div key={index} className="flex items-start gap-4 p-4 border border-gray-100 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
+                                  <div className={`w-12 h-16 flex-shrink-0 ${cls.color} rounded flex items-center justify-center`}>
+                                    <Book size={24} className={cls.textColor} />
+                                  </div>
+                                  <div>
+                                    <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-1">{book.title}</h5>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">by {book.author}</p>
+                                    <div className="flex flex-wrap gap-2">
+                                      <span className={`text-xs px-2 py-0.5 rounded ${book.required ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'}`}>
+                                        {book.required ? 'Required' : 'Optional'}
+                                      </span>
+                                      <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                                        ISBN: {book.isbn}
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
+                              ))
+                            ) : (
+                              <p className="text-gray-500 dark:text-gray-400">No textbooks available</p>
+                            )}
+
                           </div>
                         </div>
                       )}
@@ -515,7 +521,7 @@ export default function ClassSchedule() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                               <div className="space-y-3">
-                                {Object.entries(cls.gradeBreakdown).map(([category, percentage], index) => (
+                                {cls.gradeBreakdown && Object.entries(cls.gradeBreakdown).map(([category, percentage], index) => (
                                   <div key={index} className="flex items-center">
                                     <span className="text-sm text-gray-600 dark:text-gray-400 flex-grow capitalize">
                                       {category}
@@ -565,6 +571,7 @@ export default function ClassSchedule() {
                           </div>
                         </div>
                       )}
+
                     </div>
                   </div>
                 )}
