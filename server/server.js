@@ -10,17 +10,30 @@ import roadmapRoutes from "./routes/roadmapRoutes.js";
 import faculty from "./routes/facultyRoutes.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import navigationRoutes from "./routes/navigationRoutes.js";
-
 import facultyRoutes from "./routes/facultyRoutes.js";
+import http from "http";
+import { Server } from "socket.io";
+import classroomRoutes from "./routes/classroomRoutes.js";
 
 dotenv.config();
 
 connectDB();
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST"]
+}));
+
 app.use(express.json());
 
 const GEMINI_AI_KEY = process.env.GEMINI_AI; // Access the environment variable
@@ -56,11 +69,46 @@ app.use("/api/meals", mealRoutes);
 app.use("/api/bus", busRoutes);
 app.use("/api/class", classRoutes);
 app.use("/api/department", departmentRoutes);
-app.use("/api/roadmap", roadmapRoutes); // Use roadmap routes
+app.use("/api/roadmap", roadmapRoutes);
 app.use("/api/faculty", faculty);
 app.use("/api/navigation", navigationRoutes);
+app.use("/api/classroom", classroomRoutes);
+
+const rooms = {};
+
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("room:join", async ({ room }) => {
+    socket.join(room);
+    console.log(`User joined room: ${room}`);
+    
+    if (!rooms[room]) {
+      rooms[room] = { whiteboardData: "" };
+    }
+    
+    socket.emit("whiteboard:update", rooms[room].whiteboardData);
+  });
+
+  socket.on("whiteboard:draw", ({ room, data }) => {
+    rooms[room].whiteboardData = data;
+    socket.to(room).emit("whiteboard:update", data);
+  });
+
+  socket.on("video:call", ({ to, offer }) => {
+    io.to(to).emit("video:incomingCall", { from: socket.id, offer });
+  });
+
+  socket.on("video:answer", ({ to, answer }) => {
+    io.to(to).emit("video:callAccepted", { from: socket.id, answer });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+});
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
