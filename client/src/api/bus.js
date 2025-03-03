@@ -1,4 +1,3 @@
-//path: client/src/components/Admin/BusManagement.jsx
 import axios from "axios";
 
 // The base URL of your API, adjust this to your actual backend URL

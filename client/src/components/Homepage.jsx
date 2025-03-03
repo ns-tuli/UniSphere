@@ -10,7 +10,6 @@ import {
   FaBell,
   FaUsers,
   FaGraduationCap,
-  FaNewspaper,
 } from "react-icons/fa";
 
 export default function HomePage() {
@@ -73,7 +72,7 @@ export default function HomePage() {
       title: "Alerts & Notifications",
       icon: <FaBell className="text-3xl text-orange-600" />,
       description: "Important announcements and personalized notifications",
-      path: "/Alerts",
+      path: "/Alert",
       color: "bg-orange-50",
       hoverColor: "hover:bg-orange-100",
       borderColor: "border-orange-200",
@@ -90,21 +89,20 @@ export default function HomePage() {
     },
     {
       id: 8,
-      title: "University News",
-      icon: <FaNewspaper className="text-3xl text-blue-600" />,
+      title: "Learning Hub",
+      icon: <FaGraduationCap className="text-3xl text-teal-600" />,
       description:
-        "Stay updated with the latest university news, events, and announcements",
-      path: "/UniversityNews",
-      color: "bg-blue-50",
-      hoverColor: "hover:bg-blue-100",
-      borderColor: "border-blue-200",
+        "Access all learning tools, virtual classrooms, and resources",
+      path: "/LearningHub",
+      color: "bg-teal-50",
+      hoverColor: "hover:bg-teal-100",
+      borderColor: "border-teal-200",
     },
   ];
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
             Student Dashboard
@@ -114,7 +112,6 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-blue-500">
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -150,7 +147,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Main Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {mainFeatures.map((feature) => (
             <Link
@@ -173,7 +169,6 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* Learning Hub Detailed Card */}
         <div className="bg-teal-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-teal-200 dark:border-gray-700 mb-12">
           <div className="p-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
@@ -207,7 +202,7 @@ export default function HomePage() {
                   Personalized learning paths for your academic journey
                 </p>
                 <Link
-                  to="/Roadmap"
+                  to="/learning-hub/roadmaps"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
                   View Roadmaps →
@@ -216,10 +211,10 @@ export default function HomePage() {
 
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  Notes
+                  Smart Notes
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Take notes, switch to code mode, and export as PDF.
+                  Take notes that automatically sync to your profile
                 </p>
                 <Link
                   to="/notes"
@@ -276,16 +271,16 @@ export default function HomePage() {
 
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  ddd
+                  Your Notes
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  ddd
+                  All your notes in one place!
                 </p>
                 <Link
-                  to="/ddd"
+                  to="/uploadNotes"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
-                  Read News →
+                  Read your notes →
                 </Link>
               </div>
 
@@ -307,7 +302,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Recent Announcements */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-12">
           <div className="px-6 py-4 bg-indigo-500 dark:bg-indigo-700">
             <h2 className="text-xl font-bold text-white">
@@ -364,7 +358,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Quick Links */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
           <div className="px-6 py-4 bg-gray-100 dark:bg-gray-700">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">

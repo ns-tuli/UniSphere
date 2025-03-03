@@ -1,4 +1,3 @@
-//path: client/src/api/meal.js
 import axios from "axios";
 
 const API_URL = "http://localhost:5000/api/meals"; // Adjust this to your backend URL
