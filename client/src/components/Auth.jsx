@@ -42,7 +42,7 @@ const Auth = () => {
         const userData = await login(formData.email, formData.password);
         // Check role and redirect
         if (userData.role === "admin") {
-          navigate("/admin/users");
+          navigate("/Admin");
         } else {
           navigate("/homepage");
         }

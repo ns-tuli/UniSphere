@@ -23,7 +23,6 @@ import Alert from "./components/Alert";
 import AlertManagement from "./components/Admin/AlertManagement";
 import { AuthProvider } from "./context/AuthContext";
 import TestAuth from "./components/TestAuth";
-import AdminUsers from "./components/AdminUsers";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import UserManagement from "./components/Admin/UserManagement";
 
@@ -93,15 +92,7 @@ function App() {
                 }
               />
               <Route
-                path="users"
-                element={
-                  <ProtectedAdminRoute>
-                    <AdminUsers />
-                  </ProtectedAdminRoute>
-                }
-              />
-              <Route
-                path="users"
+                path="UserManagement"
                 element={
                   <ProtectedAdminRoute>
                     <UserManagement />
