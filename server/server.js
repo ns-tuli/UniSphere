@@ -12,6 +12,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import navigationRoutes from "./routes/navigationRoutes.js";
 import alertRoutes from "./routes/alerts.js";
 import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 import facultyRoutes from "./routes/facultyRoutes.js";
 
@@ -63,6 +64,7 @@ app.use("/api/faculty", faculty);
 app.use("/api/navigation", navigationRoutes);
 app.use("/api/alerts", alertRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

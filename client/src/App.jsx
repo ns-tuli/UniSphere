@@ -21,7 +21,11 @@ import FacultyEntry from "./components/Admin/FacultyEntry";
 import ClassManagement from "./components/Admin/ClassManagement";
 import Alert from "./components/Alert";
 import AlertManagement from "./components/Admin/AlertManagement";
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from "./context/AuthContext";
+import TestAuth from "./components/TestAuth";
+import AdminUsers from "./components/AdminUsers";
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import UserManagement from "./components/Admin/UserManagement";
 
 function App() {
   return (
@@ -40,15 +44,70 @@ function App() {
             <Route path="/ClassSchedule" element={<ClassSchedule />} />
             <Route path="/CampusNavigation" element={<CampusNavigation />} />
             <Route path="/Admin">
-              <Route index element={<AdminDashboard />} />
+              <Route
+                index
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminDashboard />
+                  </ProtectedAdminRoute>
+                }
+              />
               <Route
                 path="CafeteriaManagement"
-                element={<CafeteriaManagement />}
+                element={
+                  <ProtectedAdminRoute>
+                    <CafeteriaManagement />
+                  </ProtectedAdminRoute>
+                }
               />
-              <Route path="BusManagement" element={<BusManagement />} />
-              <Route path="FacultyEntry" element={<FacultyEntry />} />
-              <Route path="ClassManagement" element={<ClassManagement />} />
-              <Route path="AlertManagement" element={<AlertManagement />} />
+              <Route
+                path="BusManagement"
+                element={
+                  <ProtectedAdminRoute>
+                    <BusManagement />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="FacultyEntry"
+                element={
+                  <ProtectedAdminRoute>
+                    <FacultyEntry />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="ClassManagement"
+                element={
+                  <ProtectedAdminRoute>
+                    <ClassManagement />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="AlertManagement"
+                element={
+                  <ProtectedAdminRoute>
+                    <AlertManagement />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="users"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminUsers />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="users"
+                element={
+                  <ProtectedAdminRoute>
+                    <UserManagement />
+                  </ProtectedAdminRoute>
+                }
+              />
             </Route>
             <Route path="/Notes" element={<Notes />} />
             <Route path="/Roadmap" element={<Roadmap />} />
@@ -59,6 +118,7 @@ function App() {
             <Route path="/Auth" element={<Auth />} />
             <Route path="/profile" element={<StudentProfile />} />
             <Route path="/alerts" element={<Alert />} />
+            <Route path="/test-auth" element={<TestAuth />} />
           </Route>
         </Routes>
       </Router>
