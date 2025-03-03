@@ -1,16 +1,13 @@
-import mongoose from "mongoose";
-import mongooseSequence from "mongoose-sequence";
-
-// Define Class Schema
+import mongoose from "mongoose"
+import mongooseSequence from "mongoose-sequence"
 const classSchema = new mongoose.Schema({
-  _id: { type: mongoose.Schema.Types.ObjectId, auto: true }, // Explicitly define _id
   classId: { type: Number, unique: true },
-  department: { type: String, required: true }, // Reference to Department
+  department: { type: String, required: true },
   courseCode: { type: String },
   name: { type: String },
   description: { type: String },
   credits: { type: Number },
-  days: { type: [String] }, // ['Monday', 'Wednesday']
+  days: { type: [String] },
   time: { type: String },
   location: { type: String },
   professor: { type: String },
@@ -18,7 +15,20 @@ const classSchema = new mongoose.Schema({
   officeHours: { type: String },
   officeLocation: { type: String },
   learningOutcomes: [{ type: String }],
-  materials: [{ type: String }],
+  materials: [
+    {
+      material: { type: String },
+      required: { type: Boolean, default: false }  // Add required field
+    }
+  ],
+  textbooks: [
+    {
+      title: { type: String },
+      author: { type: String },
+      required: { type: Boolean, default: false }, // Add required field
+      isbn: { type: String }
+    }
+  ],
   assignments: [
     {
       name: { type: String },
@@ -31,28 +41,18 @@ const classSchema = new mongoose.Schema({
       },
     },
   ],
-});
+  gradeBreakdown: {
+    assignments: {type: String},
+    midterm: {type: String},
+    finalExam: {type: String},
+    participation: {type: String}
+  },
 
-// Add a pre-save hook to generate classId if not present
-classSchema.pre("save", async function (next) {
-  if (!this.classId) {
-    try {
-      const lastClass = await this.constructor.findOne(
-        {},
-        {},
-        { sort: { classId: -1 } }
-      );
-      this.classId = lastClass ? lastClass.classId + 1 : 1;
-    } catch (error) {
-      return next(error);
-    }
-  }
-  next();
 });
 
 classSchema.plugin(mongooseSequence(mongoose), {
-  inc_field: "classId", // Auto-increment classId
-  start_seq: 1, // Start incrementing from 1
+  inc_field: "classId",  // Auto-increment departmentId
+  start_seq: 1,  // Start incrementing from 1
 });
 
 export default mongoose.model("Class", classSchema);
