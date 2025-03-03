@@ -54,7 +54,8 @@ const Auth = () => {
         
 
         // Store user data
-        localStorage.setItem("user", JSON.stringify(userInfo.data));
+        localStorage.setItem("user", JSON.stringify(enhancedUserData));
+        updateUser(enhancedUserData);
 
         // Redirect to homepage
         navigate('/profile');

@@ -20,6 +20,7 @@ import StudentProfile from "./components/StudentProfile";
 import FacultyEntry from "./components/Admin/FacultyEntry";
 import ClassManagement from "./components/Admin/ClassManagement";
 import Alert from "./components/Alert";
+import AlertManagement from "./components/Admin/AlertManagement";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="BusManagement" element={<BusManagement />} />
             <Route path="FacultyEntry" element={<FacultyEntry />} />
             <Route path="ClassManagement" element={<ClassManagement />} />
+            <Route path="AlertManagement" element={<AlertManagement />} />
           </Route>
           <Route path="/Notes" element={<Notes />} />
           <Route path="/Roadmap" element={<Roadmap />} />
@@ -54,6 +56,7 @@ function App() {
           <Route path="/FacultyContact" element={<FacultyContact />} />
           <Route path="/Auth" element={<Auth />} />
           <Route path="/profile" element={<StudentProfile />} />
+          <Route path="/alerts" element={<Alert />} />
         </Route>
       </Routes>
     </Router>

@@ -77,7 +77,7 @@ export default function AdminDashboard() {
       title: "Announcements",
       icon: <FaBell className="text-3xl text-orange-600" />,
       description: "Create and manage university-wide notifications and alerts",
-      path: "/admin/announcements",
+      path: "/Admin/AlertManagement",
       color: "bg-orange-50",
       hoverColor: "hover:bg-orange-100",
       borderColor: "border-orange-200",

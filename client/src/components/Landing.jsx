@@ -14,7 +14,7 @@ export function Landing() {
           className="absolute inset-0 bg-cover bg-center transition-transform duration-10000 hover:scale-105"
           style={{
             backgroundImage:
-              "url('https://i.pinimg.com/736x/be/d8/eb/bed8eb366f4cf15e85220a1f2ca4f703.jpg')",
+              "url('https://external-preview.redd.it/IlO44ByizivjyKI5jyUmU1CQqhXOYsyrHm8QtaKdjGk.jpg?auto=webp&s=c49a399a6aba08da22da66e3b661a7b62b2c7204')",
           }}
         >
           <div className="absolute inset-0 bg-gray-900/70"></div>
