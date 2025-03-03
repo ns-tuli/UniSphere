@@ -21,45 +21,48 @@ import FacultyEntry from "./components/Admin/FacultyEntry";
 import ClassManagement from "./components/Admin/ClassManagement";
 import Alert from "./components/Alert";
 import AlertManagement from "./components/Admin/AlertManagement";
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Public routes that don't need the header */}
-        <Route path="/" element={<Landing />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public routes that don't need the header */}
+          <Route path="/" element={<Landing />} />
 
-        {/* Protected routes with header */}
-        <Route element={<Layout />}>
-          <Route path="/homepage" element={<HomePage />} />
-          <Route path="/BusSchedule" element={<BusSchedule />} />
-          <Route path="/CafeteriaMenu" element={<CafeteriaMenu />} />
-          <Route path="/EventCalendar" element={<EventCalendar />} />
-          <Route path="/ClassSchedule" element={<ClassSchedule />} />
-          <Route path="/CampusNavigation" element={<CampusNavigation />} />
-          <Route path="/Admin">
-            <Route index element={<AdminDashboard />} />
-            <Route
-              path="CafeteriaManagement"
-              element={<CafeteriaManagement />}
-            />
-            <Route path="BusManagement" element={<BusManagement />} />
-            <Route path="FacultyEntry" element={<FacultyEntry />} />
-            <Route path="ClassManagement" element={<ClassManagement />} />
-            <Route path="AlertManagement" element={<AlertManagement />} />
+          {/* Protected routes with header */}
+          <Route element={<Layout />}>
+            <Route path="/homepage" element={<HomePage />} />
+            <Route path="/BusSchedule" element={<BusSchedule />} />
+            <Route path="/CafeteriaMenu" element={<CafeteriaMenu />} />
+            <Route path="/EventCalendar" element={<EventCalendar />} />
+            <Route path="/ClassSchedule" element={<ClassSchedule />} />
+            <Route path="/CampusNavigation" element={<CampusNavigation />} />
+            <Route path="/Admin">
+              <Route index element={<AdminDashboard />} />
+              <Route
+                path="CafeteriaManagement"
+                element={<CafeteriaManagement />}
+              />
+              <Route path="BusManagement" element={<BusManagement />} />
+              <Route path="FacultyEntry" element={<FacultyEntry />} />
+              <Route path="ClassManagement" element={<ClassManagement />} />
+              <Route path="AlertManagement" element={<AlertManagement />} />
+            </Route>
+            <Route path="/Notes" element={<Notes />} />
+            <Route path="/Roadmap" element={<Roadmap />} />
+            <Route path="/Chatbot" element={<Chatbot />} />
+            <Route path="/uploadNotes" element={<UploadNotes />} />
+            <Route path="/Alert" element={<Alert />} />
+            <Route path="/FacultyContact" element={<FacultyContact />} />
+            <Route path="/Auth" element={<Auth />} />
+            <Route path="/profile" element={<StudentProfile />} />
+            <Route path="/alerts" element={<Alert />} />
           </Route>
-          <Route path="/Notes" element={<Notes />} />
-          <Route path="/Roadmap" element={<Roadmap />} />
-          <Route path="/Chatbot" element={<Chatbot />} />
-          <Route path="/uploadNotes" element={<UploadNotes />} />
-          <Route path="/Alert" element={<Alert />} />
-          <Route path="/FacultyContact" element={<FacultyContact />} />
-          <Route path="/Auth" element={<Auth />} />
-          <Route path="/profile" element={<StudentProfile />} />
-          <Route path="/alerts" element={<Alert />} />
-        </Route>
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

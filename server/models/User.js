@@ -12,6 +12,13 @@ const userSchema = new mongoose.Schema({
   },
   uploadedPdfs: [{ type: mongoose.Schema.Types.ObjectId, ref: "PDF" }], // References to uploaded PDFs
   downloadedPdfs: [{ type: mongoose.Schema.Types.ObjectId, ref: "PDF" }], // References to downloaded PDFs
+  studentId: { type: String },
+  department: { type: String },
+  joinDate: { type: Date, default: Date.now },
+  lastLogin: { type: Date },
+  isAdmin: { type: Boolean, default: false }
+}, {
+  timestamps: true
 });
 
 // Hash password before saving
@@ -23,6 +30,6 @@ userSchema.pre("save", async function (next) {
 // Method to compare password
 userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
-};
+});
 
 export default mongoose.model("User", userSchema);

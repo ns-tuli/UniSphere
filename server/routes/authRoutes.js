@@ -1,61 +1,85 @@
-import express from "express";
-import jwt from "jsonwebtoken";
-import User from "../models/User.js";
-import { authenticateUser, authorizeRole } from "../middlewares/auth.js";
+import express from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// User Registration
-router.post("/register", async (req, res) => {
+// Generate JWT
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: '30d',
+  });
+};
+
+// Register
+router.post('/register', async (req, res) => {
   try {
-    const { username, password, role } = req.body;
-    if (!username || !password || !role) {
-      return res.status(400).json({ error: "All fields are required." });
+    const { name, email, password, studentId, department } = req.body;
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: 'User already exists' });
     }
-    const user = new User({ username, password, role });
-    await user.save();
-    res.status(201).json({ message: "User registered successfully!" });
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      studentId,
+      department,
+    });
+
+    if (user) {
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        studentId: user.studentId,
+        department: user.department,
+        token: generateToken(user._id),
+      });
+    }
   } catch (error) {
-    res.status(500).json({ error: "Failed to register user." });
+    res.status(400).json({ message: error.message });
   }
 });
 
-// User Login
-router.post("/login", async (req, res) => {
+// Login
+router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ error: "All fields are required." });
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        studentId: user.studentId,
+        department: user.department,
+        token: generateToken(user._id),
+      });
+    } else {
+      res.status(401).json({ message: 'Invalid email or password' });
     }
-    const user = await User.findOne({ username });
-    if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ error: "Invalid credentials." });
-    }
-    const token = jwt.sign(
-      { userId: user._id, role: user.role, username: user.username },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
-    res.status(200).json({ token, userId: user._id, username: user.username });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error." });
+    res.status(400).json({ message: error.message });
   }
 });
 
-// Protected Route for Authenticated Users
-router.get("/profile", authenticateUser, (req, res) => {
-  res.status(200).json({ message: "Welcome to your profile!", user: req.user });
-});
-
-// Admin-Only Route
-router.get("/admin", authenticateUser, authorizeRole("admin"), (req, res) => {
-  res.status(200).json({ message: "Admin dashboard access granted." });
-});
-
-// Logout Route
-router.post("/logout", authenticateUser, (req, res) => {
-  // Client-side should handle token removal
-  res.status(200).json({ message: "Logged out successfully." });
+// Get user profile
+router.get('/profile', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
+  } catch (error) {
+    res.status(404).json({ message: 'User not found' });
+  }
 });
 
 export default router;
