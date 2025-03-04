@@ -187,7 +187,7 @@ export default function HomePage() {
                   Video calling, online whiteboard, and real-time chat
                 </p>
                 <Link
-                  to="/learning-hub/virtual-classroom"
+                  to="/Collab"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
                   Enter Classroom →

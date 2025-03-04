@@ -25,6 +25,7 @@ import { AuthProvider } from "./context/AuthContext";
 import TestAuth from "./components/TestAuth";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import UserManagement from "./components/Admin/UserManagement";
+import Collab from "./components/Collab/Collab";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
             <Route path="/EventCalendar" element={<EventCalendar />} />
             <Route path="/ClassSchedule" element={<ClassSchedule />} />
             <Route path="/CampusNavigation" element={<CampusNavigation />} />
+            <Route path="/Collab" element={<Collab />} />
             <Route path="/Admin">
               <Route
                 index
