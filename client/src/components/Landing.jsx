@@ -1,36 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Footer from "./Footer";
-import ThemeToggle from "./ThemeToggle";
 import { Award, Book, Brain, Terminal, Timer, Users } from "lucide-react";
+import Header from "./Header";
+
 export function Landing() {
   return (
     <div>
-      {/* Header */}
-      <header className="fixed w-full bg-yellow-50 dark:bg-[#18181b] backdrop-blur-sm py-4 z-50 transition-all duration-300">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-yellow-600 dark:text-yellow-200 hover:text-yellow-500 dark:hover:text-yellow-100 transition-colors duration-300">
-            UniSphere
-          </h1>
-          <nav className="hidden md:flex space-x-6"></nav>
-          <div className="flex space-x-4">
-            <Link to="/HomePage">
-              <button className="bg-yellow-600 dark:bg-yellow-200 hover:bg-yellow-500 dark:hover:bg-yellow-100 text-[#f5f5f5] dark:text-black px-4 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-200/20">
-                Get Started
-              </button>
-            </Link>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
-
+      <Header />
       {/* Hero Section */}
       <div className="relative min-h-screen flex items-center">
         <div
           className="absolute inset-0 bg-cover bg-center transition-transform duration-10000 hover:scale-105"
           style={{
             backgroundImage:
-              "url('https://media.istockphoto.com/id/1588289977/photo/happy-black-females-student-during-a-class-in-lecture-hall-looking-at-camera.jpg?s=612x612&w=0&k=20&c=o2l4DsMWHhZ3Oqq8hxrGoKqJfC1S2kAfnjUHlRJuD-k=')",
+              "url('https://i.pinimg.com/736x/be/d8/eb/bed8eb366f4cf15e85220a1f2ca4f703.jpg')",
           }}
         >
           <div className="absolute inset-0 bg-gray-900/70"></div>
@@ -44,7 +28,7 @@ export function Landing() {
               All-in-One University App – Revolutionizing every student's life
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/sign-up">
+              <Link to="/Auth">
                 <button className="w-full sm:w-auto bg-yellow-200 hover:bg-yellow-300 text-gray-900 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-200/20">
                   Let's Get Started
                 </button>
@@ -381,12 +365,12 @@ export function Landing() {
               </div>
             ))}
           </div>
-          {/* <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-800 dark:text-gray-400">
+          <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-800 dark:text-gray-400">
             <p>© 2025 UniSphere. All rights reserved.</p>
-          </div> */}
+          </div>
         </div>
       </footer>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

@@ -1,39 +1,57 @@
-import mongoose from "mongoose";
-import mongooseSequence from "mongoose-sequence";
-
-// Define Class Schema
+import mongoose from "mongoose"
+import mongooseSequence from "mongoose-sequence"
 const classSchema = new mongoose.Schema({
   classId: { type: Number, unique: true },
-  department: { type: String, required: true },  // Reference to Department
-  courseCode: { type: String},
-  name: { type: String},
-  description: { type: String},
-  credits: { type: Number},
-  days: { type: [String]},  // ['Monday', 'Wednesday']
-  time: { type: String},
-  location: { type: String},
-  professor: { type: String},
-  email: { type: String},
+  department: { type: String, required: true },
+  courseCode: { type: String },
+  name: { type: String },
+  description: { type: String },
+  credits: { type: Number },
+  days: { type: [String] },
+  time: { type: String },
+  location: { type: String },
+  professor: { type: String },
+  email: { type: String },
   officeHours: { type: String },
   officeLocation: { type: String },
-  learningOutcomes: [
-    { type: String }
+  learningOutcomes: [{ type: String }],
+  materials: [
+    {
+      material: { type: String },
+      required: { type: Boolean, default: false }  // Add required field
+    }
   ],
-  materials:[
-    {type: String}
+  textbooks: [
+    {
+      title: { type: String },
+      author: { type: String },
+      required: { type: Boolean, default: false }, // Add required field
+      isbn: { type: String }
+    }
   ],
   assignments: [
     {
-      name: { type: String},
-      dueDate: { type: Date},
-      points: { type: Number},
-      status: { type: String, enum: ["completed", "upcoming", "ongoing"], default: "upcoming" }
-    }
-  ]
+      name: { type: String },
+      dueDate: { type: Date },
+      points: { type: Number },
+      status: {
+        type: String,
+        enum: ["completed", "upcoming", "ongoing"],
+        default: "upcoming",
+      },
+    },
+  ],
+  gradeBreakdown: {
+    assignments: {type: String},
+    midterm: {type: String},
+    finalExam: {type: String},
+    participation: {type: String}
+  },
+
 });
 
 classSchema.plugin(mongooseSequence(mongoose), {
-  inc_field: "classId",  // Auto-increment classId
+  inc_field: "classId",  // Auto-increment departmentId
   start_seq: 1,  // Start incrementing from 1
 });
 
