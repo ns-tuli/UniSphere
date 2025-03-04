@@ -1,25 +1,26 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import AdminDashboard from "./components/Admin/AdminDashboard";
-import BusManagement from "./components/Admin/BusManagement";
-import CafeteriaManagement from "./components/Admin/CafeteriaManagement";
-import ClassManagement from "./components/Admin/ClassManagement";
-import FacultyEntry from "./components/Admin/FacultyEntry";
-import Alert from "./components/Alert";
-import Auth from "./components/Auth";
-import BusSchedule from "./components/BusSchedule";
-import CafeteriaMenu from "./components/CafeteriaMenu";
-import CampusNavigation from "./components/CampusNavigation";
-import Chatbot from "./components/Chatbot";
-import ClassSchedule from "./components/ClassSchedule";
-import EventCalendar from "./components/EventCalendar";
-import FacultyContact from "./components/FacultyContact";
-import HomePage from "./components/Homepage";
-import Landing from "./components/Landing";
-import Layout from "./components/Layout";
-import StudentProfile from "./components/StudentProfile";
-import UploadNotes from "./components/UploadNotes";
-import Notes from "./pages/Notes";
-import Roadmap from "./pages/Roadmap";
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import AdminDashboard from './components/Admin/AdminDashboard';
+import BusManagement from './components/Admin/BusManagement';
+import CafeteriaManagement from './components/Admin/CafeteriaManagement';
+import ClassManagement from './components/Admin/ClassManagement';
+import FacultyEntry from './components/Admin/FacultyEntry';
+import Alert from './components/Alert';
+import Auth from './components/Auth';
+import BusSchedule from './components/BusSchedule';
+import CafeteriaMenu from './components/CafeteriaMenu';
+import CampusNavigation from './components/CampusNavigation';
+import Chatbot from './components/Chatbot';
+import ClassSchedule from './components/ClassSchedule';
+import EventCalendar from './components/EventCalendar';
+import FacultyContact from './components/FacultyContact';
+import HomePage from './components/Homepage';
+import Landing from './components/Landing';
+import Layout from './components/Layout';
+import StudentProfile from './components/StudentProfile';
+import UploadNotes from './components/UploadNotes';
+import Clubs from './pages/Club';
+import Notes from './pages/Notes';
+import Roadmap from './pages/Roadmap';
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
           <Route path="/FacultyContact" element={<FacultyContact />} />
           <Route path="/Auth" element={<Auth />} />
           <Route path="/profile" element={<StudentProfile />} />
+          <Route path="/clubs" element={<Clubs />} />
         </Route>
       </Routes>
     </Router>
