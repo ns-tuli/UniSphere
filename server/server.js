@@ -14,6 +14,10 @@ import facultyRoutes from "./routes/facultyRoutes.js";
 import http from "http";
 import { Server } from "socket.io";
 import classroomRoutes from "./routes/classroomRoutes.js";
+import newsRoutes from './routes/newsRoutes.js';  // Fixed missing quotes
+import bodyParser from 'body-parser';
+import uploadRoutes from "./routes/uploadRoutes.js"; // Routes for file uploads
+
 
 dotenv.config();
 
@@ -35,6 +39,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(bodyParser.json());
 
 const GEMINI_AI_KEY = process.env.GEMINI_AI; // Access the environment variable
 
@@ -73,6 +78,9 @@ app.use("/api/roadmap", roadmapRoutes);
 app.use("/api/faculty", faculty);
 app.use("/api/navigation", navigationRoutes);
 app.use("/api/classroom", classroomRoutes);
+app.use("/api/news", newsRoutes);  // Fixed route path
+app.use("/api/uploads", uploadRoutes); // Use the upload routes
+
 
 const rooms = {};
 
@@ -106,6 +114,12 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err);  // Log the error
+  res.status(500).json({ message: 'Internal Server Error', error: err.message });  // Send detailed error message
 });
 
 const PORT = process.env.PORT || 5000;

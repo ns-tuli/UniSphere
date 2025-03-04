@@ -202,7 +202,7 @@ export default function HomePage() {
                   Personalized learning paths for your academic journey
                 </p>
                 <Link
-                  to="/learning-hub/roadmaps"
+                  to="/Roadmap"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
                   View Roadmaps →
@@ -256,16 +256,16 @@ export default function HomePage() {
 
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  Skill Courses
+                  Read Articles
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Specialized courses to enhance your professional skills
+                  Get updated with the latest articles about your subject!
                 </p>
                 <Link
-                  to="/learning-hub/skill-courses"
+                  to="/readArticle"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
-                  Browse Courses →
+                  Browse Articles →
                 </Link>
               </div>
 
