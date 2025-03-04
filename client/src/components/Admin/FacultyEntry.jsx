@@ -26,6 +26,7 @@ import {
   Clock,
   MapPin,
   List, // Add this import
+  Image,
 } from "lucide-react";
 
 const FacultyEntry = () => {
@@ -54,7 +55,9 @@ const FacultyEntry = () => {
     linkedin: "",
     googleScholar: "",
     available: true,
+    image: null,
   });
+  const [imagePreview, setImagePreview] = useState(null);
 
   // Notification state
   const [notification, setNotification] = useState({
@@ -143,6 +146,7 @@ const FacultyEntry = () => {
       linkedin: "",
       googleScholar: "",
       available: true,
+      image: null,
     });
     setIsEditing(false);
     setCurrentFacultyId(null);
@@ -168,6 +172,7 @@ const FacultyEntry = () => {
         linkedin: facultyData.linkedin || "",
         googleScholar: facultyData.googleScholar || "",
         available: facultyData.available || true,
+        image: facultyData.image || null,
       });
       setIsEditing(true);
       setCurrentFacultyId(facultyId);
@@ -262,6 +267,15 @@ const FacultyEntry = () => {
     setTimeout(() => {
       setNotification({ show: false, message: "", type: "" });
     }, 5000);
+  };
+
+  // Add this function to handle image selection
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({ ...prev, image: file }));
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   return (
@@ -733,6 +747,58 @@ const FacultyEntry = () => {
             <div className="p-6">
               <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  {/* Image Upload */}
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Faculty Image
+                    </label>
+                    <div className="mt-1 flex items-center space-x-4">
+                      {(imagePreview || formData.image?.url) && (
+                        <div className="relative w-32 h-32">
+                          <img
+                            src={imagePreview || formData.image?.url}
+                            alt="Preview"
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData((prev) => ({ ...prev, image: null }));
+                              setImagePreview(null);
+                            }}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <div className="flex items-center justify-center w-full">
+                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              <Image className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                              <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                <span className="font-semibold">
+                                  Click to upload
+                                </span>{" "}
+                                or drag and drop
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                PNG, JPG or JPEG (MAX. 800x400px)
+                              </p>
+                            </div>
+                            <input
+                              type="file"
+                              className="hidden"
+                              accept="image/*"
+                              onChange={handleImageChange}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Name */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
