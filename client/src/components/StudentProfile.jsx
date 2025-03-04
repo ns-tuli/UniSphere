@@ -141,8 +141,8 @@ const StudentProfile = () => {
     cgpa: user.cgpa ,
     credits: user.credits ,
     enrollmentDate: user.joinDate ,
-    currentCourses: user.currentCourses ,
-    achievements: user.achievement ,
+    currentCourses: user.currentCourses || [""],
+    achievements: user.achievement || [""],
   };
   console.log(studentData);
 
