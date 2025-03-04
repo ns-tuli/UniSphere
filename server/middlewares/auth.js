@@ -42,10 +42,13 @@ export const verifyToken = (req, res, next) => {
   }
 
   try {
+    console.log("Token received:", token); // Log the received token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Populate req.user
+    req.user = decoded;
     next();
   } catch (err) {
+    console.error("Invalid token:", err); // Log the error
     res.status(401).json({ error: "Invalid token." });
   }
 };
+

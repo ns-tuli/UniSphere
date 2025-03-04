@@ -1,21 +1,21 @@
 // src/components/CampusNavigation.jsx
-import { motion } from "framer-motion";
-import L from "leaflet";
+import React, { useState, useEffect, useRef } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 import {
+  Search,
+  Navigation,
+  Map,
+  Info,
+  Compass,
+  Layers,
   AlertTriangle,
   BookOpen,
-  Compass,
-  Info,
-  Layers,
-  Map,
-  Navigation,
-  Search,
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
-import { useMap } from "react-leaflet";
-import ARView from "./AR/ARView";
+import { motion } from "framer-motion";
 import MapboxMap from "./Map/MapboxMap";
+import ARView from "./AR/ARView";
 
 // Fix for default marker icon in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -159,7 +159,7 @@ const campusBuildings = [
     id: 10,
     name: "South Hall of Residence",
     type: "residential",
-    coordinates: [23.94900190458333, 90.38009004610988],
+    coordinates: [23.94700090458333, 90.38009004610988],
     description:
       "Another accommodation facility for male students with modern amenities.",
     facilities: ["Dormitories", "Recreation Rooms", "Laundry Facilities"],

@@ -6,7 +6,7 @@ import Header from "./Header";
 
 export function Landing() {
   return (
-    <div>
+    <div className="dark:bg-gray-900 bg-white text-gray-900 dark:text-white">
       <Header />
       {/* Hero Section */}
       <div className="relative min-h-screen flex items-center">
@@ -29,7 +29,7 @@ export function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/Auth">
-                <button className="w-full sm:w-auto bg-yellow-200 hover:bg-yellow-300 text-gray-900 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-200/20">
+                <button className="w-full sm:w-auto bg-yellow-200 hover:bg-yellow-300 dark:bg-yellow-200 text-gray-900 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-200/20">
                   Let's Get Started
                 </button>
               </Link>
@@ -47,7 +47,7 @@ export function Landing() {
       <div className="bg-[#f5f5f5] dark:bg-[#18181b] py-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
+            {[ 
               {
                 number: "50+",
                 label: "Cafeteria Menu Items",
@@ -66,43 +66,37 @@ export function Landing() {
               {
                 number: "20+",
                 label: "Campus Navigation Features",
-                description:
-                  "AR maps and GPS-based navigation for easy movement",
+                description: "AR maps and GPS-based navigation for easy movement",
               },
               {
                 number: "1000+",
                 label: "Club & Event Announcements",
-                description:
-                  "AI-integrated chatbot for real-time event updates",
+                description: "AI-integrated chatbot for real-time event updates",
               },
               {
                 number: "99%",
                 label: "Learning Support",
-                description:
-                  "Video calls, online whiteboard, and text-based coding sessions",
+                description: "Video calls, online whiteboard, and text-based coding sessions",
               },
               {
                 number: "200+",
                 label: "Skill-Specific Courses",
-                description:
-                  "Personalized learning paths for university students",
+                description: "Personalized learning paths for university students",
               },
               {
                 number: "95%",
                 label: "Student Engagement",
-                description:
-                  "Collaborative text editor and interactive quiz system",
+                description: "Collaborative text editor and interactive quiz system",
               },
               {
                 number: "1000+",
                 label: "Complaints Resolved",
-                description:
-                  "Secure complaint system for hall, security, and academic issues",
+                description: "Secure complaint system for hall, security, and academic issues",
               },
             ].map((stat, index) => (
               <div
                 key={index}
-                className="bg-yellow-100 p-8 rounded-2xl transform transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-200 dark:hover:shadow-lg group"
+                className="bg-yellow-100 p-8 rounded-2xl transform transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-200 dark:hover:shadow-lg group dark:bg-gray-800"
               >
                 <div className="text-5xl font-bold text-black mb-2 group-hover:text-yellow-800 transition-colors duration-300">
                   {stat.number}
@@ -124,52 +118,48 @@ export function Landing() {
             Everything You Need in One Platform
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
+            {[ 
               {
                 icon: (
                   <Terminal className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
                 title: "Cafeteira Menu",
-                description:
-                  "enjoy your meal and get the best food in the cafeteria.",
+                description: "Enjoy your meal and get the best food in the cafeteria.",
               },
               {
                 icon: (
                   <Brain className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "AI-Powered Learning and take quizzes",
-                description:
-                  "Get personalized suggestions and help from our AI assistant as you code.",
+                title: "AI-Powered Learning and Take Quizzes",
+                description: "Get personalized suggestions and help from our AI assistant as you code.",
               },
               {
                 icon: (
                   <Book className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "courses to get skilled",
-                description: "course to get skilled and learn new things.",
+                title: "Courses to Get Skilled",
+                description: "Courses to get skilled and learn new things.",
               },
               {
                 icon: (
                   <Timer className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
                 title: "Bus Schedules",
-                description: "monitor the bus schedules.",
+                description: "Monitor the bus schedules.",
               },
               {
                 icon: (
                   <Users className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "complaint box",
-                description:
-                  "secure complaint system for hall, security, and academic issues.",
+                title: "Complaint Box",
+                description: "Secure complaint system for hall, security, and academic issues.",
               },
               {
                 icon: (
                   <Award className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "personalized study zone",
-                description:
-                  "get personalized study zone and learn at your own pace.",
+                title: "Personalized Study Zone",
+                description: "Get a personalized study zone and learn at your own pace.",
               },
             ].map((feature, index) => (
               <div
@@ -198,30 +188,24 @@ export function Landing() {
             What Our Users Say
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {[
+            {[ 
               {
                 name: "Raisa Hasan",
-                role: "CSE 3rd year",
-                image:
-                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-                quote:
-                  "UniSphere helped me transition from a beginner to a confident developer. The AI suggestions are incredibly helpful!",
+                role: "CSE 3rd Year",
+                image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                quote: "UniSphere helped me transition from a beginner to a confident developer. The AI suggestions are incredibly helpful!",
               },
               {
                 name: "Tasnim Akhter",
-                role: "Mechanical 2nd year",
-                image:
-                  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-                quote:
-                  "The interactive  environment and community support made learning enjoyable and effective.",
+                role: "Mechanical 2nd Year",
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                quote: "The interactive environment and community support made learning enjoyable and effective.",
               },
               {
                 name: "Tasnim Hossain Orna",
-                role: "IPE 4rth year",
-                image:
-                  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-                quote:
-                  "I love the variety of courses available on UniSphere. It's a great platform for students to learn and grow together.",
+                role: "IPE 4th Year",
+                image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                quote: "I love the variety of courses available on UniSphere. It's a great platform for students to learn and grow together.",
               },
             ].map((testimonial, index) => (
               <div
@@ -235,7 +219,7 @@ export function Landing() {
                     className="w-16 h-16 rounded-full mr-4 transform transition-all duration-300 group-hover:scale-110"
                   />
                   <div>
-                    <h4 className="text-xl font-semibold text-black dark:text-yellow-300 group-hover:text-gray-600 dark:group-hover:text-yellow-100 transition-colors duration-300">
+                    <h4 className="text-xl font-semibold light:text-white text-black dark:text-yellow-300 group-hover:text-gray-600 dark:group-hover:text-yellow-100 transition-colors duration-300">
                       {testimonial.name}
                     </h4>
                     <p className="text-gray-700 dark:text-gray-300 group-hover:text-gray-500 dark:group-hover:text-gray-100 transition-colors duration-300">
@@ -259,27 +243,22 @@ export function Landing() {
             Frequently Asked Questions
           </h2>
           <div className="max-w-3xl mx-auto space-y-6">
-            {[
+            {[ 
               {
                 question: "What features does the campus app offer?",
-                answer:
-                  "It includes cafeteria menus, bus schedules, class timetables, faculty contacts, campus navigation, AR maps, alerts, event management, virtual classrooms, note-taking, and a chatbot.",
+                answer: "It includes cafeteria menus, bus schedules, class timetables, faculty contacts, campus navigation, AR maps, alerts, event management, virtual classrooms, note-taking, and a chatbot.",
               },
               {
                 question: "How does the event management system work?",
-                answer:
-                  "AI recommends events based on interests, and announcements automatically appear in chatbot prompts for easy access.",
+                answer: "AI recommends events based on interests, and announcements automatically appear in chatbot prompts for easy access.",
               },
               {
-                question:
-                  "Can students report complaints or security concerns?",
-                answer:
-                  "Yes, the complaint box allows reporting of security, hall, and mental health issues, along with career guidance support.",
+                question: "Can students report complaints or security concerns?",
+                answer: "Yes, the complaint box allows reporting of security, hall, and mental health issues, along with career guidance support.",
               },
               {
                 question: "Does the app support real-time collaboration?",
-                answer:
-                  "Yes, students can use a collaborative text editor with Socket.io for group coding and learning.",
+                answer: "Yes, students can use a collaborative text editor with Socket.io for group coding and learning.",
               },
             ].map((faq, index) => (
               <div
@@ -307,11 +286,10 @@ export function Landing() {
                 UniSphere
               </h3>
               <p className="text-gray-800 dark:text-gray-400">
-                Empowering developers through interactive learning and
-                AI-powered guidance.
+                Empowering developers through interactive learning and AI-powered guidance.
               </p>
             </div>
-            {[
+            {[ 
               {
                 title: "Quick Links",
                 links: [
@@ -370,7 +348,6 @@ export function Landing() {
           </div>
         </div>
       </footer>
-      {/* <Footer /> */}
     </div>
   );
 }
