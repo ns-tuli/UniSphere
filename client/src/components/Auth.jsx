@@ -11,16 +11,17 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import { useUser } from "../context/UserContext";
 
 const Auth = () => {
-  const { updateUser } = useUser();
+  const { login, register } = useAuth();
   const navigate = useNavigate();
   const [isSignIn, setIsSignIn] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -30,7 +31,46 @@ const Auth = () => {
     confirmPassword: "",
   });
 
-  const login = useGoogleLogin({
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    try {
+      if (isSignIn) {
+        // Handle Sign In
+        const userData = await login(formData.email, formData.password);
+        // Check role and redirect
+        if (userData.role === "admin") {
+          navigate("/Admin");
+        } else {
+          navigate("/homepage");
+        }
+      } else {
+        // Handle Register
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error("Passwords don't match!");
+        }
+
+        const userData = {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          studentId: formData.studentId,
+          department: formData.department,
+        };
+
+        await register(userData);
+        navigate("/homepage"); // New users are never admin by default
+      }
+    } catch (error) {
+      setError(error.message || "Authentication failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setIsLoading(true);
       try {
@@ -44,60 +84,29 @@ const Auth = () => {
         // Create enhanced user object with additional fields
         const enhancedUserData = {
           ...userInfo.data,
-          studentId: '',
-          department: '',
+          studentId: "",
+          department: "",
           joinDate: new Date().toISOString(),
           lastLogin: new Date().toISOString(),
-          accessToken: tokenResponse.access_token
+          accessToken: tokenResponse.access_token,
         };
 
-        
-
-        // Store user data
-        localStorage.setItem("user", JSON.stringify(userInfo.data));
-
-        // Redirect to homepage
-        navigate('/profile');
+        // Store user data and navigate
+        localStorage.setItem("user", JSON.stringify(enhancedUserData));
+        navigate("/homepage");
       } catch (error) {
-        console.error('Error:', error);
-        alert('Failed to login with Google: ' + (error.response?.data?.message || error.message));
+        setError(
+          "Failed to login with Google: " +
+            (error.response?.data?.message || error.message)
+        );
       } finally {
         setIsLoading(false);
       }
     },
     onError: (error) => {
-      console.log("Login Failed:", error);
-      alert("Google login failed: " + error.message);
+      setError("Google login failed: " + error.message);
     },
   });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!isSignIn && formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      // Create user object for traditional sign-in
-      const userData = {
-        ...formData,
-        joinDate: new Date().toISOString(),
-        lastLogin: new Date().toISOString(),
-        loginMethod: 'traditional'
-      };
-      
-      updateUser(userData);
-      navigate('/profile');
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Authentication failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-yellow-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -112,11 +121,15 @@ const Auth = () => {
               : "Create an account to get started"}
           </p>
         </div>
-
         <div className="p-8 space-y-6">
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+              {error}
+            </div>
+          )}
           <div className="flex flex-col items-center">
             <button
-              onClick={() => login()}
+              onClick={() => googleLogin()}
               disabled={isLoading}
               className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm transition-all duration-300 disabled:opacity-50 font-medium"
             >

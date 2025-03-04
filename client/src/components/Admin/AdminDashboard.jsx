@@ -1,7 +1,7 @@
-//path: client/src/components/Admin/AdminDashboard.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-// import CafeteriaForm from "./AddMeal";
+import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
 import {
   FaUtensils,
   FaBus,
@@ -15,9 +15,57 @@ import {
   FaCog,
   FaChartBar,
   FaLock,
+  FaSearch,
+  FaUserMinus,
+  FaUserCog,
 } from "react-icons/fa";
 
 export default function AdminDashboard() {
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/api/admin/users`,
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+        }
+      );
+      setUsers(response.data);
+      setError("");
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to fetch users");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [user]);
+
+  const toggleAdminStatus = async (userId, makeAdmin) => {
+    try {
+      const endpoint = makeAdmin ? "make-admin" : "remove-admin";
+      await axios.put(
+        `${import.meta.env.VITE_SERVER_URL}/api/admin/${endpoint}/${userId}`,
+        {},
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
+      fetchUsers();
+      setError("");
+    } catch (error) {
+      setError(
+        error.response?.data?.message || "Failed to update admin status"
+      );
+    }
+  };
+
   const adminFeatures = [
     {
       id: 1,
@@ -77,7 +125,7 @@ export default function AdminDashboard() {
       title: "Announcements",
       icon: <FaBell className="text-3xl text-orange-600" />,
       description: "Create and manage university-wide notifications and alerts",
-      path: "/admin/announcements",
+      path: "/Admin/AlertManagement",
       color: "bg-orange-50",
       hoverColor: "hover:bg-orange-100",
       borderColor: "border-orange-200",
@@ -183,20 +231,20 @@ export default function AdminDashboard() {
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
               <FaCog className="mr-3 text-gray-600" /> System Management
             </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Core system administration and configuration options
-            </p>
 
+            
+
+            {/* Rest of system management cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                   User Management
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Create, edit and manage user accounts and permissions
+                  Manage user accounts and permissions
                 </p>
                 <Link
-                  to="/admin/system/users"
+                  to="./UserManagement"
                   className="text-gray-600 dark:text-gray-400 text-sm hover:underline"
                 >
                   Manage Users →

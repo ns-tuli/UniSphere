@@ -5,6 +5,8 @@ import express from "express";
 import connectDB from "./config/db.js";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import adminRoutes from "./routes/adminRoutes.js";
+import alertRoutes from "./routes/alerts.js";
 import authRoutes from './routes/authRoutes.js';
 import busRoutes from "./routes/busRoutes.js";
 import classRoutes from "./routes/classRoutes.js";
@@ -78,6 +80,9 @@ app.use("/api/department", departmentRoutes);
 app.use("/api/roadmap", roadmapRoutes); // Use roadmap routes
 app.use("/api/faculty", faculty);
 app.use("/api/navigation", navigationRoutes);
+app.use("/api/alerts", alertRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -25,7 +25,29 @@ export const getFacultyById = async (id) => {
 // Add new faculty
 export const addFaculty = async (facultyData) => {
   try {
-    const response = await axios.post(`${API_URL}/api/faculty`, facultyData);
+    const formData = new FormData();
+
+    // Append image if it exists
+    if (facultyData.image) {
+      formData.append("image", facultyData.image);
+    }
+
+    // Append other faculty data
+    Object.keys(facultyData).forEach((key) => {
+      if (key !== "image") {
+        if (Array.isArray(facultyData[key])) {
+          formData.append(key, JSON.stringify(facultyData[key]));
+        } else {
+          formData.append(key, facultyData[key]);
+        }
+      }
+    });
+
+    const response = await axios.post(`${API_URL}/api/faculty`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -35,10 +57,27 @@ export const addFaculty = async (facultyData) => {
 // Update faculty
 export const updateFaculty = async (id, facultyData) => {
   try {
-    const response = await axios.put(
-      `${API_URL}/api/faculty/${id}`,
-      facultyData
-    );
+    const formData = new FormData();
+
+    if (facultyData.image) {
+      formData.append("image", facultyData.image);
+    }
+
+    Object.keys(facultyData).forEach((key) => {
+      if (key !== "image") {
+        if (Array.isArray(facultyData[key])) {
+          formData.append(key, JSON.stringify(facultyData[key]));
+        } else {
+          formData.append(key, facultyData[key]);
+        }
+      }
+    });
+
+    const response = await axios.put(`${API_URL}/api/faculty/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
