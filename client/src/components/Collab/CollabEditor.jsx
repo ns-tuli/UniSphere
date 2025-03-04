@@ -3,7 +3,7 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import io from "socket.io-client";
 import { FaUsers, FaCopy, FaCheck } from "react-icons/fa";
-import Whiteboard from './Whiteboard';
+import Whiteboard from "./Whiteboard";
 
 const TOOLBAR_OPTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -25,7 +25,7 @@ const CollabEditor = ({ roomId, username }) => {
   const [userCount, setUserCount] = useState(1);
   const [isCopied, setIsCopied] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [editorType, setEditorType] = useState('text'); // 'text' or 'whiteboard'
+  const [editorType, setEditorType] = useState("text"); // 'text' or 'whiteboard'
 
   const copyRoomId = async () => {
     try {
@@ -143,21 +143,21 @@ const CollabEditor = ({ roomId, username }) => {
               </div>
               <div className="flex space-x-4">
                 <button
-                  onClick={() => setEditorType('text')}
+                  onClick={() => setEditorType("text")}
                   className={`px-4 py-2 rounded ${
-                    editorType === 'text'
-                      ? 'bg-yellow-500 text-white'
-                      : 'bg-gray-200'
+                    editorType === "text"
+                      ? "bg-yellow-500 text-white"
+                      : "bg-gray-200"
                   }`}
                 >
                   Text Editor
                 </button>
                 <button
-                  onClick={() => setEditorType('whiteboard')}
+                  onClick={() => setEditorType("whiteboard")}
                   className={`px-4 py-2 rounded ${
-                    editorType === 'whiteboard'
-                      ? 'bg-yellow-500 text-white'
-                      : 'bg-gray-200'
+                    editorType === "whiteboard"
+                      ? "bg-yellow-500 text-white"
+                      : "bg-gray-200"
                   }`}
                 >
                   Whiteboard
@@ -168,7 +168,7 @@ const CollabEditor = ({ roomId, username }) => {
 
           {/* Editor Container */}
           <div className="relative">
-            {editorType === 'text' ? (
+            {editorType === "text" ? (
               <div ref={editorRef} className="min-h-[calc(100vh-300px)]" />
             ) : (
               <div className="min-h-[calc(100vh-300px)]">

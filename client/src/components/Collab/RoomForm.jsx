@@ -160,7 +160,7 @@ const RoomForm = ({ onJoinRoom }) => {
           </form>
         </div>
 
-        {/* Information Footer */}
+        
         <div className="px-8 py-4 bg-yellow-50 border-t border-yellow-100">
           <p className="text-xs text-gray-500 text-center">
             {formData.isNewRoom
