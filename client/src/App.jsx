@@ -22,6 +22,8 @@ import ClassManagement from "./components/Admin/ClassManagement";
 import Alert from "./components/Alert";
 import Classroom from "./pages/Classroom";
 import Lobby from "./pages/Lobby"
+import NewsPortal from "./components/NewsPortal"; // Adjust the path as necessary
+
 function App() {
   return (
     <Router>
@@ -57,6 +59,7 @@ function App() {
           <Route path="/Auth" element={<Auth />} />
           <Route path="/profile" element={<StudentProfile />} />
           <Route path="/lobby" element={<Lobby />} />
+          <Route path="/readArticle" element={<NewsPortal />} />
         </Route>
       </Routes>
     </Router>
