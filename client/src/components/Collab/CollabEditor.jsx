@@ -4,6 +4,7 @@ import "quill/dist/quill.snow.css";
 import io from "socket.io-client";
 import { FaUsers, FaCopy, FaCheck } from "react-icons/fa";
 import Whiteboard from "./Whiteboard";
+import { JitsiMeeting } from '@jitsi/react-sdk';
 
 const TOOLBAR_OPTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -99,89 +100,125 @@ const CollabEditor = ({ roomId, username }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-50 py-6 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
-          {/* Header Section */}
-          <div className="px-8 py-6 border-b border-yellow-100">
-            <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-              <div className="flex items-center space-x-4">
-                <FaUsers className="h-8 w-8 text-yellow-600" />
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    Collaborative Editor
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    {userCount} active users
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                <div className="flex items-center space-x-2 bg-yellow-50 px-3 py-2 rounded-lg">
-                  <span className="text-sm text-gray-600">Room ID:</span>
-                  <code className="px-2 py-1 bg-white rounded text-sm font-mono border border-yellow-200">
-                    {roomId}
-                  </code>
-                  <button
-                    onClick={copyRoomId}
-                    className="p-1.5 hover:bg-yellow-100 rounded-full transition-colors"
-                    title="Copy room ID"
-                  >
-                    {isCopied ? (
-                      <FaCheck className="text-green-500 h-4 w-4" />
-                    ) : (
-                      <FaCopy className="text-yellow-600 h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-                <div className="text-sm text-gray-600">
-                  Connected as:{" "}
-                  <span className="font-medium text-yellow-600">
-                    {username}
-                  </span>
-                </div>
-              </div>
-              <div className="flex space-x-4">
-                <button
-                  onClick={() => setEditorType("text")}
-                  className={`px-4 py-2 rounded ${
-                    editorType === "text"
-                      ? "bg-yellow-500 text-white"
-                      : "bg-gray-200"
-                  }`}
-                >
-                  Text Editor
-                </button>
-                <button
-                  onClick={() => setEditorType("whiteboard")}
-                  className={`px-4 py-2 rounded ${
-                    editorType === "whiteboard"
-                      ? "bg-yellow-500 text-white"
-                      : "bg-gray-200"
-                  }`}
-                >
-                  Whiteboard
-                </button>
-              </div>
+      <div className="max-w-[95%] mx-auto">
+        <div className="flex gap-4">
+          {/* Video Conference Section */}
+          <div className="w-1/3 bg-white rounded-xl shadow-2xl overflow-hidden">
+            <div className="h-[calc(100vh-6rem)]">
+              <JitsiMeeting
+                domain="meet.jit.si"
+                roomName={`unisphere-${roomId}`}
+                userInfo={{
+                  displayName: username
+                }}
+                configOverwrite={{
+                  startWithAudioMuted: true,
+                  startWithVideoMuted: false,
+                  toolbarButtons: [
+                    'camera',
+                    'chat',
+                    'closedcaptions',
+                    'desktop',
+                    'fullscreen',
+                    'hangup',
+                    'microphone',
+                    'participants-pane',
+                    'select-background',
+                    'settings',
+                    'toggle-camera',
+                  ],
+                }}
+                interfaceConfigOverwrite={{
+                  DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
+                  MOBILE_APP_PROMO: false,
+                  SHOW_JITSI_WATERMARK: false,
+                  SHOW_WATERMARK_FOR_GUESTS: false,
+                  SHOW_BRAND_WATERMARK: false,
+                }}
+                getIFrameRef={(iframeRef) => { iframeRef.style.height = '100%'; }}
+              />
             </div>
           </div>
 
-          {/* Editor Container */}
-          <div className="relative">
-            {editorType === "text" ? (
-              <div ref={editorRef} className="min-h-[calc(100vh-300px)]" />
-            ) : (
-              <div className="min-h-[calc(100vh-300px)]">
-                <Whiteboard socket={socketRef.current} roomId={roomId} />
-              </div>
-            )}
-          </div>
+          {/* Editor Section */}
+          <div className="w-2/3 bg-white rounded-xl shadow-2xl overflow-hidden">
+            {/* Header Section */}
+            <div className="px-8 py-6 border-b border-yellow-100 bg-white">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <FaUsers className="h-8 w-8 text-yellow-600" />
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Collaborative Editor
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                      {userCount} active users
+                    </p>
+                  </div>
+                </div>
 
-          {/* Status Footer */}
-          <div className="px-8 py-4 bg-yellow-50 border-t border-yellow-100">
-            <p className="text-sm text-gray-600 text-right">
-              {saving ? "Saving changes..." : "All changes saved"}
-            </p>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2 bg-yellow-50 px-3 py-2 rounded-lg">
+                    <span className="text-sm text-gray-600">Room ID:</span>
+                    <code className="px-2 py-1 bg-white rounded text-sm font-mono border border-yellow-200">
+                      {roomId}
+                    </code>
+                    <button
+                      onClick={copyRoomId}
+                      className="p-1.5 hover:bg-yellow-100 rounded-full transition-colors"
+                      title="Copy room ID"
+                    >
+                      {isCopied ? (
+                        <FaCheck className="text-green-500 h-4 w-4" />
+                      ) : (
+                        <FaCopy className="text-yellow-600 h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setEditorType("text")}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      editorType === "text"
+                        ? "bg-yellow-500 text-white shadow-lg"
+                        : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                  >
+                    Text Editor
+                  </button>
+                  <button
+                    onClick={() => setEditorType("whiteboard")}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      editorType === "whiteboard"
+                        ? "bg-yellow-500 text-white shadow-lg"
+                        : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                  >
+                    Whiteboard
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Editor Container */}
+            <div className="relative bg-white">
+              {editorType === "text" ? (
+                <div ref={editorRef} className="min-h-[calc(100vh-300px)]" />
+              ) : (
+                <div className="min-h-[calc(100vh-300px)]">
+                  <Whiteboard socket={socketRef.current} roomId={roomId} />
+                </div>
+              )}
+            </div>
+
+            {/* Status Footer */}
+            <div className="px-8 py-4 bg-yellow-50 border-t border-yellow-100">
+              <p className="text-sm text-gray-600 text-right">
+                {saving ? "Saving changes..." : "All changes saved"}
+              </p>
+            </div>
           </div>
         </div>
       </div>
