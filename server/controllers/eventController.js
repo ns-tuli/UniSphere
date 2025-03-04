@@ -2,7 +2,7 @@ import { validationResult } from 'express-validator';
 import Club from '../models/Club.js';
 import Event from '../models/Event.js';
 import Notification from '../models/Notification.js';
-import User from '../models/user.js';
+import User from '../models/User.js';
 
 export const createEvent = async (req, res, next) => {
   const errors = validationResult(req);

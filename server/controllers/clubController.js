@@ -1,6 +1,6 @@
 import { validationResult } from 'express-validator';
 import Club from '../models/Club.js';
-import User from '../models/user.js';
+import User from '../models/User.js';
 
 export const createClub = async (req, res, next) => {
   const errors = validationResult(req);
