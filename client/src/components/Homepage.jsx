@@ -184,10 +184,10 @@ export default function HomePage() {
                   Virtual Classroom
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Video calling, online whiteboard, and real-time chat
+                  Video calling with online whiteboard
                 </p>
                 <Link
-                  to="/learning-hub/virtual-classroom"
+                  to="/lobby"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
                   Enter Classroom →

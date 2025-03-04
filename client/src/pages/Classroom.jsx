@@ -3,6 +3,7 @@ import ReactPlayer from "react-player";
 import { useParams, useLocation } from "react-router-dom";
 import Whiteboard from "../components/Whiteboard";
 import { useSocket } from "../context/SocketContext";
+import PeerService from "../service/peer.js";  // Import PeerService
 
 const Classroom = () => {
   const { roomId } = useParams();
@@ -24,8 +25,6 @@ const Classroom = () => {
   const [remoteStream, setRemoteStream] = useState(null);
   const [remoteSocketId, setRemoteSocketId] = useState(null);
 
-  const peer = new RTCPeerConnection();
-
   // Handle the user joining the room
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room`);
@@ -40,14 +39,19 @@ const Classroom = () => {
     });
     setMyStream(stream);
     setVideoEnabled(true);
-    sendStreams(stream);
+    PeerService.sendStreams(stream);  // Use PeerService to send streams
   };
 
-  const sendStreams = useCallback((stream) => {
-    for (const track of stream.getTracks()) {
-      peer.addTrack(track, stream);
-    }
-  }, []);
+  const handleStopVideo = useCallback(() => {
+    setVideoEnabled(false);
+    myStream.getTracks().forEach((track) => track.stop());
+    setMyStream(null);
+  }, [myStream]);
+
+  const handleMute = useCallback(() => {
+    setMuted(!muted);
+    myStream.getTracks().forEach((track) => track.kind === "audio" && (track.enabled = !muted));
+  }, [muted, myStream]);
 
   // Handle incoming call
   const handleIncommingCall = useCallback(
@@ -59,20 +63,25 @@ const Classroom = () => {
       });
       setMyStream(stream);
       console.log(`Incoming Call from ${from}`);
-      const ans = await peer.createAnswer(offer);
-      socket.emit("call:accepted", { to: from, ans });
+
+      try {
+        const ans = await PeerService.getAnswer(offer);  // Use PeerService to get answer
+        socket.emit("call:accepted", { to: from, ans });
+      } catch (error) {
+        console.error("Error in handleIncommingCall:", error);
+      }
     },
     [socket]
   );
 
   const handleCallAccepted = useCallback(async ({ from, ans }) => {
     try {
-      await peer.setRemoteDescription(ans);
-      sendStreams(myStream);
+      await PeerService.setLocalDescription(ans);  // Use PeerService to set description
+      PeerService.sendStreams(myStream);  // Use PeerService to send streams
     } catch (err) {
       console.error("Error in handleCallAccepted", err);
     }
-  }, [sendStreams, myStream]);
+  }, [myStream]);
 
   useEffect(() => {
     // Ensure email and room values are correctly passed to the backend
@@ -93,17 +102,6 @@ const Classroom = () => {
       socket.off("call:accepted", handleCallAccepted);
     };
   }, [email, room, socket, handleUserJoined, handleIncommingCall, handleCallAccepted]);
-
-  const handleStopVideo = useCallback(() => {
-    setVideoEnabled(false);
-    myStream.getTracks().forEach((track) => track.stop());
-    setMyStream(null);
-  }, [myStream]);
-
-  const handleMute = useCallback(() => {
-    setMuted(!muted);
-    myStream.getTracks().forEach((track) => track.kind === "audio" && (track.enabled = !muted));
-  }, [muted, myStream]);
 
   return (
     <div className="flex h-full overflow-hidden">

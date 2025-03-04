@@ -5,7 +5,7 @@ import { FaSun } from "react-icons/fa6";
 import { BsMoonStarsFill } from "react-icons/bs";
 
 const ThemeToggle = () => {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark");
 
   useEffect(() => {
     // Check for saved user preference, if any, on component mount
