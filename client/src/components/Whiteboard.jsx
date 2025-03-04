@@ -1,76 +1,67 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSocket } from "../context/SocketContext";
 import * as fabric from "fabric";
-const Whiteboard = ({ roomId }) => {
+
+const Whiteboard = ({ roomId, socket }) => {
   const canvasRef = useRef(null);
   const canvasContainerRef = useRef(null);
   const [activeColor, setActiveColor] = useState("#000000");
   const [brushSize, setBrushSize] = useState(5);
   const [tool, setTool] = useState("brush");
   const [isDrawing, setIsDrawing] = useState(false);
-  const [shapes, setShapes] = useState([]);
   const [currentShape, setCurrentShape] = useState(null);
   const [startPoint, setStartPoint] = useState(null);
   const [canvasHistory, setCanvasHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  
-  const socket = useSocket();
-  
+
   const fabricCanvasRef = useRef(null);
-  
+
   const colors = [
-    "#000000", "#ffffff", "#ff0000", "#00ff00", "#0000ff", 
+    "#000000", "#ffffff", "#ff0000", "#00ff00", "#0000ff",
     "#ffff00", "#ff00ff", "#00ffff", "#FFA500", "#800080"
   ];
-  
+
   const brushSizes = [2, 5, 10, 15, 20];
-  
+
   useEffect(() => {
-    // Wait for the DOM to fully load
     if (!canvasRef.current) return;
-    
-    // Import Fabric.js dynamically to avoid SSR issues
+
     import("fabric").then(({ Canvas, PencilBrush, Line, Rect, Circle, IText }) => {
-      // Initialize Fabric.js canvas
       const canvas = new Canvas(canvasRef.current);
       fabricCanvasRef.current = canvas;
-      
-      // Setup canvas
+
       const container = canvasContainerRef.current;
       if (container) {
+        container.style.width = "100%";
+        container.style.height = "500px";
         canvas.setDimensions({
           width: container.clientWidth,
           height: container.clientHeight,
         });
       }
-      
-      // Enable drawing mode by default
+
       canvas.isDrawingMode = true;
       canvas.freeDrawingBrush.width = brushSize;
       canvas.freeDrawingBrush.color = activeColor;
-      
-      // Handle window resize
+
       const handleResize = () => {
         canvas.width(container.clientWidth);
         canvas.height(container.clientHeight);
         canvas.renderAll();
-        
-        // Send updated canvas after resize
         saveCanvasState();
       };
-      
+
       window.addEventListener("resize", handleResize);
-      
-      // Send drawing data to server via Socket.IO
+
       canvas.on("path:created", () => {
         saveCanvasState();
       });
-      
+
       canvas.on("object:modified", () => {
         saveCanvasState();
       });
-      
-      // Listen for whiteboard updates from other users
+
+      // Listen for updates to the whiteboard from others
       socket.on("whiteboard:update", (data) => {
         if (data) {
           canvas.loadFromJSON(data, () => {
@@ -78,35 +69,30 @@ const Whiteboard = ({ roomId }) => {
           });
         }
       });
-      
-      // Initialize canvas with any existing data
+
+      // Join the room
       socket.emit("whiteboard:join", roomId);
-      
-      // Define saveCanvasState function
+
       const saveCanvasState = () => {
         const whiteboardData = JSON.stringify(canvas.toJSON());
-        // Update history
         const newHistory = canvasHistory.slice(0, historyIndex + 1);
         newHistory.push(whiteboardData);
         setCanvasHistory(newHistory);
         setHistoryIndex(newHistory.length - 1);
-        // Send to server
-        socket.emit("whiteboard:draw", { room: roomId, data: whiteboardData });
+        socket.emit("whiteboard:draw", { room: roomId, data: whiteboardData });  // Emit the drawing data
       };
-      
-      // Cleanup
+
       return () => {
         window.removeEventListener("resize", handleResize);
         canvas.dispose();
         socket.off("whiteboard:update");
       };
     });
-  }, [roomId]);
-  
-  // Update brush properties when colors/sizes change
+  }, [roomId, socket]);
+
   useEffect(() => {
     if (!fabricCanvasRef.current) return;
-    
+
     if (tool === "brush" || tool === "eraser") {
       fabricCanvasRef.current.isDrawingMode = true;
       fabricCanvasRef.current.freeDrawingBrush.width = brushSize;
@@ -114,22 +100,21 @@ const Whiteboard = ({ roomId }) => {
     } else {
       fabricCanvasRef.current.isDrawingMode = false;
     }
-    
+
     fabricCanvasRef.current.renderAll();
   }, [activeColor, brushSize, tool]);
-  
-  // Handle shape creation
+
   useEffect(() => {
     if (!fabricCanvasRef.current || tool === "brush" || tool === "eraser" || tool === "text") return;
-    
+
     const canvas = fabricCanvasRef.current;
-    
+
     const handleMouseDown = (e) => {
       if (tool !== "brush" && tool !== "eraser") {
         setIsDrawing(true);
         const pointer = canvas.getPointer(e.e);
         setStartPoint({ x: pointer.x, y: pointer.y });
-        
+
         let shapeObj;
         if (tool === "rect") {
           shapeObj = new fabric.Rect({
@@ -156,23 +141,23 @@ const Whiteboard = ({ roomId }) => {
             strokeWidth: brushSize,
           });
         }
-        
+
         if (shapeObj) {
           canvas.add(shapeObj);
           setCurrentShape(shapeObj);
         }
       }
     };
-    
+
     const handleMouseMove = (e) => {
       if (!isDrawing || !currentShape || !startPoint) return;
-      
+
       const pointer = canvas.getPointer(e.e);
-      
+
       if (tool === "rect") {
         const width = pointer.x - startPoint.x;
         const height = pointer.y - startPoint.y;
-        
+
         currentShape.set({
           width: Math.abs(width),
           height: Math.abs(height),
@@ -183,10 +168,10 @@ const Whiteboard = ({ roomId }) => {
         const radius = Math.sqrt(
           Math.pow(pointer.x - startPoint.x, 2) + Math.pow(pointer.y - startPoint.y, 2)
         ) / 2;
-        
+
         const midX = (pointer.x + startPoint.x) / 2;
         const midY = (pointer.y + startPoint.y) / 2;
-        
+
         currentShape.set({
           radius: radius,
           left: midX - radius,
@@ -198,140 +183,84 @@ const Whiteboard = ({ roomId }) => {
           y2: pointer.y,
         });
       }
-      
+
       canvas.renderAll();
     };
-    
+
     const handleMouseUp = () => {
       setIsDrawing(false);
       if (currentShape) {
         fabricCanvasRef.current.setActiveObject(currentShape);
         setCurrentShape(null);
         setStartPoint(null);
-        
-        // Save state after creating shape
+
         const whiteboardData = JSON.stringify(canvas.toJSON());
         socket.emit("whiteboard:draw", { room: roomId, data: whiteboardData });
-        
-        // Update history
+
         const newHistory = canvasHistory.slice(0, historyIndex + 1);
         newHistory.push(whiteboardData);
         setCanvasHistory(newHistory);
         setHistoryIndex(newHistory.length - 1);
       }
     };
-    
+
     canvas.on("mouse:down", handleMouseDown);
     canvas.on("mouse:move", handleMouseMove);
     canvas.on("mouse:up", handleMouseUp);
-    
+
     return () => {
       canvas.off("mouse:down", handleMouseDown);
       canvas.off("mouse:move", handleMouseMove);
       canvas.off("mouse:up", handleMouseUp);
     };
   }, [tool, isDrawing, currentShape, startPoint, activeColor, brushSize, roomId]);
-  
-  // Text tool handler
-  useEffect(() => {
-    if (!fabricCanvasRef.current || tool !== "text") return;
-    
-    const canvas = fabricCanvasRef.current;
-    
-    const handleTextAdd = (e) => {
-      if (tool === "text") {
-        const pointer = canvas.getPointer(e.e);
-        const text = new fabric.IText("Type here", {
-          left: pointer.x,
-          top: pointer.y,
-          fontFamily: "Arial",
-          fontSize: brushSize * 2,
-          fill: activeColor,
-          editingBorderColor: '#00aeff',
-        });
-        
-        canvas.add(text);
-        canvas.setActiveObject(text);
-        text.enterEditing();
-        
-        // Save state after text is added and edited
-        text.on('editing:exited', () => {
-          const whiteboardData = JSON.stringify(canvas.toJSON());
-          socket.emit("whiteboard:draw", { room: roomId, data: whiteboardData });
-          
-          // Update history
-          const newHistory = canvasHistory.slice(0, historyIndex + 1);
-          newHistory.push(whiteboardData);
-          setCanvasHistory(newHistory);
-          setHistoryIndex(newHistory.length - 1);
-        });
-      }
-    };
-    
-    canvas.on("mouse:down", handleTextAdd);
-    
-    return () => {
-      canvas.off("mouse:down", handleTextAdd);
-    };
-  }, [tool, activeColor, brushSize, roomId]);
-  
-  // Undo/Redo handlers
+
   const handleUndo = () => {
     if (historyIndex > 0) {
       const newIndex = historyIndex - 1;
       setHistoryIndex(newIndex);
-      
+
       if (fabricCanvasRef.current) {
         fabricCanvasRef.current.loadFromJSON(canvasHistory[newIndex], () => {
           fabricCanvasRef.current.renderAll();
-          
-          // Send updated canvas to others
           socket.emit("whiteboard:draw", { room: roomId, data: canvasHistory[newIndex] });
         });
       }
     }
   };
-  
+
   const handleRedo = () => {
     if (historyIndex < canvasHistory.length - 1) {
       const newIndex = historyIndex + 1;
       setHistoryIndex(newIndex);
-      
+
       if (fabricCanvasRef.current) {
         fabricCanvasRef.current.loadFromJSON(canvasHistory[newIndex], () => {
           fabricCanvasRef.current.renderAll();
-          
-          // Send updated canvas to others
           socket.emit("whiteboard:draw", { room: roomId, data: canvasHistory[newIndex] });
         });
       }
     }
   };
-  
+
   const handleClear = () => {
     if (fabricCanvasRef.current) {
       fabricCanvasRef.current.clear();
-      
-      // Save empty canvas state
       const emptyCanvasData = JSON.stringify(fabricCanvasRef.current.toJSON());
-      
-      // Update history
       const newHistory = [...canvasHistory, emptyCanvasData];
       setCanvasHistory(newHistory);
       setHistoryIndex(newHistory.length - 1);
-      
-      // Send to server
       socket.emit("whiteboard:draw", { room: roomId, data: emptyCanvasData });
     }
   };
-  
+
   const handleDownload = () => {
     if (fabricCanvasRef.current) {
       const dataURL = fabricCanvasRef.current.toDataURL({
         format: 'png',
         quality: 1
       });
-      
+
       const link = document.createElement('a');
       link.download = `whiteboard-${roomId}-${new Date().toISOString()}.png`;
       link.href = dataURL;
@@ -340,14 +269,13 @@ const Whiteboard = ({ roomId }) => {
       document.body.removeChild(link);
     }
   };
-  
+
   const selectTool = (selectedTool) => {
     setTool(selectedTool);
   };
-
   return (
-    <div className="flex flex-col h-full">
-      <div className="bg-gray-100 p-2 border-b flex flex-wrap items-center gap-2">
+    <div className="flex flex-col h-full w-250">
+      <div className="bg-gray-100 p-0 border-b flex flex-wrap items-center gap-1 width-30px">
         {/* Tool selection */}
         <div className="flex items-center gap-1 mr-4">
           <button
