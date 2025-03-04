@@ -4,7 +4,7 @@ import "quill/dist/quill.snow.css";
 import io from "socket.io-client";
 import { FaUsers, FaCopy, FaCheck } from "react-icons/fa";
 import Whiteboard from "./Whiteboard";
-import { JitsiMeeting } from '@jitsi/react-sdk';
+import { JitsiMeeting } from "@jitsi/react-sdk";
 
 const TOOLBAR_OPTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -109,23 +109,23 @@ const CollabEditor = ({ roomId, username }) => {
                 domain="meet.jit.si"
                 roomName={`unisphere-${roomId}`}
                 userInfo={{
-                  displayName: username
+                  displayName: username,
                 }}
                 configOverwrite={{
                   startWithAudioMuted: true,
                   startWithVideoMuted: false,
                   toolbarButtons: [
-                    'camera',
-                    'chat',
-                    'closedcaptions',
-                    'desktop',
-                    'fullscreen',
-                    'hangup',
-                    'microphone',
-                    'participants-pane',
-                    'select-background',
-                    'settings',
-                    'toggle-camera',
+                    "camera",
+                    "chat",
+                    "closedcaptions",
+                    "desktop",
+                    "fullscreen",
+                    "hangup",
+                    "microphone",
+                    "participants-pane",
+                    "select-background",
+                    "settings",
+                    "toggle-camera",
                   ],
                 }}
                 interfaceConfigOverwrite={{
@@ -135,7 +135,9 @@ const CollabEditor = ({ roomId, username }) => {
                   SHOW_WATERMARK_FOR_GUESTS: false,
                   SHOW_BRAND_WATERMARK: false,
                 }}
-                getIFrameRef={(iframeRef) => { iframeRef.style.height = '100%'; }}
+                getIFrameRef={(iframeRef) => {
+                  iframeRef.style.height = "100%";
+                }}
               />
             </div>
           </div>
