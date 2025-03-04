@@ -27,14 +27,13 @@ const AlertManagement = () => {
     try {
       setLoading(true);
       const data = await getAlerts();
-      console.log("Received alerts:", data); // Debug log
-      
+
       // Ensure data is an array before filtering
       const alertsList = Array.isArray(data) ? data : [];
-      const activeAlerts = alertsList.filter(alert => 
-        ["active", "pending"].includes(alert.status)
+      const activeAlerts = alertsList.filter((alert) =>
+        ["active", "pending"].includes(alert.status?.toLowerCase())
       );
-      
+
       setAlerts(activeAlerts);
       setError(null);
     } catch (error) {
@@ -97,6 +96,7 @@ const AlertManagement = () => {
             <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
               <h2 className="text-xl font-semibold mb-6 text-white">
                 Active Alerts
+                {}
               </h2>
 
               {loading ? (

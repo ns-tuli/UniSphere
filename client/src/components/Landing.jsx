@@ -93,12 +93,6 @@ export function Landing() {
                 description:
                   "Collaborative text editor and interactive quiz system",
               },
-              {
-                number: "1000+",
-                label: "Complaints Resolved",
-                description:
-                  "Secure complaint system for hall, security, and academic issues",
-              },
             ].map((stat, index) => (
               <div
                 key={index}

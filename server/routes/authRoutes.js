@@ -4,6 +4,7 @@ import {
   loginUser,
   getUserProfile,
   updateUserProfile,
+  updateUser,
 } from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -13,6 +14,7 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/profile", protect, getUserProfile);
 router.put("/profile", protect, updateUserProfile);
+router.put("/",protect,updateUser)
 
 // DEV ONLY - Remove in production
 router.post("/make-admin", async (req, res) => {

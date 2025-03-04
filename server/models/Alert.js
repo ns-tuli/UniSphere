@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const alertSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   category: {
     type: String,
     required: true,
@@ -20,7 +24,11 @@ const alertSchema = new mongoose.Schema({
     enum: ["active", "resolved", "dismissed"],
     default: "active",
   },
+  adminResponse: {
+    seen: { type: Boolean, default: false },
+    responseMessage: { type: String, default: "" },
+    respondedAt: { type: Date },
+  },
 });
 
-// module.exports = mongoose.model("Alert", alertSchema);
 export default mongoose.model("Alert", alertSchema);

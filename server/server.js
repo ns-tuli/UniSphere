@@ -13,6 +13,7 @@ import navigationRoutes from "./routes/navigationRoutes.js";
 import alertRoutes from "./routes/alerts.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import studentRoutes from "./routes/studentDataRoutes.js";
 
 import facultyRoutes from "./routes/facultyRoutes.js";
 
@@ -65,6 +66,7 @@ app.use("/api/navigation", navigationRoutes);
 app.use("/api/alerts", alertRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/student", studentRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

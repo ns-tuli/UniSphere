@@ -173,23 +173,28 @@ const Alert = () => {
   const sendEmergencyAlert = async () => {
     setIsSOSActive(true);
     setLoading(true);
-    
+
+    // Get the user ID from your auth context or local storage
+    const userId = localStorage.getItem("userId"); // Adjust based on your auth setup
+
     const alertData = {
       category: selectedCategory,
-      message: message || "Emergency alert", // Provide default message
-      location: location || { lat: 0, lng: 0 }, // Provide default location
-      status: "active"
+      message: message || `Emergency alert: ${selectedCategory}`,
+      location: location || { lat: 0, lng: 0 },
+      status: "active",
+      user: userId, // Add the user ID
     };
 
     try {
-      console.log("Sending alert data:", alertData); // Debug log
       const response = await createAlert(alertData);
-      console.log("Alert response:", response); // Debug log
+      console.log("Alert created:", response);
       alert("Emergency alert has been sent to campus security.");
     } catch (error) {
       console.error("Error sending alert:", error);
       setIsSOSActive(false);
-      alert("Failed to send emergency alert. Please call emergency services directly.");
+      alert(
+        "Failed to send emergency alert. Please call emergency services directly."
+      );
     } finally {
       setLoading(false);
     }
