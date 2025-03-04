@@ -87,7 +87,7 @@ export default function AdminDashboard() {
       title: "Events Administration",
       icon: <FaUsers className="text-3xl text-indigo-600" />,
       description: "Approve club events, manage venues, and monitor attendance",
-      path: "/admin/events",
+      path: "/Admin/Events",
       color: "bg-indigo-50",
       hoverColor: "hover:bg-indigo-100",
       borderColor: "border-indigo-200",
