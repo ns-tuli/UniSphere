@@ -5,12 +5,14 @@ import {
   createStudentData,
   deleteStudentData,
 } from "../controllers/studentDataController.js";
+import { updateUser } from "../controllers/authController.js";
 
 const router = express.Router();
 
 router.get("/:studentId", getStudentData);
 router.post("/", createStudentData);
-router.put("/:studentId", updateStudentData);
+
 router.delete("/:studentId", deleteStudentData);
+router.put("/", updateUser);
 
 export default router;

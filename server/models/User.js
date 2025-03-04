@@ -18,7 +18,44 @@ const userSchema = new mongoose.Schema(
     },
     joinDate: { type: Date, default: Date.now },
     lastLogin: { type: Date },
+    studentId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+  
+    department: {
+      type: String,
+      required: true,
+    },
+    semester: {
+      type: String,
+      default: "Spring 2024",
+    },
+    phone: String,
+    address: String,
+    cgpa: {
+      type: Number,
+      default: 0.0,
+    },
+    credits: {
+      type: Number,
+      default: 0,
+    },
+    enrollmentDate: {
+      type: Date,
+      default: Date.now,
+    },
+    picture: String,
+    currentCourses: [
+      {
+        code: String,
+        name: String,
+        credits: Number,
+      },
+    ],
   },
+  
   {
     timestamps: true,
   }

@@ -16,6 +16,11 @@ import eventRoutes from './routes/eventRoutes.js';
 import faculty from "./routes/facultyRoutes.js";
 import mealRoutes from "./routes/mealRoutes.js";
 import navigationRoutes from "./routes/navigationRoutes.js";
+import alertRoutes from "./routes/alerts.js";
+import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import studentRoutes from "./routes/studentDataRoutes.js";
+
 import facultyRoutes from "./routes/facultyRoutes.js";
 import http from "http";
 import { Server } from "socket.io";
@@ -127,6 +132,10 @@ app.use((err, req, res, next) => {
   console.error(err);  // Log the error
   res.status(500).json({ message: 'Internal Server Error', error: err.message });  // Send detailed error message
 });
+app.use("/api/alerts", alertRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/student", studentRoutes);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {

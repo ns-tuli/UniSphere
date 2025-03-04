@@ -5,7 +5,7 @@ import { authenticateToken } from "../middleware/auth.js";
 const router = express.Router();
 
 // Get all alerts
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const alerts = await Alert.find({
       status: { $in: ["active", "pending"] },
@@ -23,7 +23,7 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 // Create new alert
-router.post("/", authenticateToken, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     console.log("Received alert data:", req.body); // Debug log
 
@@ -38,7 +38,7 @@ router.post("/", authenticateToken, async (req, res) => {
       message: req.body.message,
       location: req.body.location,
       status: "active",
-      reportedBy: req.user?.id || null, // Make reportedBy optional
+      user: req.user?.id || null, // Make reportedBy optional
     });
 
     const newAlert = await alert.save();
@@ -78,23 +78,47 @@ router.get("/admin", authenticateToken, async (req, res) => {
 });
 
 // Update alert status
-router.patch("/:id", authenticateToken, async (req, res) => {
+router.patch("/:id", async (req, res) => {
   try {
-    const alert = await Alert.findById(req.params.id);
-    if (alert == null) {
+    // Find the alert
+    const {id}=req.params;
+    const alert = await Alert.findById(id);
+    if (!alert) {
       return res.status(404).json({ message: "Alert not found" });
     }
 
+    // Validate status if provided
     if (req.body.status) {
+      const validStatuses = ["active", "pending", "resolved", "dismissed"];
+      if (!validStatuses.includes(req.body.status)) {
+        return res.status(400).json({
+          message:
+            "Invalid status. Must be one of: " + validStatuses.join(", "),
+        });
+      }
       alert.status = req.body.status;
-      alert.handledBy = req.user.id;
+      
       alert.handledAt = new Date();
     }
 
+    // Update other fields if provided
+    if (req.body.message) alert.message = req.body.message;
+    if (req.body.location) alert.location = req.body.location;
+    if (req.body.category) alert.category = req.body.category;
+
+    // Save the updated alert
     const updatedAlert = await alert.save();
-    res.json(updatedAlert);
+
+    res.json({
+      message: "Alert updated successfully",
+      alert: updatedAlert,
+    });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Error updating alert:", error);
+    res.status(400).json({
+      message: "Error updating alert",
+      error: error.message,
+    });
   }
 });
 

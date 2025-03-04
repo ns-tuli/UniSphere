@@ -134,3 +134,37 @@ export const updateUserProfile = async (req, res) => {
     });
   }
 };
+
+
+export const updateUser = async (req, res) => {
+  try {
+
+    const updates = req.body;
+    const userId = req.body.id;
+
+    // Check if the user exists
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+   
+
+    // Prevent updating sensitive fields like password or role unless allowed
+    const restrictedFields = ["password", "role"];
+    restrictedFields.forEach(field => delete updates[field]);
+
+  
+
+    // Update user fields
+    user = await User.findByIdAndUpdate(userId, updates, { new: true, runValidators: true });
+
+    res.json({
+      message: "User updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

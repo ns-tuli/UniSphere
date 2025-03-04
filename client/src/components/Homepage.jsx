@@ -357,64 +357,6 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <div className="px-6 py-4 bg-gray-100 dark:bg-gray-700">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Quick Links
-            </h2>
-          </div>
-          <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link
-              to="/student-profile"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Student Profile
-            </Link>
-            <Link
-              to="/academic-records"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Academic Records
-            </Link>
-            <Link
-              to="/financial-aid"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Financial Aid
-            </Link>
-            <Link
-              to="/career-services"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Career Services
-            </Link>
-            <Link
-              to="/library"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Library Resources
-            </Link>
-            <Link
-              to="/health-services"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Health Services
-            </Link>
-            <Link
-              to="/housing"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Housing Portal
-            </Link>
-            <Link
-              to="/help-desk"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Help Desk
-            </Link>
-          </div>
-        </div>
       </div>
     </div>
   );
