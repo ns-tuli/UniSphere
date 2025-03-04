@@ -1,5 +1,5 @@
+import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -25,4 +25,7 @@ userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-export default mongoose.model("User", userSchema);
+// Check if model exists before compiling
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+export default User;
