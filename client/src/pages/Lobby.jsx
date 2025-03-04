@@ -9,13 +9,17 @@ const Lobby = () => {
   const joinRoom = (e) => {
     e.preventDefault();
     if (room.trim() === "" || email.trim() === "") return; // Ensure both fields are filled
-    navigate(`/classroom/${room}`, { state: { email, room } }); // Pass email and room via state
+    console.log(room, email);
+    localStorage.setItem("room", room)
+    localStorage.setItem("email", email)
+    navigate(`/Classroom/${room}`, { state: { email, room } }); // Pass email and room via state
   };
+
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
       <div className="p-8 bg-gray-800 rounded-lg shadow-lg text-center">
-        <h2 className="text-2xl font-bold mb-4">Join a Classroom</h2>
+        <h2 className="text-2xl font-bold mb-4 text-white">Join a Classroom</h2>
         <form onSubmit={joinRoom}>
           <input
             type="email"
@@ -24,6 +28,9 @@ const Lobby = () => {
             onChange={(e) => setEmail(e.target.value)}
             className="p-2 rounded w-full text-black"
             required
+            color="white"
+            style={{color:"white"}}
+            
           />
           <input
             type="text"
@@ -32,6 +39,8 @@ const Lobby = () => {
             onChange={(e) => setRoom(e.target.value)}
             className="p-2 rounded w-full text-black mt-4"
             required
+            color="white"
+            style={{color:"white"}}
           />
           <button className="mt-4 bg-yellow-500 p-2 rounded w-full">Join</button>
         </form>

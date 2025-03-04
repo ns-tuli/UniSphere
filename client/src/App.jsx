@@ -21,7 +21,7 @@ import FacultyEntry from "./components/Admin/FacultyEntry";
 import ClassManagement from "./components/Admin/ClassManagement";
 import Alert from "./components/Alert";
 import Classroom from "./pages/Classroom";
-
+import Lobby from "./pages/Lobby"
 function App() {
   return (
     <Router>
@@ -48,7 +48,7 @@ function App() {
             <Route path="ClassManagement" element={<ClassManagement />} />
           </Route>
           <Route path="/Notes" element={<Notes />} />
-          <Route path="/Classroom" element={<Classroom />} />
+          <Route path="/Classroom/:id" element={<Classroom />} />
           <Route path="/Roadmap" element={<Roadmap />} />
           <Route path="/Chatbot" element={<Chatbot />} />
           <Route path="/uploadNotes" element={<UploadNotes />} />
@@ -56,6 +56,7 @@ function App() {
           <Route path="/FacultyContact" element={<FacultyContact />} />
           <Route path="/Auth" element={<Auth />} />
           <Route path="/profile" element={<StudentProfile />} />
+          <Route path="/lobby" element={<Lobby />} />
         </Route>
       </Routes>
     </Router>

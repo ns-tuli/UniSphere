@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 
-const io = new Server(9001, {
+const io = new Server(8000, {
   cors: true,
 });
 
@@ -50,7 +50,4 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = 9001;
-io.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
