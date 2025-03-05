@@ -1,39 +1,58 @@
-// controllers/uploadController.js
-import PDF from "../models/Pdf.js";
-import upload from "../utils/uploadUtils.js"; // Helper function to handle file upload to storage
+import PDF from "../models/pdf.js";
+import fs from "fs";
+import path from "path";
+import { verifyToken } from "../middlewares/auth.js";
+import multer from "multer";
+import dotenv from "dotenv";
+import { extractTextFromFile } from "../utils/extractText.js"; // Assuming you have an extraction method
 
-// Handle file upload
+dotenv.config();
+
+const upload = multer({ dest: "temp/" }); // Temporary storage for uploaded files
+
 export const uploadFile = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded." });
   }
 
-  const { userId } = req.user;  // Extract userId from the authenticated user
-
+  const userId = req.user?.userId;
   if (!userId) {
-    return res.status(400).json({ error: "User ID is missing from the request." });
+    return res.status(400).json({ error: "userId is missing from request." });
   }
 
   try {
-    // Save the PDF file information in the database along with the userId
+    const tempFilePath = path.join(__dirname, "../", req.file.path);
+    const fileBuffer = fs.readFileSync(tempFilePath);
+
+    // Extract text from the uploaded file
+    const extractedText = await extractTextFromFile(fileBuffer); // Replace with your method to extract text from PDF
+
+    if (!extractedText) {
+      return res.status(400).json({ error: "Extracted text is empty." });
+    }
+
+    // Save the PDF info to the database
     const pdfData = new PDF({
+      userId,
       pdfFileName: req.file.originalname,
-      uploadedAt: new Date(),
-      userId: userId,  // Associate the file with the authenticated user
     });
 
     await pdfData.save();
 
-    res.status(200).json({ message: "File uploaded successfully!" });
+    fs.unlinkSync(tempFilePath); // Delete temp file
+
+    res.status(200).json({
+      message: "File uploaded successfully!",
+      extractedText, // Send the extracted text in the response
+    });
   } catch (error) {
-    console.error("Error uploading file:", error);
+    console.error("Error during file upload:", error);
     res.status(500).json({ error: "An error occurred during file upload." });
   }
 };
 
-// Fetch uploaded files for the authenticated user
 export const getUploadedFiles = async (req, res) => {
-  const { userId } = req.user; // Extract userId from the authenticated user
+  const { userId } = req.user;
 
   try {
     const files = await PDF.find({ userId }); // Fetch PDFs associated with the authenticated user

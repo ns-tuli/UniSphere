@@ -4,7 +4,7 @@ import { verifyToken, authorizeRole, authenticateUser } from "../middlewares/aut
 import { ObjectId } from "mongodb";
 import { getDocument } from "pdfjs-dist"; 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import PDF from "../models/Pdf.js";
+import PDF from "../models/pdf.js";
 dotenv.config();
 
 const router = express.Router();

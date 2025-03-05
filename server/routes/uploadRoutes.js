@@ -1,8 +1,8 @@
-// routes/uploadRoutes.js
 import express from "express";
-import upload from "../utils/uploadUtils.js"; // Importing the default export
 import { uploadFile, getUploadedFiles } from "../controllers/uploadController.js";
 import { verifyToken } from "../middlewares/auth.js";
+import multer from "multer";
+const upload = multer({ dest: "uploads/" });
 
 const router = express.Router();
 

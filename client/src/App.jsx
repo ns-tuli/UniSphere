@@ -13,7 +13,6 @@ import CafeteriaManagement from "./components/Admin/CafeteriaManagement";
 import Notes from "./pages/Notes";
 import Roadmap from "./pages/Roadmap";
 import Chatbot from "./components/Chatbot";
-import UploadNotes from "./components/UploadNotes";
 import FacultyContact from "./components/FacultyContact";
 import Auth from "./components/Auth";
 import StudentProfile from "./components/StudentProfile";
@@ -21,8 +20,9 @@ import FacultyEntry from "./components/Admin/FacultyEntry";
 import ClassManagement from "./components/Admin/ClassManagement";
 import Alert from "./components/Alert";
 import Classroom from "./pages/Classroom";
-import Lobby from "./pages/Lobby"
+import Lobby from "./pages/Lobby";
 import NewsPortal from "./components/NewsPortal"; // Adjust the path as necessary
+import UploadNotes from "./components/UploadNotes";
 
 function App() {
   return (
@@ -60,6 +60,7 @@ function App() {
           <Route path="/profile" element={<StudentProfile />} />
           <Route path="/lobby" element={<Lobby />} />
           <Route path="/readArticle" element={<NewsPortal />} />
+          <Route path="/upload-notes" element={<UploadNotes />} />
         </Route>
       </Routes>
     </Router>
