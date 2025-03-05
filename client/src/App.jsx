@@ -59,7 +59,7 @@ function App() {
           <Route path="/lobby" element={<Lobby />} />
           <Route path="/readArticle" element={<NewsPortal />} />
           <Route path="/upload-notes" element={<UploadNotes />} />
-          <Route path="/readArticle" element={<NewsPortal />} />
+          
         </Route>
       </Routes>
     </Router>

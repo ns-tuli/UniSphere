@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 // models/Pdf.js
 import mongoose from "mongoose";
 
