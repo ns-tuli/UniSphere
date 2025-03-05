@@ -76,13 +76,14 @@ const Whiteboard = ({ socket, roomId }) => {
         canvas.freeDrawingBrush.color = color;
         canvas.freeDrawingBrush.width = brushSize;
         break;
-      case 'eraser':
+      case 'eraser': {
         canvas.isDrawingMode = true;
         const brush = new fabric.PencilBrush(canvas);
         brush.color = '#ffffff';
         brush.width = brushSize * 2;
         canvas.freeDrawingBrush = brush;
         break;
+      }
       case 'rectangle':
         canvas.isDrawingMode = false;
         break;
