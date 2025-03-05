@@ -82,6 +82,7 @@ app.use("/api/classroom", classroomRoutes);
 app.use("/api/news", newsRoutes);  // Fixed route path
 app.use('/api/uploads', uploadRoutes);  // Add the upload routes
 
+
 const rooms = {};
 
 io.on("connection", (socket) => {

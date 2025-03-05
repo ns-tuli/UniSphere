@@ -5,7 +5,6 @@ const UploadNotes = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [extractedText, setExtractedText] = useState(""); // State to store extracted text
 
   useEffect(() => {
     // Fetch the list of uploaded files when the component mounts
@@ -30,17 +29,13 @@ const UploadNotes = () => {
     try {
       const response = await fetch("http://localhost:5000/api/uploads/upload", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: formData,
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message); // Display the message returned by the backend
-        setExtractedText(data.extractedText); // Set the extracted text from the response
+        setMessage(data.message); // Display success message
         setError("");
         fetchUploadedFiles(); // Refresh the uploaded files list
       } else {
@@ -53,11 +48,14 @@ const UploadNotes = () => {
 
   const fetchUploadedFiles = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/uploads/files", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      const response = await fetch("http://localhost:5000/api/uploads/upload", {
+        method: "POST",
+        headers: { 
+          Authorization: `Bearer ${localStorage.getItem("token")}` 
         },
+        body: formData,
       });
+      
       const data = await response.json();
       if (response.ok) {
         setUploadedFiles(data.files);
@@ -70,30 +68,30 @@ const UploadNotes = () => {
   };
 
   return (
-    <div className="uploadNotesContainer">
-      <h2>Upload Notes</h2>
+    <div>
+      {/* Display success or error message */}
       {message && <p>{message}</p>}
       {error && <p>{error}</p>}
 
+      {/* File Upload Form */}
       <form onSubmit={handleUpload}>
-        <div className="fileInput">
-          <input type="file" onChange={handleFileChange} />
-        </div>
+        <input type="file" onChange={handleFileChange} />
         <button type="submit">Upload</button>
       </form>
 
-      {extractedText && (
-        <div>
-          <h3>Extracted Text from Uploaded PDF:</h3>
-          <pre>{extractedText}</pre>
-        </div>
-      )}
-
+      {/* Display Uploaded Files */}
       <div>
-        <h3>Uploaded Notes</h3>
+        <h3>Uploaded PDFs</h3>
         <ul>
           {uploadedFiles.map((file, index) => (
-            <li key={index}>{file.pdfFileName}</li>
+            <li key={index}>
+              <a
+                href={`http://localhost:5000/api/uploads/file/${file._id}`}
+                target="_blank"
+              >
+                {file.pdfFileName}
+              </a>
+            </li>
           ))}
         </ul>
       </div>

@@ -20,9 +20,7 @@ import FacultyEntry from "./components/Admin/FacultyEntry";
 import ClassManagement from "./components/Admin/ClassManagement";
 import Alert from "./components/Alert";
 import Classroom from "./pages/Classroom";
-import Lobby from "./pages/Lobby";
 import NewsPortal from "./components/NewsPortal"; // Adjust the path as necessary
-import UploadNotes from "./components/UploadNotes";
 
 function App() {
   return (
@@ -61,6 +59,7 @@ function App() {
           <Route path="/lobby" element={<Lobby />} />
           <Route path="/readArticle" element={<NewsPortal />} />
           <Route path="/upload-notes" element={<UploadNotes />} />
+          <Route path="/readArticle" element={<NewsPortal />} />
         </Route>
       </Routes>
     </Router>
