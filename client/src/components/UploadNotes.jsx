@@ -28,18 +28,9 @@ const UploadNotes = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const token = localStorage.getItem("token"); // Get the JWT token from localStorage
-    if (!token) {
-      setError("No token found. Please log in again.");
-      return;
-    }
-
     try {
       const response = await fetch("http://localhost:5000/api/v1/uploads/upload", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`, // Send the token in the Authorization header
-        },
         body: formData, // Attach the file in the form data
       });
 
@@ -58,19 +49,10 @@ const UploadNotes = () => {
 
   // Fetch the list of uploaded files from the server
   const fetchUploadedFiles = async () => {
-    const token = localStorage.getItem("token"); // Get the JWT token from localStorage
-    if (!token) {
-      setError("No token found. Please log in again.");
-      return;
-    }
+    
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/uploads/files", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`, // Send the token in the Authorization header
-        },
-      });
+      const response = await fetch("http://localhost:5000/api/v1/uploads/files")
 
       const data = await response.json();
       if (response.ok) {

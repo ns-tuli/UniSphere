@@ -1,10 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
-import { verifyToken, authorizeRole, authenticateUser } from "../middlewares/auth.js";
+import { authorizeRole, authenticateUser } from "../middlewares/auth.js";
 import { ObjectId } from "mongodb";
 import { getDocument } from "pdfjs-dist"; 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import PDF from "../models/pdf.js";
+import PDF from "../models/Pdf.js";
 dotenv.config();
 
 const router = express.Router();
@@ -148,7 +148,7 @@ const generateAnswer = async (question, context = "") => {
 // Generate Quiz Route
 router.post(
   "/generate-quiz-Admin",
-  verifyToken,
+  
   async (req, res) => {
     const { fileId } = req.body;
 
@@ -194,7 +194,7 @@ router.post(
 
 router.post(
   "/generate-quiz-Editor",
-  verifyToken,
+  
   async (req, res) => {
     const { fileId } = req.body;
 
@@ -241,7 +241,7 @@ router.post(
 // Pending Notes Route (Admins Only)
 router.get(
   "/pending-notes",
-  verifyToken,
+  
   authorizeRole("Admin"),
   async (req, res) => {
     try {
@@ -295,7 +295,7 @@ router.put(
 );
 
 // Approved Notes Route (Editors Only)
-router.get("/approved-notes", verifyToken, async (req, res) => {
+router.get("/approved-notes", async (req, res) => {
   try {
     // Fetch approved notes from the PDF collection
     const notes = await PDF.find({}).select("pdfFileName aiGeneratedTitle aiGeneratedCaption").lean();
@@ -316,7 +316,7 @@ router.get("/approved-notes", verifyToken, async (req, res) => {
 // Download Note Route (Editors Only)
 router.get(
   "/download-note/:id",
-  verifyToken,
+  
   authorizeRole("Editor", "Admin"),
   async (req, res) => {
     const { id } = req.params;
@@ -372,7 +372,7 @@ router.post('/ask-question', authenticateUser, async (req, res) => {
 });
 
 // Chatbot Route: Chat about a specific note
-router.post("/chat-about-note", verifyToken, async (req, res) => {
+router.post("/chat-about-note",  async (req, res) => {
   const { fileId, question } = req.body;
 
   if (!fileId || !question) {

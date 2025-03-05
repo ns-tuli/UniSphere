@@ -28,7 +28,6 @@ export const uploadFile = async (req, res, next) => {
     try {
       // Save the file information in the database with the associated user
       const pdfData = new PDF({
-        userId: req.user.id, // The user ID is obtained from the JWT token
         pdfFileName: req.file.filename,
         uploadedAt: new Date()
       });
@@ -50,7 +49,7 @@ export const uploadFile = async (req, res, next) => {
 export const getUploadedFiles = async (req, res, next) => {
   try {
     // Fetch files associated with the authenticated user (based on userId from JWT)
-    const files = await PDF.find({ userId: req.user.id });
+    const files = await PDF.find({});
 
     if (files.length === 0) {
       return next(new ErrorResponse('No files found for this user.', 404));

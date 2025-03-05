@@ -5,9 +5,9 @@ import { verifyToken } from '../middlewares/auth.js';  // Middleware to verify J
 const router = express.Router();
 
 // Route to upload a file (POST)
-router.post('/upload', verifyToken, uploadFile);
+router.post('/upload', uploadFile);
 
 // Route to get uploaded files (GET)
-router.get('/files', verifyToken, getUploadedFiles);
+router.get('/files', getUploadedFiles);
 
 export default router;
