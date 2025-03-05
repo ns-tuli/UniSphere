@@ -22,6 +22,7 @@ import Alert from "./components/Alert";
 import Classroom from "./pages/Classroom";
 import NewsPortal from "./components/NewsPortal"; // Adjust the path as necessary
 import ClubManagement from "./components/Admin/ClubManagement";
+import UploadNotes from "./components/UploadNotes";
 function App() {
   return (
     <Router>
@@ -56,10 +57,9 @@ function App() {
           <Route path="/FacultyContact" element={<FacultyContact />} />
           <Route path="/Auth" element={<Auth />} />
           <Route path="/profile" element={<StudentProfile />} />
-          <Route path="/lobby" element={<Lobby />} />
           <Route path="/readArticle" element={<NewsPortal />} />
           <Route path="/upload-notes" element={<UploadNotes />} />
-          
+
           <Route path="/Admin/Events" element={<ClubManagement />} />
         </Route>
       </Routes>
