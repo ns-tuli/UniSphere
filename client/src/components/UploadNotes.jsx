@@ -26,8 +26,10 @@ const UploadNotes = () => {
     }
 
     const formData = new FormData();
+    const user= JSON.parse(localStorage.getItem("user"));
     formData.append("file", file);
-
+    formData.append("email", user.email);
+    
     try {
       const response = await fetch("http://localhost:5000/api/v1/uploads/upload", {
         method: "POST",
@@ -49,10 +51,15 @@ const UploadNotes = () => {
 
   // Fetch the list of uploaded files from the server
   const fetchUploadedFiles = async () => {
-    
+    const user= JSON.parse(localStorage.getItem("user"));
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/uploads/files")
+      const response = await fetch("http://localhost:5000/api/v1/uploads/files",{
+        method: "GET",
+        headers: {
+          'email': user.email
+        },
+      })
 
       const data = await response.json();
       if (response.ok) {

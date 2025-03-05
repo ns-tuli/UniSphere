@@ -24,10 +24,12 @@ export const uploadFile = async (req, res, next) => {
     if (!req.file) {
       return next(new ErrorResponse('No file selected for upload.', 400));
     }
+    const {email}= req.body;
 
     try {
       // Save the file information in the database with the associated user
       const pdfData = new PDF({
+        email: email,
         pdfFileName: req.file.filename,
         uploadedAt: new Date()
       });
@@ -49,11 +51,10 @@ export const uploadFile = async (req, res, next) => {
 export const getUploadedFiles = async (req, res, next) => {
   try {
     // Fetch files associated with the authenticated user (based on userId from JWT)
-    const files = await PDF.find({});
+    const email= req.headers['email']
+    const files = await PDF.find({email: email});
 
-    if (files.length === 0) {
-      return next(new ErrorResponse('No files found for this user.', 404));
-    }
+    
 
     res.status(200).json({
       success: true,
