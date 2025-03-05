@@ -21,7 +21,7 @@ import ClassManagement from "./components/Admin/ClassManagement";
 import Alert from "./components/Alert";
 import Classroom from "./pages/Classroom";
 import NewsPortal from "./components/NewsPortal"; // Adjust the path as necessary
-
+import ClubManagement from "./components/Admin/ClubManagement";
 function App() {
   return (
     <Router>
@@ -60,6 +60,7 @@ function App() {
           <Route path="/readArticle" element={<NewsPortal />} />
           <Route path="/upload-notes" element={<UploadNotes />} />
           
+          <Route path="/Admin/Events" element={<ClubManagement />} />
         </Route>
       </Routes>
     </Router>
