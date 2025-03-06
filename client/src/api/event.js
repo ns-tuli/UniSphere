@@ -46,11 +46,12 @@ export const updateEvent = async (eventId, eventData) => {
 };
 
 // Delete an event by ID
+
 export const deleteEvent = async (eventId) => {
-  try {
-    const response = await axios.delete(`${API_URL}/${eventId}`);
-    return response.data;  // Return the response from deletion (e.g., success message)
-  } catch (error) {
-    throw new Error("Error deleting event: " + error.message);
-  }
+    try {
+        const response = await axios.delete(`${API_URL}/${eventId}`);
+        return response.data;  // Return the response data after successful deletion
+    } catch (error) {
+        throw new Error('Failed to delete the event. Please try again.');  // Handle any errors during deletion
+    }
 };

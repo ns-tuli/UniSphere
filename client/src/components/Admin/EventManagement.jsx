@@ -1,7 +1,7 @@
 //client\src\components\Admin\ClubManagement.jsx
 
 import React, { useState, useEffect } from "react";
-import { addEvent, getEvents } from "../../api/event.js"
+import { addEvent, getEvents, getEventById, updateEvent, deleteEvent } from "../../api/event.js"
 import {
     Plus,
     Edit,
@@ -35,6 +35,8 @@ const ClubManagement = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [currentBusId, setCurrentBusId] = useState(null);
     const [selectedBus, setSelectedBus] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState(null); // Add this line to define the selectedEvent state
+
 
     const [currentEventId, setCurrentEventId] = useState(null);
     const [formData, setFormData] = useState({
@@ -157,44 +159,48 @@ const ClubManagement = () => {
 
 
     // Open form for editing bus
-    const openEditForm = async (busId) => {
+    const openEditForm = async (eventId) => {
         setLoading(true);
         try {
-            const busData = await getBusScheduleById(busId);
+            const eventData = await getEventById(eventId);
             setFormData({
-                name: busData.name || "",
-                busNumber: busData.busNumber || "",
-                capacity: busData.capacity || "",
-                driver: busData.driver || "",
-                accessibility: busData.accessibility || false,
-                estimatedTime: busData.estimatedTime || "",
-                currentLocation: busData.currentLocation || "",
-                stops: busData.stops.length ? busData.stops : [""],
-                schedule: busData.schedule.length ? busData.schedule : [{ time: "", status: "On Time" }]
+                title: eventData.title || "",
+                description: eventData.description || "",
+                startDate: eventData.startDate || "",
+                endDate: eventData.endDate || "",
+                location: eventData.location || "",
+                organizer: eventData.organizer || "",
+                capacity: eventData.capacity || "",
+                tags: eventData.tags || [],
+                imageUrl: eventData.imageUrl || "",
+                attendees: eventData.attendees || [],
             });
             setIsEditing(true);
-            setCurrentBusId(busId);
+            setCurrentEventId(eventId);
             setIsFormOpen(true);
             setActiveCard("edit");
         } catch (err) {
-            showNotification("Failed to load bus details. Please try again.", "error");
+            showNotification("Failed to load event details. Please try again.", "error");
             console.error(err);
         } finally {
             setLoading(false);
         }
     };
+    
 
     // Open delete confirmation
-    const openDeleteConfirmation = (bus) => {
-        setSelectedBus(bus);
+    const openDeleteConfirmation = (event) => {
+        setSelectedEvent(event);
         setActiveCard("delete");
     };
+    
 
     // Close form
     const closeForm = () => {
         setIsFormOpen(false);
         setActiveCard("view");
     };
+    
 
     // Submit form  // Import the addEvent API function
 
@@ -243,22 +249,24 @@ const ClubManagement = () => {
     };
 
 
+   
+    
     // Delete bus schedule
-    const handleDelete = async (busId) => {
+    const handleDelete = async (eventId) => {
         setLoading(true);
         try {
-            await deleteBusSchedule(busId);
-            showNotification("Bus schedule deleted successfully!", "success");
-            fetchBusSchedules();
+            await deleteEvent(eventId); // Assuming deleteEvent is the function to delete the event
+            showNotification("Event deleted successfully!", "success");
+            fetchEvents(); // Assuming fetchEvents is the function to refresh the event list
             setActiveCard("view");
         } catch (err) {
-            showNotification("Failed to delete bus schedule. Please try again.", "error");
+            showNotification("Failed to delete event. Please try again.", "error");
             console.error(err);
         } finally {
             setLoading(false);
         }
     };
-
+    
     // Show notification
     const showNotification = (message, type) => {
         setNotification({ show: true, message, type });
@@ -267,14 +275,19 @@ const ClubManagement = () => {
             setNotification({ show: false, message: "", type: "" });
         }, 5000);
     };
+    
 
     // Get status color
-    const getStatusColor = (location) => {
-        if (location.includes("At")) {
+    const getStatusColor = (status) => {
+        if (status === "attending") {
             return "text-green-600 bg-green-100 dark:bg-green-900/20 dark:text-green-400";
+        }
+        if (status === "declined") {
+            return "text-red-600 bg-red-100 dark:bg-red-900/20 dark:text-red-400";
         }
         return "text-blue-600 bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400";
     };
+    
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
@@ -567,36 +580,36 @@ const ClubManagement = () => {
                     ))}
                 </div>
 
+                {/*Edit event*/}
 
-                {/* Edit Selection View
                 {activeCard === "edit" && !isFormOpen && !loading && (
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
                         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Select Route to Edit</h3>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Select Event to Edit</h3>
                             <p className="text-gray-600 dark:text-gray-400 mt-1">
-                                Choose a bus route from the list below to modify its details
+                                Choose an event from the list below to modify its details
                             </p>
                         </div>
 
-                        {filteredSchedules.length === 0 ? (
+                        {filteredEvents.length === 0 ? (
                             <div className="p-8 text-center">
-                                <p className="text-gray-600 dark:text-gray-400">No bus routes available to edit.</p>
+                                <p className="text-gray-600 dark:text-gray-400">No events available to edit.</p>
                             </div>
                         ) : (
                             <div className="grid gap-2 p-6">
-                                {filteredSchedules.map((bus) => (
+                                {filteredEvents.map((event) => (
                                     <button
-                                        key={bus.busId}
-                                        onClick={() => openEditForm(bus.busId)}
+                                        key={event._id}
+                                        onClick={() => openEditForm(event._id)}
                                         className="text-left bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 border border-amber-200 dark:border-amber-800/30 rounded-lg p-4 transition-colors flex items-center justify-between"
                                     >
                                         <div className="flex items-center">
                                             <div className="bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 p-3 rounded-lg mr-4">
-                                                <Bus className="w-5 h-5" />
+                                                <Calendar className="w-5 h-5" />
                                             </div>
                                             <div>
-                                                <h4 className="font-medium text-gray-900 dark:text-white">{bus.name}</h4>
-                                                <p className="text-gray-600 dark:text-gray-400 text-sm">Bus #{bus.busNumber} • Driver: {bus.driver}</p>
+                                                <h4 className="font-medium text-gray-900 dark:text-white">{event.title}</h4>
+                                                <p className="text-gray-600 dark:text-gray-400 text-sm">Event Date: {new Date(event.startDate).toLocaleDateString()}</p>
                                             </div>
                                         </div>
                                         <Edit className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -607,35 +620,36 @@ const ClubManagement = () => {
                     </div>
                 )}
 
+
                 {/* Delete Selection View */}
-                {activeCard === "delete" && !selectedBus && !loading && (
+                {activeCard === "delete" && !selectedEvent && !loading && (
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
                         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Select Route to Delete</h3>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Select Event to Delete</h3>
                             <p className="text-gray-600 dark:text-gray-400 mt-1">
-                                Choose a bus route from the list below to remove it from the system
+                                Choose an event from the list below to remove it from the system
                             </p>
                         </div>
 
-                        {filteredSchedules.length === 0 ? (
+                        {filteredEvents.length === 0 ? (
                             <div className="p-8 text-center">
-                                <p className="text-gray-600 dark:text-gray-400">No bus routes available to delete.</p>
+                                <p className="text-gray-600 dark:text-gray-400">No events available to delete.</p>
                             </div>
                         ) : (
                             <div className="grid gap-2 p-6">
-                                {filteredSchedules.map((bus) => (
+                                {filteredEvents.map((event) => (
                                     <button
-                                        key={bus.busId}
-                                        onClick={() => openDeleteConfirmation(bus)}
+                                        key={event._id}
+                                        onClick={() => openDeleteConfirmation(event)}
                                         className="text-left bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 border border-rose-200 dark:border-rose-800/30 rounded-lg p-4 transition-colors flex items-center justify-between"
                                     >
                                         <div className="flex items-center">
                                             <div className="bg-rose-200 dark:bg-rose-800 text-rose-800 dark:text-rose-200 p-3 rounded-lg mr-4">
-                                                <Bus className="w-5 h-5" />
+                                                <Calendar className="w-5 h-5" />
                                             </div>
                                             <div>
-                                                <h4 className="font-medium text-gray-900 dark:text-white">{bus.name}</h4>
-                                                <p className="text-gray-600 dark:text-gray-400 text-sm">Bus #{bus.busNumber} • Driver: {bus.driver}</p>
+                                                <h4 className="font-medium text-gray-900 dark:text-white">{event.title}</h4>
+                                                <p className="text-gray-600 dark:text-gray-400 text-sm">Event Date: {new Date(event.startDate).toLocaleDateString()}</p>
                                             </div>
                                         </div>
                                         <Trash2 className="w-5 h-5 text-rose-600 dark:text-rose-400" />
@@ -646,8 +660,9 @@ const ClubManagement = () => {
                     </div>
                 )}
 
+
                 {/* Delete Confirmation */}
-                {activeCard === "delete" && selectedBus && !loading && (
+                {activeCard === "delete" && selectedEvent && !loading && (
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
                         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white">Confirm Deletion</h3>
@@ -659,17 +674,17 @@ const ClubManagement = () => {
                                     <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Are you sure?</h4>
                                 </div>
                                 <p className="text-gray-700 dark:text-gray-300 mb-4">
-                                    You are about to delete the following bus route. This action cannot be undone.
+                                    You are about to delete the following event. This action cannot be undone.
                                 </p>
                                 <div className="bg-white dark:bg-gray-700 rounded-lg p-4 mb-4">
-                                    <p className="font-medium text-gray-900 dark:text-white mb-1">{selectedBus.name}</p>
-                                    <p className="text-gray-600 dark:text-gray-400 text-sm">Bus #{selectedBus.busNumber} • Driver: {selectedBus.driver}</p>
+                                    <p className="font-medium text-gray-900 dark:text-white mb-1">{selectedEvent.title}</p>
+                                    <p className="text-gray-600 dark:text-gray-400 text-sm">Event Date: {new Date(selectedEvent.startDate).toLocaleDateString()}</p>
                                 </div>
                             </div>
                             <div className="flex justify-end space-x-3">
                                 <button
                                     onClick={() => {
-                                        setSelectedBus(null);
+                                        setSelectedEvent(null);
                                         setActiveCard("view");
                                     }}
                                     className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
@@ -677,16 +692,17 @@ const ClubManagement = () => {
                                     Cancel
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(selectedBus.busId)}
+                                    onClick={() => handleDelete(selectedEvent._id)}
                                     className="px-4 py-2 text-white bg-rose-600 hover:bg-rose-700 dark:bg-rose-700 dark:hover:bg-rose-600 rounded-lg transition-colors flex items-center"
                                 >
                                     <Trash2 className="w-4 h-4 mr-2" />
-                                    Delete Bus Route
+                                    Delete Event
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
+
 
                 {/* Bus Form (Add/Edit) */}
                 {isFormOpen && (

@@ -174,3 +174,67 @@ export const getTags = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateEvent = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  
+  try {
+    const { id } = req.params;
+    const eventData = req.body;
+
+    // Validate dates
+    const startDate = new Date(eventData.startDate);
+    const endDate = new Date(eventData.endDate);
+    if (endDate < startDate) {
+      return res.status(400).json({ error: 'End date cannot be before start date' });
+    }
+
+    // Find event by ID
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    // Update event data
+    event.title = eventData.title || event.title;
+    event.description = eventData.description || event.description;
+    event.startDate = eventData.startDate || event.startDate;
+    event.endDate = eventData.endDate || event.endDate;
+    event.location = eventData.location || event.location;
+    event.organizer = eventData.organizer || event.organizer;
+    event.capacity = eventData.capacity || event.capacity;
+    event.tags = eventData.tags || event.tags;
+    event.imageUrl = eventData.imageUrl || event.imageUrl;
+
+    // Save updated event
+    await event.save();
+
+    res.status(200).json({ message: 'Event updated successfully', event });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteEvent = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Find event by ID
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    // Remove event from the database
+    await event.deleteOne();
+
+    // Optionally: You can also remove the event from any other related collections, such as clubs or users.
+
+    res.status(200).json({ message: 'Event deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
