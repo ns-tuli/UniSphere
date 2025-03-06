@@ -22,8 +22,7 @@ export const createUser = async (req, res, next) => {
 export const getUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id)
-      .populate('joinedClubs')
-      .populate('eventReminders.event');
+      
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }

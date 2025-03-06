@@ -1,4 +1,3 @@
-import cookieParser from 'cookie-parser';
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
@@ -6,27 +5,24 @@ import connectDB from "./config/db.js";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import adminRoutes from "./routes/adminRoutes.js";
+
 import alertRoutes from "./routes/alerts.js";
 import authRoutes from './routes/authRoutes.js';
 import busRoutes from "./routes/busRoutes.js";
 import classRoutes from "./routes/classRoutes.js";
-import clubRoutes from './routes/clubRoutes.js';
 import departmentRoutes from "./routes/departmentRoutes.js";
-import eventRoutes from './routes/eventRoutes.js';
 import faculty from "./routes/facultyRoutes.js";
 import mealRoutes from "./routes/mealRoutes.js";
 import navigationRoutes from "./routes/navigationRoutes.js";
-import alertRoutes from "./routes/alerts.js";
-import authRoutes from "./routes/authRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
+import roadmapRoutes from './routes/roadmapRoutes.js';
 import studentRoutes from "./routes/studentDataRoutes.js";
+import userRoutes from './routes/userRoutes.js';
 
-import facultyRoutes from "./routes/facultyRoutes.js";
+import bodyParser from 'body-parser';
 import http from "http";
 import { Server } from "socket.io";
 import classroomRoutes from "./routes/classroomRoutes.js";
-import newsRoutes from './routes/newsRoutes.js';  // Fixed missing quotes
-import bodyParser from 'body-parser';
+import newsRoutes from './routes/newsRoutes.js'; // Fixed missing quotes
 import uploadRoutes from "./routes/uploadRoutes.js"; // Routes for file uploads
 
 
@@ -46,7 +42,7 @@ const io = new Server(server, {
 // Middleware
 app.use(cors({
   origin: "http://localhost:5173",
-  methods: ["GET", "POST"]
+  methods: ["GET", "POST", "PUT", "DELETE"] // Add PUT and DELETE here
 }));
 
 app.use(express.json());
@@ -91,6 +87,8 @@ app.use("/api/navigation", navigationRoutes);
 app.use("/api/classroom", classroomRoutes);
 app.use("/api/news", newsRoutes);  // Fixed route path
 app.use("/api/uploads", uploadRoutes); // Use the upload routes
+app.use('/api/user',userRoutes)
+
 
 
 const rooms = {};

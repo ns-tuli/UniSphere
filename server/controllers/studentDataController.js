@@ -3,8 +3,10 @@ import User from "../models/User.js";
 
 export const getStudentData = async (req, res) => {
   try {
-    const userId = req.user._id; // Get user from auth middleware
-    const studentData = await StudentData.findOne({ user: userId });
+    console.log("fetching...")
+    const userId = req.body.id; // Get user from auth middleware
+    console.log(userId)
+    const studentData = await User.findById(userId)
 
     if (!studentData) {
       return res.status(404).json({ message: "Student data not found" });

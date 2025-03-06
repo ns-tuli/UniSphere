@@ -1,7 +1,7 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import ThemeToggle from "./ThemeToggle";
-import { FaUser } from "react-icons/fa";
+import React from 'react';
+import { FaUser } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
 
 function Header() {
   return (
