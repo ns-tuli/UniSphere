@@ -3,6 +3,7 @@ import axios from "axios";
 import "aframe";
 import "aframe-look-at-component";
 import { Entity, Scene } from "aframe-react";
+import { FaCompass } from "react-icons/fa";
 import "./AR.css";
 
 const AR = () => {
@@ -15,6 +16,8 @@ const AR = () => {
   const [cameraPermission, setCameraPermission] = useState(false);
   const [arStarted, setArStarted] = useState(false);
   const [navigationMode, setNavigationMode] = useState("ar"); // 'ar' or 'maps'
+  const [deviceOrientation, setDeviceOrientation] = useState(null);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
 
   // Calculate distance between two points
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -31,11 +34,42 @@ const AR = () => {
     return (R * c * 1000).toFixed(0); // Convert to meters
   };
 
+  // Calculate bearing between two points
+  const calculateBearing = (lat1, lon1, lat2, lon2) => {
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+    const y = Math.sin(Δλ) * Math.cos(φ2);
+    const x =
+      Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+    return Math.atan2(y, x);
+  };
+
+  const handleOrientation = (event) => {
+    setDeviceOrientation({
+      alpha: event.alpha, // compass direction
+      beta: event.beta, // front/back tilt
+      gamma: event.gamma, // left/right tilt
+    });
+  };
+
   const startAR = async () => {
     try {
       // Request camera permission
       await navigator.mediaDevices.getUserMedia({ video: true });
       setCameraPermission(true);
+
+      if (isDesktop) {
+        // For desktop: request device orientation permission
+        if (typeof DeviceOrientationEvent.requestPermission === "function") {
+          const permission = await DeviceOrientationEvent.requestPermission();
+          if (permission === "granted") {
+            window.addEventListener("deviceorientation", handleOrientation);
+          }
+        } else {
+          window.addEventListener("deviceorientation", handleOrientation);
+        }
+      }
 
       // Get user location
       navigator.geolocation.watchPosition(
@@ -104,6 +138,55 @@ const AR = () => {
     );
   };
 
+  const DesktopAROverlay = () => (
+    <div className="desktop-ar-overlay">
+      <div className="compass">
+        <FaCompass
+          style={{
+            transform: `rotate(${deviceOrientation?.alpha || 0}deg)`,
+            fontSize: "2rem",
+          }}
+        />
+      </div>
+      <div className="location-markers">
+        {places.map((place, index) => {
+          if (!userLocation) return null;
+          const distance = calculateDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            place.coordinates.latitude,
+            place.coordinates.longitude
+          );
+
+          // Calculate relative position based on bearing
+          const bearing = calculateBearing(
+            userLocation.latitude,
+            userLocation.longitude,
+            place.coordinates.latitude,
+            place.coordinates.longitude
+          );
+
+          return (
+            <div
+              key={index}
+              className="location-marker"
+              style={{
+                transform: `translate(${
+                  (Math.sin(bearing) * distance) / 10
+                }px, ${(Math.cos(bearing) * distance) / 10}px)`,
+              }}
+              onClick={() => setSelectedPlace(place)}
+            >
+              <div className="marker-dot" />
+              <span className="marker-label">{place.name}</span>
+              <span className="marker-distance">{distance}m</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   if (!arStarted) {
     return (
       <div className="ar-start-screen">
@@ -128,7 +211,7 @@ const AR = () => {
         <>
           <Scene
             embedded
-            arjs="sourceType: webcam; debugUIEnabled: false; sourceWidth: 1280; sourceHeight: 960; displayWidth: 1280; displayHeight: 960;"
+            arjs="sourceType: webcam; debugUIEnabled: true; sourceWidth: 1280; sourceHeight: 960; displayWidth: 1280; displayHeight: 960;"
             renderer="antialias: true; alpha: true"
             vr-mode-ui="enabled: false"
           >
@@ -174,6 +257,8 @@ const AR = () => {
             })}
             <Entity primitive="a-camera" gps-camera rotation-reader />
           </Scene>
+
+          {isDesktop && <DesktopAROverlay />}
 
           <div className="ar-overlay">
             {userLocation && (
