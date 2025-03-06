@@ -1,4 +1,4 @@
-//client\src\components\Admin\ClubManagement.jsx
+//client\src\components\Admin\EventManagement.jsx
 
 import React, { useState, useEffect } from "react";
 import { addEvent, getEvents, getEventById, updateEvent, deleteEvent } from "../../api/event.js"
@@ -21,7 +21,7 @@ import {
     Calendar, Image
 } from "lucide-react";
 
-const ClubManagement = () => {
+const EventManagement = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -950,4 +950,4 @@ const ClubManagement = () => {
     );
 };
 
-export default ClubManagement;
+export default EventManagement;

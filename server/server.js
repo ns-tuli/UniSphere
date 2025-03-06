@@ -87,6 +87,7 @@ app.use("/api/classroom", classroomRoutes);
 app.use("/api/news", newsRoutes);  // Fixed route path
 app.use("/api/uploads", uploadRoutes); // Use the upload routes
 app.use("/api/events", eventRoutes); // Use the upload routes
+app.use("/api/clubs", clubRoutes); // Use the upload routes
 
 
 const rooms = {};

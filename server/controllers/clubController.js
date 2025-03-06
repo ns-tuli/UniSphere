@@ -1,12 +1,9 @@
 import { validationResult } from 'express-validator';
 import Club from '../models/Club.js';
 import User from '../models/User.js';
-
+import axios from "axios"
 export const createClub = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+  
   try {
     const club = new Club(req.body);
     await club.save();
@@ -40,12 +37,7 @@ export const getClubs = async (req, res, next) => {
   export const getClub = async (req, res, next) => {
     try {
       const club = await Club.findById(req.params.id)
-        .populate({
-          path: 'events',
-          match: { startDate: { $gte: new Date() } },
-          options: { sort: { startDate: 1 } }
-        })
-        .populate('members.user', 'name email');
+       
       if (!club) {
         return res.status(404).json({ error: 'Club not found' });
       }
@@ -55,79 +47,74 @@ export const getClubs = async (req, res, next) => {
     }
   };
   
-  export const joinClub = async (req, res, next) => {
+
+  export const addMember = async (req, res, next) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ 
-          success: false, 
-          errors: errors.array() 
-        });
-      }
+      const { email, role } = req.body;  // Using email instead of userId
+      const clubId = req.params.clubId;  // Club ID from URL parameter
   
-      const { userId, role = 'member' } = req.body;
-      const clubId = req.params.id;
-  
-      // Find user with password field explicitly
-      const user = await User.findById(userId).select('+password');
-      if (!user) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'User not found' 
-        });
-      }
-  
+      // Find the club by its ID
       const club = await Club.findById(clubId);
       if (!club) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Club not found' 
-        });
+        return res.status(404).json({ success: false, error: 'Club not found' });
       }
   
-      // Check if user is already a member
-      const isMember = club.members.some(member => 
-        member.user.toString() === userId
-      );
-      
+      // Check if the email is already a member of the club
+      const isMember = club.members.some((member) => member.email === email);
       if (isMember) {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'User is already a member of this club' 
-        });
+        return res.status(400).json({ success: false, error: 'User is already a member of this club' });
       }
   
-      // Add user to club's members
-      club.members.push({
-        user: userId,
-        role,
-        joinedAt: new Date()
-      });
+      // Add the email to the club's members
+      club.members.push({ email, role, joinedAt: new Date() });
   
       await club.save();
   
-      // Add club to user's joinedClubs if not already present
-      if (!user.joinedClubs.includes(club._id)) {
-        user.joinedClubs.push(club._id);
-        await user.save();
-      }
-  
       res.status(200).json({
         success: true,
-        message: 'Successfully joined the club',
-        data: club
+        message: 'User added as a member of the club',
+        data: club,
       });
     } catch (error) {
-      console.error('Join Club Error:', error);
+      console.error('Add Member Error:', error);
       next(error);
     }
   };
   
-  export const getCategories = async (req, res, next) => {
+
+export  const updateClub = async (req, res) => {
+    const { clubId } = req.params; // Get the clubId from the URL params
+    const clubData = req.body; // Get the club data from the request body
+  
     try {
-      const categories = await Club.distinct('category');
-      res.json(categories);
+      // Find the club by its ID and update with the new data
+      const updatedClub = await Club.findByIdAndUpdate(clubId, clubData, { new: true });
+      
+      if (!updatedClub) {
+        return res.status(404).json({ message: "Club not found" }); // If no club is found
+      }
+  
+      res.status(200).json(updatedClub); // Return the updated club data
     } catch (error) {
-      next(error);
+      console.error(error);
+      res.status(500).json({ message: "Error updating club: " + error.message });
+    }
+  };
+
+export  const deleteClub = async (req, res) => {
+    const { clubId } = req.params; // Get the clubId from the URL params
+  
+    try {
+      // Find and delete the club by its ID
+      const deletedClub = await Club.findByIdAndDelete(clubId);
+  
+      if (!deletedClub) {
+        return res.status(404).json({ message: "Club not found" }); // If no club is found
+      }
+  
+      res.status(200).json({ message: "Club deleted successfully" }); // Return success message
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error deleting club: " + error.message });
     }
   };
