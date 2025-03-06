@@ -2,18 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-const theme = {
-  primary: '#eab308', // yellow-600
-  secondary: '#fcd34d', // yellow-300
-  accent: '#fef3c7', // yellow-100
-  background: '#fffbeb', // yellow-50
-  text: {
-    primary: '#854d0e', // yellow-900
-    secondary: '#a16207', // yellow-800
-    light: '#fef3c7', // yellow-100
-  }
-};
-
 const LostFound = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +9,8 @@ const LostFound = () => {
   const [showReportForm, setShowReportForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -129,6 +119,27 @@ const LostFound = () => {
     }
   };
 
+  // Add handleMarkAsResolved function
+  const handleMarkAsResolved = async (itemId) => {
+    try {
+      const response = await axios.patch(
+        `${import.meta.env.VITE_SERVER_URL}/api/lostfound/items/${itemId}`,
+        { status: "resolved" }
+      );
+
+      if (response.status === 200) {
+        toast.success("Item has been marked as resolved!");
+        // Remove the item from the local state
+        setItems((prevItems) =>
+          prevItems.filter((item) => item._id !== itemId)
+        );
+      }
+    } catch (error) {
+      toast.error("Failed to update item status");
+      console.error("Error updating item status:", error);
+    }
+  };
+
   // Filter items based on search and filters
   const filteredItems = Array.isArray(items)
     ? items.filter((item) => {
@@ -155,7 +166,7 @@ const LostFound = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-yellow-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-yellow-50 via-yellow-100/20 to-white">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-yellow-800 mb-2">
@@ -225,11 +236,11 @@ const LostFound = () => {
 
         {/* Report Form */}
         {showReportForm && (
-          <div className="bg-white rounded-xl shadow-lg p-8 mb-8 transform transition-all duration-300">
-            <h2 className="text-xl font-semibold mb-4">
+          <div className="bg-white rounded-xl shadow-lg p-8 mb-8 transform transition-all duration-300 border-2 border-yellow-100">
+            <h2 className="text-2xl font-bold text-yellow-800 mb-6">
               Report a Lost or Found Item
             </h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-1">Reporter Name *</label>
@@ -239,7 +250,7 @@ const LostFound = () => {
                     value={formData.reporterName}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-yellow-100 focus:border-yellow-300 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
                   />
                 </div>
 
@@ -251,7 +262,7 @@ const LostFound = () => {
                     value={formData.reporterId}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-yellow-100 focus:border-yellow-300 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
                   />
                 </div>
 
@@ -263,7 +274,7 @@ const LostFound = () => {
                     value={formData.contactNumber}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-yellow-100 focus:border-yellow-300 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
                   />
                 </div>
 
@@ -274,7 +285,7 @@ const LostFound = () => {
                     value={formData.itemType}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-yellow-100 focus:border-yellow-300 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
                   >
                     <option value="lost">Lost Item</option>
                     <option value="found">Found Item</option>
@@ -289,7 +300,7 @@ const LostFound = () => {
                     value={formData.location}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-yellow-100 focus:border-yellow-300 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
                     placeholder="Where lost/found"
                   />
                 </div>
@@ -302,7 +313,7 @@ const LostFound = () => {
                     value={formData.date}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-yellow-100 focus:border-yellow-300 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
                   />
                 </div>
 
@@ -314,7 +325,7 @@ const LostFound = () => {
                     value={formData.itemName}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-yellow-100 focus:border-yellow-300 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
                   />
                 </div>
 
@@ -325,7 +336,7 @@ const LostFound = () => {
                     value={formData.category}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-yellow-100 focus:border-yellow-300 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
                   >
                     <option value="electronics">Electronics</option>
                     <option value="documents">Documents</option>
@@ -343,7 +354,7 @@ const LostFound = () => {
                     value={formData.description}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-yellow-100 focus:border-yellow-300 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
                     rows="3"
                     placeholder="Detailed description of the item"
                   ></textarea>
@@ -355,7 +366,7 @@ const LostFound = () => {
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-yellow-100 focus:border-yellow-300 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -388,20 +399,27 @@ const LostFound = () => {
               className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-2 border-yellow-100"
             >
               {item.imageUrl && (
-                <div className="h-48 overflow-hidden">
+                <div className="relative h-48">
                   <img
                     src={item.imageUrl}
                     alt={item.itemName}
                     className="w-full h-full object-cover"
                   />
+                  {item.status === "resolved" && (
+                    <div className="absolute top-0 right-0 m-2 px-3 py-1 bg-green-500 text-white rounded-full text-sm font-medium">
+                      Resolved
+                    </div>
+                  )}
                 </div>
               )}
 
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-semibold">{item.itemName}</h3>
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-xl font-bold text-yellow-800">
+                    {item.itemName}
+                  </h3>
                   <span
-                    className={`text-xs px-2 py-1 rounded-full ${
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
                       item.itemType === "lost"
                         ? "bg-red-100 text-red-700"
                         : "bg-green-100 text-green-700"
@@ -411,23 +429,28 @@ const LostFound = () => {
                   </span>
                 </div>
 
-                <p className="text-sm text-gray-600 mb-2">
-                  <span className="font-medium">Category:</span> {item.category}
-                </p>
-                <p className="text-sm text-gray-600 mb-2">
-                  <span className="font-medium">Location:</span> {item.location}
-                </p>
-                <p className="text-sm text-gray-600 mb-2">
-                  <span className="font-medium">Date:</span>{" "}
-                  {formatDate(item.date || item.createdAt)}
-                </p>
-                <p className="text-sm text-gray-700 mb-3 line-clamp-3">
+                <div className="space-y-2 mb-4">
+                  <p className="flex items-center text-gray-600">
+                    <span className="font-medium w-24">Category:</span>
+                    <span className="capitalize">{item.category}</span>
+                  </p>
+                  <p className="flex items-center text-gray-600">
+                    <span className="font-medium w-24">Location:</span>
+                    <span>{item.location}</span>
+                  </p>
+                  <p className="flex items-center text-gray-600">
+                    <span className="font-medium w-24">Date:</span>
+                    <span>{formatDate(item.date || item.createdAt)}</span>
+                  </p>
+                </div>
+
+                <p className="text-gray-700 mb-4 line-clamp-3">
                   {item.description}
                 </p>
 
-                <div className="flex justify-between items-center mt-4">
+                <div className="flex justify-between items-center mt-4 pt-4 border-t border-yellow-100">
                   <span
-                    className={`text-xs px-2 py-1 rounded-full ${
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
                       item.status === "resolved"
                         ? "bg-green-100 text-green-600"
                         : item.status === "in-progress"
@@ -435,33 +458,118 @@ const LostFound = () => {
                         : "bg-gray-100 text-gray-600"
                     }`}
                   >
-                    {item.status === "resolved"
-                      ? "Resolved"
-                      : item.status === "in-progress"
-                      ? "In Progress"
-                      : "Pending"}
+                    {item.status}
                   </span>
 
-                  <button
-                    className="text-blue-600 hover:text-blue-800 text-sm"
-                    onClick={() => {
-                      // Implement view details modal or navigation
-                      // For simplicity, we'll just show an alert here
-                      alert(
-                        `Contact: ${item.reporterName} at ${item.contactNumber}`
-                      );
-                    }}
-                  >
-                    View Details
-                  </button>
+                  <div className="flex gap-2">
+                    {item.status !== "resolved" && (
+                      <button
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              "Are you sure you want to mark this item as resolved? This will remove it from the list."
+                            )
+                          ) {
+                            handleMarkAsResolved(item._id);
+                          }
+                        }}
+                        className="px-3 py-1 text-sm bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors"
+                      >
+                        Mark as Resolved
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        setSelectedItem(item);
+                        setShowDetailsModal(true);
+                      }}
+                      className="px-3 py-1 text-sm bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition-colors"
+                    >
+                      View Details
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Details Modal */}
+        {showDetailsModal && selectedItem && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="text-2xl font-bold text-yellow-800">
+                  {selectedItem.itemName}
+                </h3>
+                <button
+                  onClick={() => setShowDetailsModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ×
+                </button>
+              </div>
+
+              {selectedItem.imageUrl && (
+                <img
+                  src={selectedItem.imageUrl}
+                  alt={selectedItem.itemName}
+                  className="w-full h-64 object-cover rounded-lg mb-4"
+                />
+              )}
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <DetailItem label="Status" value={selectedItem.status} />
+                  <DetailItem label="Type" value={selectedItem.itemType} />
+                  <DetailItem label="Category" value={selectedItem.category} />
+                  <DetailItem label="Location" value={selectedItem.location} />
+                  <DetailItem
+                    label="Date"
+                    value={formatDate(
+                      selectedItem.date || selectedItem.createdAt
+                    )}
+                  />
+                  <DetailItem
+                    label="Reporter"
+                    value={selectedItem.reporterName}
+                  />
+                  <DetailItem
+                    label="Contact"
+                    value={selectedItem.contactNumber}
+                  />
+                </div>
+
+                <div>
+                  <h4 className="font-medium text-gray-700 mb-2">
+                    Description
+                  </h4>
+                  <p className="text-gray-600">{selectedItem.description}</p>
+                </div>
+
+                {selectedItem.notes && (
+                  <div>
+                    <h4 className="font-medium text-gray-700 mb-2">
+                      Additional Notes
+                    </h4>
+                    <p className="text-gray-600">{selectedItem.notes}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
+// Helper component for modal details
+const DetailItem = ({ label, value }) => (
+  <div>
+    <span className="text-sm text-gray-500">{label}</span>
+    <p className="font-medium capitalize">{value}</p>
+  </div>
+);
 
 export default LostFound;

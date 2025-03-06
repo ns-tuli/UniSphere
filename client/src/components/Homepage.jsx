@@ -7,6 +7,7 @@ import {
   FaCalendarAlt,
   FaUserTie,
   FaMapMarkedAlt,
+  FaSearch,
   FaBell,
   FaUsers,
   FaGraduationCap,
@@ -89,11 +90,10 @@ export default function HomePage() {
     },
     {
       id: 8,
-      title: "Learning Hub",
-      icon: <FaGraduationCap className="text-3xl text-teal-600" />,
-      description:
-        "Access all learning tools, virtual classrooms, and resources",
-      path: "/LearningHub",
+      title: "LostFound",
+      icon: <FaSearch className="text-3xl text-indigo-600" />,
+      description: "Lost and found items on campus",
+      path: "/LostFound",
       color: "bg-teal-50",
       hoverColor: "hover:bg-teal-100",
       borderColor: "border-teal-200",

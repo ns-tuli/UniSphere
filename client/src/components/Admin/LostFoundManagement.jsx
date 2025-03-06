@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { 
-  Search, 
-  Trash2, 
-  CheckCircle, 
-  Clock, 
-  AlertCircle, 
-  Filter, 
+import {
+  Search,
+  Trash2,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  Filter,
   Download,
-  Edit
+  Edit,
 } from "lucide-react";
 
 const LostFoundManagement = () => {
@@ -18,14 +18,14 @@ const LostFoundManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [itemToUpdate, setItemToUpdate] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  
+
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
   const [itemTypeFilter, setItemTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dateSort, setDateSort] = useState("newest");
-  
+
   // Statistics
   const [stats, setStats] = useState({
     total: 0,
@@ -39,7 +39,9 @@ const LostFoundManagement = () => {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/admin/lostfound/items`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/api/admin/lostfound/items`
+      );
       const data = Array.isArray(response.data) ? response.data : [];
       setItems(data);
       calculateStats(data);
@@ -62,10 +64,10 @@ const LostFoundManagement = () => {
 
     const newStats = {
       total: itemsData.length,
-      lost: itemsData.filter(item => item?.itemType === "lost").length,
-      found: itemsData.filter(item => item?.itemType === "found").length,
-      resolved: itemsData.filter(item => item?.status === "resolved").length,
-      pending: itemsData.filter(item => item?.status === "pending").length,
+      lost: itemsData.filter((item) => item?.itemType === "lost").length,
+      found: itemsData.filter((item) => item?.itemType === "found").length,
+      resolved: itemsData.filter((item) => item?.status === "resolved").length,
+      pending: itemsData.filter((item) => item?.status === "pending").length,
     };
     setStats(newStats);
   };
@@ -77,13 +79,27 @@ const LostFoundManagement = () => {
   // Update item status
   const updateItemStatus = async (itemId, newStatus) => {
     try {
-      const response = await axios.patch(`/api/admin/lostfound/items/${itemId}`, {
-        status: newStatus
-      });
-      
+      const response = await axios.patch(
+        `${
+          import.meta.env.VITE_SERVER_URL
+        }/api/admin/lostfound/items/${itemId}`,
+        { status: newStatus }
+      );
+
       if (response.status === 200) {
-        toast.success("Item status updated successfully");
-        fetchItems();
+        toast.success(
+          `Item ${
+            newStatus === "resolved" ? "resolved" : "status updated"
+          } successfully`
+        );
+        // Update items list
+        setItems((prevItems) =>
+          prevItems.map((item) =>
+            item._id === itemId ? { ...item, status: newStatus } : item
+          )
+        );
+        // Recalculate stats
+        calculateStats(items);
       }
     } catch (error) {
       toast.error("Failed to update item status");
@@ -94,10 +110,13 @@ const LostFoundManagement = () => {
   // Handle item update form submission
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
-      const response = await axios.put(`/api/admin/lostfound/items/${itemToUpdate._id}`, itemToUpdate);
-      
+      const response = await axios.put(
+        `/api/admin/lostfound/items/${itemToUpdate._id}`,
+        itemToUpdate
+      );
+
       if (response.status === 200) {
         toast.success("Item updated successfully");
         setShowUpdateModal(false);
@@ -113,8 +132,10 @@ const LostFoundManagement = () => {
   const deleteItem = async (itemId) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
-        const response = await axios.delete(`/api/admin/lostfound/items/${itemId}`);
-        
+        const response = await axios.delete(
+          `/api/admin/lostfound/items/${itemId}`
+        );
+
         if (response.status === 200) {
           toast.success("Item deleted successfully");
           fetchItems();
@@ -132,13 +153,17 @@ const LostFoundManagement = () => {
       toast.error("No items selected");
       return;
     }
-    
-    if (window.confirm(`Are you sure you want to delete ${selectedItems.length} selected items?`)) {
+
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${selectedItems.length} selected items?`
+      )
+    ) {
       try {
         const response = await axios.post("/api/admin/lostfound/bulk-delete", {
-          itemIds: selectedItems
+          itemIds: selectedItems,
         });
-        
+
         if (response.status === 200) {
           toast.success(`${selectedItems.length} items deleted successfully`);
           setSelectedItems([]);
@@ -154,7 +179,7 @@ const LostFoundManagement = () => {
   // Handle checkbox selection
   const handleSelectItem = (itemId) => {
     if (selectedItems.includes(itemId)) {
-      setSelectedItems(selectedItems.filter(id => id !== itemId));
+      setSelectedItems(selectedItems.filter((id) => id !== itemId));
     } else {
       setSelectedItems([...selectedItems, itemId]);
     }
@@ -165,16 +190,25 @@ const LostFoundManagement = () => {
     if (selectedItems.length === filteredItems.length) {
       setSelectedItems([]);
     } else {
-      setSelectedItems(filteredItems.map(item => item._id));
+      setSelectedItems(filteredItems.map((item) => item._id));
     }
   };
 
   // Export data as CSV
   const exportToCSV = () => {
-    const headers = ["Item Name", "Type", "Category", "Location", "Date", "Reporter", "Contact", "Status"];
-    
+    const headers = [
+      "Item Name",
+      "Type",
+      "Category",
+      "Location",
+      "Date",
+      "Reporter",
+      "Contact",
+      "Status",
+    ];
+
     // Transform the data for CSV
-    const csvData = filteredItems.map(item => [
+    const csvData = filteredItems.map((item) => [
       item.itemName,
       item.itemType,
       item.category,
@@ -182,22 +216,25 @@ const LostFoundManagement = () => {
       new Date(item.date || item.createdAt).toLocaleDateString(),
       item.reporterName,
       item.contactNumber,
-      item.status
+      item.status,
     ]);
-    
+
     // Combine headers and data
     const csvContent = [
       headers.join(","),
-      ...csvData.map(row => row.join(","))
+      ...csvData.map((row) => row.join(",")),
     ].join("\n");
-    
+
     // Create download link
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.setAttribute("hidden", "");
     a.setAttribute("href", url);
-    a.setAttribute("download", `lost_found_report_${new Date().toISOString().split("T")[0]}.csv`);
+    a.setAttribute(
+      "download",
+      `lost_found_report_${new Date().toISOString().split("T")[0]}.csv`
+    );
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -216,35 +253,41 @@ const LostFoundManagement = () => {
   // Apply all filters and sorting
   const filteredItems = items
     .filter((item) => {
-      const matchesSearch = (
-        item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      const matchesSearch =
+        item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.reporterName.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      
-      const matchesType = itemTypeFilter === "all" || item.itemType === itemTypeFilter;
-      const matchesStatus = statusFilter === "all" || item.status === statusFilter;
-      const matchesCategory = categoryFilter === "all" || item.category === categoryFilter;
-      
+        item.reporterName.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesType =
+        itemTypeFilter === "all" || item.itemType === itemTypeFilter;
+      const matchesStatus =
+        statusFilter === "all" || item.status === statusFilter;
+      const matchesCategory =
+        categoryFilter === "all" || item.category === categoryFilter;
+
       return matchesSearch && matchesType && matchesStatus && matchesCategory;
     })
     .sort((a, b) => {
       const dateA = new Date(a.date || a.createdAt);
       const dateB = new Date(b.date || b.createdAt);
-      
+
       return dateSort === "newest" ? dateB - dateA : dateA - dateB;
     });
 
   return (
     <div className="container mx-auto px-4 py-6 bg-yellow-50">
-      <h1 className="text-2xl font-bold mb-6 text-yellow-800">Lost & Found Management</h1>
-      
+      <h1 className="text-2xl font-bold mb-6 text-yellow-800">
+        Lost & Found Management
+      </h1>
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         <div className="bg-white rounded-lg shadow-md border-2 border-yellow-100 p-4">
           <p className="text-yellow-700 text-sm">Total Items</p>
-          <p className="text-2xl font-semibold text-yellow-800">{stats.total}</p>
+          <p className="text-2xl font-semibold text-yellow-800">
+            {stats.total}
+          </p>
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <p className="text-gray-500 text-sm">Lost Items</p>
@@ -256,19 +299,26 @@ const LostFoundManagement = () => {
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <p className="text-gray-500 text-sm">Resolved</p>
-          <p className="text-2xl font-semibold text-blue-600">{stats.resolved}</p>
+          <p className="text-2xl font-semibold text-blue-600">
+            {stats.resolved}
+          </p>
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <p className="text-gray-500 text-sm">Pending</p>
-          <p className="text-2xl font-semibold text-yellow-600">{stats.pending}</p>
+          <p className="text-2xl font-semibold text-yellow-600">
+            {stats.pending}
+          </p>
         </div>
       </div>
-      
+
       {/* Search and Filters */}
       <div className="bg-white rounded-lg shadow-md border-2 border-yellow-100 p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4 mb-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
             <input
               type="text"
               placeholder="Search by item name, location or reporter..."
@@ -277,7 +327,7 @@ const LostFoundManagement = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
+
           <select
             className="px-4 py-2 border rounded-lg"
             value={itemTypeFilter}
@@ -287,7 +337,7 @@ const LostFoundManagement = () => {
             <option value="lost">Lost Items</option>
             <option value="found">Found Items</option>
           </select>
-          
+
           <select
             className="px-4 py-2 border rounded-lg"
             value={statusFilter}
@@ -298,7 +348,7 @@ const LostFoundManagement = () => {
             <option value="in-progress">In Progress</option>
             <option value="resolved">Resolved</option>
           </select>
-          
+
           <select
             className="px-4 py-2 border rounded-lg"
             value={categoryFilter}
@@ -312,7 +362,7 @@ const LostFoundManagement = () => {
             <option value="clothing">Clothing</option>
             <option value="other">Other</option>
           </select>
-          
+
           <select
             className="px-4 py-2 border rounded-lg"
             value={dateSort}
@@ -322,12 +372,13 @@ const LostFoundManagement = () => {
             <option value="oldest">Oldest First</option>
           </select>
         </div>
-        
+
         <div className="flex justify-between items-center">
           <p className="text-sm text-gray-600">
-            {filteredItems.length} {filteredItems.length === 1 ? "item" : "items"} found
+            {filteredItems.length}{" "}
+            {filteredItems.length === 1 ? "item" : "items"} found
           </p>
-          
+
           <div className="flex gap-2">
             {selectedItems.length > 0 && (
               <button
@@ -338,7 +389,7 @@ const LostFoundManagement = () => {
                 Delete Selected ({selectedItems.length})
               </button>
             )}
-            
+
             <button
               className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition flex items-center gap-1"
               onClick={exportToCSV}
@@ -349,7 +400,7 @@ const LostFoundManagement = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Items Table */}
       {loading ? (
         <div className="flex justify-center my-12">
@@ -357,7 +408,9 @@ const LostFoundManagement = () => {
         </div>
       ) : filteredItems.length === 0 ? (
         <div className="bg-white p-8 rounded-lg shadow text-center">
-          <p className="text-lg text-gray-600">No items found. Try adjusting your filters.</p>
+          <p className="text-lg text-gray-600">
+            No items found. Try adjusting your filters.
+          </p>
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow-md border-2 border-yellow-100 overflow-auto">
@@ -367,7 +420,10 @@ const LostFoundManagement = () => {
                 <th className="w-12 px-4 py-3">
                   <input
                     type="checkbox"
-                    checked={selectedItems.length === filteredItems.length && filteredItems.length > 0}
+                    checked={
+                      selectedItems.length === filteredItems.length &&
+                      filteredItems.length > 0
+                    }
                     onChange={handleSelectAll}
                     className="h-4 w-4"
                   />
@@ -418,12 +474,18 @@ const LostFoundManagement = () => {
                         </div>
                       ) : (
                         <div className="flex-shrink-0 h-10 w-10 mr-3 bg-gray-200 rounded-full flex items-center justify-center">
-                          <span className="text-gray-500 text-xs">{item.category.charAt(0).toUpperCase()}</span>
+                          <span className="text-gray-500 text-xs">
+                            {item.category.charAt(0).toUpperCase()}
+                          </span>
                         </div>
                       )}
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{item.itemName}</div>
-                        <div className="text-xs text-gray-500">{item.category}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {item.itemName}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {item.category}
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -439,15 +501,21 @@ const LostFoundManagement = () => {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm">{item.location}</td>
-                  <td className="px-4 py-3 text-sm">{formatDate(item.date || item.createdAt)}</td>
+                  <td className="px-4 py-3 text-sm">
+                    {formatDate(item.date || item.createdAt)}
+                  </td>
                   <td className="px-4 py-3">
                     <div className="text-sm">{item.reporterName}</div>
-                    <div className="text-xs text-gray-500">{item.contactNumber}</div>
+                    <div className="text-xs text-gray-500">
+                      {item.contactNumber}
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <select
                       value={item.status}
-                      onChange={(e) => updateItemStatus(item._id, e.target.value)}
+                      onChange={(e) =>
+                        updateItemStatus(item._id, e.target.value)
+                      }
                       className={`text-xs rounded-full px-2 py-1 border ${
                         item.status === "resolved"
                           ? "bg-green-100 text-green-800 border-green-200"
@@ -486,30 +554,44 @@ const LostFoundManagement = () => {
           </table>
         </div>
       )}
-      
+
       {/* Update Modal */}
       {showUpdateModal && itemToUpdate && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
             <h3 className="text-xl font-semibold mb-4">Edit Item</h3>
-            
+
             <form onSubmit={handleUpdateSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1 text-sm font-medium">Item Name</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Item Name
+                  </label>
                   <input
                     type="text"
                     value={itemToUpdate.itemName}
-                    onChange={(e) => setItemToUpdate({...itemToUpdate, itemName: e.target.value})}
+                    onChange={(e) =>
+                      setItemToUpdate({
+                        ...itemToUpdate,
+                        itemName: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block mb-1 text-sm font-medium">Category</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Category
+                  </label>
                   <select
                     value={itemToUpdate.category}
-                    onChange={(e) => setItemToUpdate({...itemToUpdate, category: e.target.value})}
+                    onChange={(e) =>
+                      setItemToUpdate({
+                        ...itemToUpdate,
+                        category: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg"
                   >
                     <option value="electronics">Electronics</option>
@@ -520,24 +602,38 @@ const LostFoundManagement = () => {
                     <option value="other">Other</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="block mb-1 text-sm font-medium">Item Type</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Item Type
+                  </label>
                   <select
                     value={itemToUpdate.itemType}
-                    onChange={(e) => setItemToUpdate({...itemToUpdate, itemType: e.target.value})}
+                    onChange={(e) =>
+                      setItemToUpdate({
+                        ...itemToUpdate,
+                        itemType: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg"
                   >
                     <option value="lost">Lost</option>
                     <option value="found">Found</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="block mb-1 text-sm font-medium">Status</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Status
+                  </label>
                   <select
                     value={itemToUpdate.status}
-                    onChange={(e) => setItemToUpdate({...itemToUpdate, status: e.target.value})}
+                    onChange={(e) =>
+                      setItemToUpdate({
+                        ...itemToUpdate,
+                        status: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg"
                   >
                     <option value="pending">Pending</option>
@@ -545,60 +641,92 @@ const LostFoundManagement = () => {
                     <option value="resolved">Resolved</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="block mb-1 text-sm font-medium">Location</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Location
+                  </label>
                   <input
                     type="text"
                     value={itemToUpdate.location}
-                    onChange={(e) => setItemToUpdate({...itemToUpdate, location: e.target.value})}
+                    onChange={(e) =>
+                      setItemToUpdate({
+                        ...itemToUpdate,
+                        location: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block mb-1 text-sm font-medium">Date</label>
                   <input
                     type="date"
-                    value={itemToUpdate.date?.split('T')[0] || ''}
-                    onChange={(e) => setItemToUpdate({...itemToUpdate, date: e.target.value})}
+                    value={itemToUpdate.date?.split("T")[0] || ""}
+                    onChange={(e) =>
+                      setItemToUpdate({ ...itemToUpdate, date: e.target.value })
+                    }
                     className="w-full px-3 py-2 border rounded-lg"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block mb-1 text-sm font-medium">Reporter Name</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Reporter Name
+                  </label>
                   <input
                     type="text"
                     value={itemToUpdate.reporterName}
-                    onChange={(e) => setItemToUpdate({...itemToUpdate, reporterName: e.target.value})}
+                    onChange={(e) =>
+                      setItemToUpdate({
+                        ...itemToUpdate,
+                        reporterName: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block mb-1 text-sm font-medium">Contact Number</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Contact Number
+                  </label>
                   <input
                     type="tel"
                     value={itemToUpdate.contactNumber}
-                    onChange={(e) => setItemToUpdate({...itemToUpdate, contactNumber: e.target.value})}
+                    onChange={(e) =>
+                      setItemToUpdate({
+                        ...itemToUpdate,
+                        contactNumber: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg"
                   />
                 </div>
-                
+
                 <div className="md:col-span-2">
-                  <label className="block mb-1 text-sm font-medium">Description</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Description
+                  </label>
                   <textarea
                     value={itemToUpdate.description}
-                    onChange={(e) => setItemToUpdate({...itemToUpdate, description: e.target.value})}
+                    onChange={(e) =>
+                      setItemToUpdate({
+                        ...itemToUpdate,
+                        description: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border rounded-lg"
                     rows="3"
                   ></textarea>
                 </div>
-                
+
                 {itemToUpdate.imageUrl && (
                   <div className="md:col-span-2">
-                    <label className="block mb-1 text-sm font-medium">Current Image</label>
+                    <label className="block mb-1 text-sm font-medium">
+                      Current Image
+                    </label>
                     <div className="h-40 w-40 overflow-hidden">
                       <img
                         src={itemToUpdate.imageUrl}
@@ -609,7 +737,7 @@ const LostFoundManagement = () => {
                   </div>
                 )}
               </div>
-              
+
               <div className="mt-6 flex justify-end space-x-3">
                 <button
                   type="button"
