@@ -23,7 +23,7 @@ import Alert from "./components/Alert";
 import Classroom from "./pages/Classroom";
 import Lobby from "./pages/Lobby"
 import NewsPortal from "./components/NewsPortal"; // Adjust the path as necessary
-import ClubManagement from "./components/Admin/ClubManagement";
+import ClubManagement from "./components/Admin/EventManagement";
 function App() {
   return (
     <Router>
