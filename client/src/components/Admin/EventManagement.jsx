@@ -283,10 +283,10 @@ const ClubManagement = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                     <div>
                         <h2 className="text-3xl font-bold text-indigo-700 dark:text-indigo-400 mb-2">
-                            Campus Transit
+                            University Event Management
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 max-w-xl">
-                            Streamlined bus schedule management system for efficient campus transportation
+                            Streamlined event management system for efficient reminders and scheduling
                         </p>
                     </div>
 
@@ -347,12 +347,12 @@ const ClubManagement = () => {
                         <div className="p-5 bg-gradient-to-r from-indigo-500 to-purple-600">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-xl font-bold text-white">View Events</h3>
-                                <Bus className="w-10 h-10 text-white opacity-90" />
+                                <Calendar className="w-10 h-10 text-white opacity-90" />
                             </div>
                         </div>
                         <div className="p-5">
                             <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                Browse and monitor all active bus routes and schedules of the campus
+                                Browse and monitor all active events of the university & its clubs
                             </p>
                             <button
                                 onClick={() => setActiveCard("view")}
@@ -377,7 +377,7 @@ const ClubManagement = () => {
                         </div>
                         <div className="p-5">
                             <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                Create new bus routes with stops, schedules, and driver assignments
+                                Create new official events associated with the university or its clubs
                             </p>
                             <button
                                 onClick={openCreateForm}
@@ -401,7 +401,7 @@ const ClubManagement = () => {
                         </div>
                         <div className="p-5">
                             <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                Update and modify existing routes, schedules, and bus information
+                                Update and modify existing events, schedules, and event information
                             </p>
                             <button
                                 onClick={() => setActiveCard("edit")}
@@ -425,7 +425,7 @@ const ClubManagement = () => {
                         </div>
                         <div className="p-5">
                             <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                Remove obsolete or discontinued bus routes from the system
+                                Remove obsolete or discontinued events from the system
                             </p>
                             <button
                                 onClick={() => setActiveCard("delete")}
