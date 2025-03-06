@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 
 const eventSchema = new mongoose.Schema({
-  title: { type: String, required: true, trim: true },
-  description: { type: String, required: true },
-  startDate: { type: Date, required: true },
-  endDate: { type: Date, required: true },
-  location: { type: String, required: true },
-  organizer: { type: mongoose.Schema.Types.ObjectId, ref: 'Club' },
+  title: { type: String,  trim: true },
+  description: { type: String,  },
+  startDate: { type: Date,  },
+  endDate: { type: Date,  },
+  location: { type: String,  },
+  organizer: { type: String },
   capacity: { type: Number, default: null },
   tags: [{ type: String, trim: true }],
   imageUrl: { type: String, default: null },

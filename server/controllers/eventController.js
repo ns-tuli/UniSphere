@@ -19,13 +19,8 @@ export const createEvent = async (req, res, next) => {
     const event = new Event(req.body);
     // If organizer (club) is specified, add event to club's events
     if (req.body.organizer) {
-      const club = await Club.findById(req.body.organizer);
-      if (!club) {
-        return res.status(404).json({ error: 'Organizer club not found' });
-      }
+      
       await event.save();
-      club.events.push(event._id);
-      await club.save();
     } else {
       await event.save();
     }

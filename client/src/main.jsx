@@ -13,11 +13,11 @@ const clientId = "651169042818-809bto6tomeio06m8ah23v07307v7met.apps.googleuserc
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <GoogleOAuthProvider clientId={clientId}>
-      <SocketProvider>
+      {/* <SocketProvider> */}
     <UserProvider>
       <App />
       </UserProvider>
-      </SocketProvider>
+      {/* </SocketProvider> */}
     </GoogleOAuthProvider>
   </React.StrictMode>
 );

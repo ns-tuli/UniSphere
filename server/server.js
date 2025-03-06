@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import connectDB from "./config/db.js";
-
+import roadmapRoutes from "./routes/roadmapRoutes.js"
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import adminRoutes from "./routes/adminRoutes.js";
 import alertRoutes from "./routes/alerts.js";
@@ -86,6 +86,7 @@ app.use("/api/navigation", navigationRoutes);
 app.use("/api/classroom", classroomRoutes);
 app.use("/api/news", newsRoutes);  // Fixed route path
 app.use("/api/uploads", uploadRoutes); // Use the upload routes
+app.use("/api/events", eventRoutes); // Use the upload routes
 
 
 const rooms = {};

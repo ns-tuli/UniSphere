@@ -1,11 +1,7 @@
+//client\src\components\Admin\ClubManagement.jsx
+
 import React, { useState, useEffect } from "react";
-import {
-    getBusSchedules,
-    getBusScheduleById,
-    addBusSchedule,
-    updateBusSchedule,
-    deleteBusSchedule
-} from "../../api/bus";
+import { addEvent, getEvents } from "../../api/event.js"
 import {
     Plus,
     Edit,
@@ -21,139 +17,144 @@ import {
     Clock,
     User,
     List,
-    Calendar
+    Users,
+    Calendar, Image
 } from "lucide-react";
 
 const ClubManagement = () => {
-    const [busSchedules, setBusSchedules] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredSchedules, setFilteredSchedules] = useState([]);
     const [activeCard, setActiveCard] = useState("view"); // view, add, edit, delete
+    const [events, setEvents] = useState([]);
+    const [filteredEvents, setFilteredEvents] = useState([]);
 
     // Form states
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [currentBusId, setCurrentBusId] = useState(null);
     const [selectedBus, setSelectedBus] = useState(null);
+
+    const [currentEventId, setCurrentEventId] = useState(null);
     const [formData, setFormData] = useState({
-        name: "",
-        busNumber: "",
-        capacity: "",
-        driver: "",
-        accessibility: false,
-        estimatedTime: "",
-        currentLocation: "",
-        stops: [],
-        schedule: []
+        title: '',
+        description: '',
+        startDate: '',
+        endDate: '',
+        location: '',
+        organizer: '',
+        capacity: '',
+        tags: [],
+        imageUrl: '',
+        attendees: [],  // Make sure this is an array
     });
+
 
     // Notification state
     const [notification, setNotification] = useState({ show: false, message: "", type: "" });
 
-    // Fetch all bus schedules on component mount
-    useEffect(() => {
-        fetchBusSchedules();
-    }, []);
-
-    // Filter bus schedules based on search query
-    useEffect(() => {
-        if (searchQuery.trim() === "") {
-            setFilteredSchedules(busSchedules);
-        } else {
-            const filtered = busSchedules.filter(
-                (bus) =>
-                    bus.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    bus.busNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    bus.driver.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setFilteredSchedules(filtered);
-        }
-    }, [searchQuery, busSchedules]);
-
-    // Fetch all bus schedules
-    const fetchBusSchedules = async () => {
+    const fetchEvents = async () => {
         setLoading(true);
         try {
-            const data = await getBusSchedules();
-            setBusSchedules(data);
-            setFilteredSchedules(data);
-            setError(null);
+            // Fetch events from the backend API
+            const data = await getEvents();
+            setEvents(data.data);  // Assuming the response contains a 'data' field with events
+            setFilteredEvents(data.data); // Initially, show all events
         } catch (err) {
-            setError("Failed to fetch bus schedules. Please try again.");
-            console.error(err);
+            setError(err.message);  // Handle any errors
         } finally {
-            setLoading(false);
+            setLoading(false);  // Set loading to false once data is fetched
         }
     };
+
+    useEffect(() => {
+        fetchEvents();
+    }, []);
+
+    const handleTagsChange = (e) => {
+        const value = e.target.value;
+        const tagsArray = value.split(',').map(tag => tag.trim()).filter(tag => tag); // split by commas, remove extra spaces and empty tags
+        setFormData({
+            ...formData,
+            tags: tagsArray
+        });
+    };
+
+    const addAttendeeField = () => {
+        setFormData({
+            ...formData,
+            attendees: Array.isArray(formData.attendees) ? [...formData.attendees, { user: '', rsvpStatus: 'attending' }] : [{ user: '', rsvpStatus: 'attending' }],
+        });
+    };
+
+    const removeAttendeeField = (index) => {
+        const updatedAttendees = formData.attendees.filter((_, i) => i !== index);
+        setFormData({
+            ...formData,
+            attendees: updatedAttendees,
+        });
+    };
+    const handleAttendeeChange = (index, field, value) => {
+        const updatedAttendees = [...formData.attendees];
+        updatedAttendees[index][field] = value;
+        setFormData({
+            ...formData,
+            attendees: updatedAttendees,
+        });
+    };
+
+
+
+
+    // Filter bus schedules based on search query
+    // useEffect(() => {
+    //     if (searchQuery.trim() === "") {
+    //         setFilteredSchedules(busSchedules);
+    //     } else {
+    //         const filtered = busSchedules.filter(
+    //             (bus) =>
+    //                 bus.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //                 bus.busNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //                 bus.driver.toLowerCase().includes(searchQuery.toLowerCase())
+    //         );
+    //         setFilteredSchedules(filtered);
+    //     }
+    // }, [searchQuery, busSchedules]);
+
+
 
     // Handle form input changes
     const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: type === "checkbox" ? checked : value
+            [name]: value,
         });
     };
 
-    // Handle stop changes
-    const handleStopChange = (index, value) => {
-        const updatedStops = [...formData.stops];
-        updatedStops[index] = value;
-        setFormData({ ...formData, stops: updatedStops });
-    };
 
-    // Add new stop field
-    const addStopField = () => {
-        setFormData({ ...formData, stops: [...formData.stops, ""] });
-    };
-
-    // Remove stop field
-    const removeStopField = (index) => {
-        const updatedStops = formData.stops.filter((_, i) => i !== index);
-        setFormData({ ...formData, stops: updatedStops });
-    };
-
-    // Handle schedule changes
-    const handleScheduleChange = (index, field, value) => {
-        const updatedSchedule = [...formData.schedule];
-        updatedSchedule[index] = { ...updatedSchedule[index], [field]: value };
-        setFormData({ ...formData, schedule: updatedSchedule });
-    };
-
-    // Add new schedule entry
-    const addScheduleEntry = () => {
-        setFormData({
-            ...formData,
-            schedule: [...formData.schedule, { time: "", status: "On Time" }]
-        });
-    };
-
-    // Remove schedule entry
-    const removeScheduleEntry = (index) => {
-        const updatedSchedule = formData.schedule.filter((_, i) => i !== index);
-        setFormData({ ...formData, schedule: updatedSchedule });
-    };
 
     // Open form for creating new bus
     const openCreateForm = () => {
         setFormData({
-            name: "",
-            busNumber: "",
-            capacity: "",
-            driver: "",
-            accessibility: false,
-            estimatedTime: "",
-            currentLocation: "",
-            stops: [""],
-            schedule: [{ time: "", status: "On Time" }]
+            title: "",           // Event title
+            description: "",     // Event description
+            startDate: "",       // Event start date
+            endDate: "",         // Event end date
+            location: "",        // Event location
+            organizer: "",       // Event organizer (e.g., the club)
+            capacity: "",        // Event capacity
+            tags: [],            // Tags associated with the event
+            imageUrl: "",        // Optional event image URL
+            attendees: [],       // List of attendees for the event
         });
-        setIsEditing(false);
-        setCurrentBusId(null);
-        setIsFormOpen(true);
-        setActiveCard("add");
+        setIsEditing(false);      // Set to false as it's for a new event, not editing
+        setCurrentEventId(null);  // Clear the current event ID
+        setIsFormOpen(true);      // Open the form for adding a new event
+        setActiveCard("add");    // Set the active card to the 'add' form
     };
+
 
     // Open form for editing bus
     const openEditForm = async (busId) => {
@@ -195,40 +196,44 @@ const ClubManagement = () => {
         setActiveCard("view");
     };
 
-    // Submit form
+    // Submit form  // Import the addEvent API function
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         // Validate form data
-        if (!formData.name || !formData.busNumber || !formData.driver) {
-            showNotification("Please fill in all required fields.", "error");
-            setLoading(false);
-            return;
-        }
+        // if (!formData.title || !formData.description || !formData.startDate || !formData.endDate || !formData.location) {
+        //     showNotification("Please fill in all required fields.", "error");
+        //     setLoading(false);
+        //     return;
+        // }
 
-        // Filter out empty stops
+        // Filter out empty tags (if any)
         const cleanedFormData = {
             ...formData,
-            stops: formData.stops.filter(stop => stop.trim() !== ""),
-            schedule: formData.schedule.filter(entry => entry.time.trim() !== "")
+            tags: formData.tags.filter(tag => tag.trim() !== ""),
         };
 
         try {
             if (isEditing) {
-                await updateBusSchedule(currentBusId, cleanedFormData);
-                showNotification("Bus schedule updated successfully!", "success");
+                // If editing, call the API to update the event
+                await updateEvent(currentEventId, cleanedFormData);
+                showNotification("Event updated successfully!", "success");
             } else {
-                await addBusSchedule(cleanedFormData);
-                showNotification("New bus schedule added successfully!", "success");
+                // If adding a new event, call the API to add the event
+                await addEvent(cleanedFormData);
+                showNotification("New event added successfully!", "success");
             }
-            fetchBusSchedules();
-            closeForm();
+
+            // Fetch the events again to get the updated list
+            fetchEvents();
+            closeForm();  // Close the form after submission
         } catch (err) {
             showNotification(
                 isEditing
-                    ? "Failed to update bus schedule. Please try again."
-                    : "Failed to add bus schedule. Please try again.",
+                    ? "Failed to update event. Please try again."
+                    : "Failed to add event. Please try again.",
                 "error"
             );
             console.error(err);
@@ -236,6 +241,7 @@ const ClubManagement = () => {
             setLoading(false);
         }
     };
+
 
     // Delete bus schedule
     const handleDelete = async (busId) => {
@@ -323,8 +329,9 @@ const ClubManagement = () => {
                                     : "text-green-700 dark:text-green-300"
                             }
                         >
-                            {notification.message}
+                            {typeof notification.message === "string" ? notification.message : notification.message?.text || "No message"}
                         </span>
+
                     </div>
                 </div>
             )}
@@ -452,101 +459,116 @@ const ClubManagement = () => {
                 )}
 
                 {/* View Buses */}
-                {activeCard === "view" && !loading && !error && (
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">All Bus Routes</h3>
-                            <button
-                                onClick={fetchBusSchedules}
-                                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 flex items-center"
-                            >
-                                <RefreshCw className="w-4 h-4 mr-1" />
-                                Refresh
-                            </button>
-                        </div>
-
-                        {/* No results */}
-                        {filteredSchedules.length === 0 && (
-                            <div className="p-8 text-center">
-                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
-                                    <Bus className="w-8 h-8 text-gray-500 dark:text-gray-400" />
-                                </div>
-                                <p className="text-gray-600 dark:text-gray-400 mb-2">
-                                    {searchQuery ? "No buses found matching your search." : "No bus schedules found."}
-                                </p>
-                                {searchQuery && (
-                                    <button
-                                        onClick={() => setSearchQuery("")}
-                                        className="text-indigo-600 dark:text-indigo-400 underline"
-                                    >
-                                        Clear search
-                                    </button>
+                {/* Event Grid - Updated with more compact and elegant cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredEvents.map((event) => (
+                        <div
+                            key={event._id}
+                            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:translate-y-1 max-w-sm mx-auto w-full"
+                        >
+                            {/* Card Header with Image */}
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+                                {event.imageUrl ? (
+                                    <img
+                                        src={event.imageUrl}
+                                        alt={event.title}
+                                        className="w-full h-56 object-cover object-center"
+                                    />
+                                ) : (
+                                    <div className="w-full h-56 flex items-center justify-center bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800">
+                                        <Image className="w-20 h-20 text-blue-600 dark:text-blue-400 opacity-60" />
+                                    </div>
                                 )}
+
+                                {/* Name and Title Overlay */}
+                                <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
+                                    <h3 className="text-xl font-bold text-white">
+                                        {event.title}
+                                    </h3>
+                                    <p className="text-blue-300 font-medium">
+                                        {event.startDate && new Date(event.startDate).toLocaleDateString()} - {event.endDate && new Date(event.endDate).toLocaleDateString()}
+                                    </p>
+                                </div>
                             </div>
-                        )}
 
-                        {/* Bus list */}
-                        {filteredSchedules.length > 0 && (
-                            <div className="grid gap-4 p-6">
-                                {filteredSchedules.map((bus) => (
-                                    <div
-                                        key={bus.busId}
-                                        className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                    >
-                                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                                            <div className="flex-1">
-                                                <div className="flex items-center mb-2">
-                                                    <span className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2">
-                                                        #{bus.busId}
-                                                    </span>
-                                                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                                        {bus.name}
-                                                    </h4>
-                                                </div>
+                            {/* Card Content */}
+                            <div className="p-5">
+                                <div className="space-y-2.5 mb-4">
+                                    <div className="flex items-center text-gray-700 dark:text-gray-300">
+                                        <MapPin className="mr-2 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+                                        <span className="text-sm">{event.location || event.eventLocation}</span> {/* Ensure this is a string */}
+                                    </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-                                                    <div className="flex items-center text-gray-600 dark:text-gray-400">
-                                                        <Bus className="w-4 h-4 mr-2 flex-shrink-0" />
-                                                        <span>Bus #{bus.busNumber}</span>
-                                                    </div>
-                                                    <div className="flex items-center text-gray-600 dark:text-gray-400">
-                                                        <User className="w-4 h-4 mr-2 flex-shrink-0" />
-                                                        <span>{bus.driver}</span>
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <MapPin className="w-4 h-4 mr-2 flex-shrink-0 text-gray-500 dark:text-gray-500" />
-                                                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(bus.currentLocation)}`}>
-                                                            {bus.currentLocation}
+                                    <div className="flex items-center text-gray-700 dark:text-gray-300">
+                                        <User className="mr-2 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                                        <span className="text-sm">
+                                            {typeof event.organizer === "string" ? event.organizer : event.organizer?.name || "Unknown Organizer"}
+                                        </span>
+                                    </div>
+
+                                    {event.capacity && (
+                                        <div className="flex items-center text-gray-700 dark:text-gray-300">
+                                            <Users className="mr-2 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                                            <span className="text-sm">
+                                                {typeof event.capacity === 'number' || typeof event.capacity === 'string'
+                                                    ? `${event.capacity} attendees`
+                                                    : "Unknown capacity"}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                </div>
+
+                                {/* Event Description */}
+                                <div className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                                    <p>{(event.description)?.slice(0, 100)}{(event.description)?.length > 100 && '...'}</p>
+                                </div>
+
+                                {/* Tags */}
+                                {event.tags && event.tags.length > 0 && (
+                                    <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
+                                        <h4 className="font-medium text-gray-900 dark:text-white mb-2 text-sm">
+                                            Tags
+                                        </h4>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {Array.isArray(event.tags) && event.tags.length > 0 && (
+                                                <div className="flex flex-wrap gap-2 mt-3">
+                                                    {event.tags.map((tag, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 rounded-full text-xs"
+                                                        >
+                                                            {typeof tag === 'string' ? tag : "Unknown Tag"}
                                                         </span>
-                                                    </div>
+                                                    ))}
                                                 </div>
-                                            </div>
+                                            )}
 
-                                            <div className="flex mt-4 md:mt-0 space-x-2">
-                                                <button
-                                                    onClick={() => openEditForm(bus.busId)}
-                                                    className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg transition-colors"
-                                                    title="Edit"
-                                                >
-                                                    <Edit className="w-5 h-5" />
-                                                </button>
-                                                <button
-                                                    onClick={() => openDeleteConfirmation(bus)}
-                                                    className="text-rose-600 dark:text-rose-400 hover:text-rose-800 dark:hover:text-rose-300 bg-rose-50 dark:bg-rose-900/20 p-2 rounded-lg transition-colors"
-                                                    title="Delete"
-                                                >
-                                                    <Trash2 className="w-5 h-5" />
-                                                </button>
-                                            </div>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
+                                )}
 
-                {/* Edit Selection View */}
+                                {/* Social Links */}
+                                <div className="flex justify-center space-x-4 mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                    {event.imageUrl && (
+                                        <a
+                                            href={event.imageUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:text-blue-700 transition-colors"
+                                        >
+                                            {/* <FaExternalLinkAlt size={20} /> */}
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+
+                {/* Edit Selection View
                 {activeCard === "edit" && !isFormOpen && !loading && (
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
                         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -671,7 +693,7 @@ const ClubManagement = () => {
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
                         <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                                {isEditing ? "Edit Bus Route" : "Add New Bus Route"}
+                                {isEditing ? "Edit Event" : "Add New Event"}
                             </h3>
                             <button
                                 onClick={closeForm}
@@ -684,19 +706,64 @@ const ClubManagement = () => {
                         <div className="p-6">
                             <form onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                    {/* Event Name */}
+                                    {/* Event Title */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Event Name *
+                                            Event Title *
                                         </label>
                                         <input
                                             type="text"
-                                            name="eventName"
-                                            value={formData.eventName}
+                                            name="title"
+                                            value={formData.title}
                                             onChange={handleInputChange}
                                             placeholder="e.g. Annual Science Fair"
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                            required
+
+                                        />
+                                    </div>
+
+                                    {/* Event Description */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Event Description *
+                                        </label>
+                                        <textarea
+                                            name="description"
+                                            value={formData.description}
+                                            onChange={handleInputChange}
+                                            placeholder="Describe the event"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+
+                                        />
+                                    </div>
+
+                                    {/* Event Start Date */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Event Start Date *
+                                        </label>
+                                        <input
+                                            type="date"
+                                            name="startDate"
+                                            value={formData.startDate}
+                                            onChange={handleInputChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+
+                                        />
+                                    </div>
+
+                                    {/* Event End Date */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Event End Date *
+                                        </label>
+                                        <input
+                                            type="date"
+                                            name="endDate"
+                                            value={formData.endDate}
+                                            onChange={handleInputChange}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+
                                         />
                                     </div>
 
@@ -707,124 +774,118 @@ const ClubManagement = () => {
                                         </label>
                                         <input
                                             type="text"
-                                            name="eventLocation"
-                                            value={formData.eventLocation}
+                                            name="location"
+                                            value={formData.location}
                                             onChange={handleInputChange}
                                             placeholder="e.g. Auditorium 2"
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                            required
+
                                         />
                                     </div>
 
-                                    {/* Hosting Club */}
+                                    {/* Organizer Club */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Hosting Club *
                                         </label>
                                         <input
                                             type="text"
-                                            name="hostingClub"
-                                            value={formData.hostingClub}
+                                            name="organizer"
+                                            value={formData.organizer}
                                             onChange={handleInputChange}
                                             placeholder="e.g. Robotics Club"
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                            required
+
                                         />
                                     </div>
 
-                                    {/* Event Date */}
+                                    {/* Event Capacity */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Event Date *
+                                            Event Capacity
                                         </label>
                                         <input
-                                            type="date"
-                                            name="eventDate"
-                                            value={formData.eventDate}
+                                            type="number"
+                                            name="capacity"
+                                            value={formData.capacity}
                                             onChange={handleInputChange}
+                                            placeholder="e.g. 100"
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                            required
                                         />
                                     </div>
 
-                                    {/* Event Time */}
+                                    {/* Tags */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Event Time *
+                                            Event Tags (optional)
                                         </label>
                                         <input
-                                            type="time"
-                                            name="eventTime"
-                                            value={formData.eventTime}
-                                            onChange={handleInputChange}
+                                            type="text"
+                                            name="tags"
+                                            value={formData.tags}
+                                            onChange={handleTagsChange}
+                                            placeholder="e.g. Science, Robotics"
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                            required
                                         />
                                     </div>
 
-                                    {/* Event Description */}
+                                    {/* Event Image URL */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Event Description
+                                            Event Image URL (optional)
                                         </label>
-                                        <textarea
-                                            name="eventDescription"
-                                            value={formData.eventDescription}
+                                        <input
+                                            type="text"
+                                            name="imageUrl"
+                                            value={formData.imageUrl}
                                             onChange={handleInputChange}
-                                            placeholder="e.g. This event showcases student innovations in robotics."
+                                            placeholder="e.g. https://example.com/image.jpg"
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                         />
                                     </div>
-
-                                    
                                 </div>
 
-                                {/* Schedule */}
+                                {/* Attendees Section */}
                                 <div className="mb-6">
                                     <div className="flex justify-between items-center mb-2">
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Event Schedule
+                                            Attendees RSVP Status
                                         </label>
                                         <button
                                             type="button"
-                                            onClick={addScheduleEntry}
+                                            onClick={addAttendeeField}
                                             className="text-indigo-600 dark:text-indigo-400 text-sm flex items-center"
                                         >
                                             <Plus className="w-4 h-4 mr-1" />
-                                            Add Time
+                                            Add Attendee
                                         </button>
                                     </div>
 
                                     <div className="space-y-2">
-                                        {formData.schedule.map((entry, index) => (
-                                            <div key={`schedule-${index}`} className="flex items-center">
+                                        {(formData.attendees || []).map((attendee, index) => (
+                                            <div key={`attendee-${index}`} className="flex items-center">
                                                 <div className="flex-1 grid grid-cols-2 gap-2">
-                                                    <div className="relative">
-                                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                            <Clock className="h-5 w-5 text-gray-400" />
-                                                        </div>
-                                                        <input
-                                                            type="text"
-                                                            value={entry.time}
-                                                            onChange={(e) => handleScheduleChange(index, "time", e.target.value)}
-                                                            placeholder="e.g. 10:00 AM"
-                                                            className="block w-full pl-10 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                                        />
-                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        value={attendee.user}
+                                                        onChange={(e) => handleAttendeeChange(index, "user", e.target.value)}
+                                                        placeholder="Attendee Name"
+                                                        className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                                    />
                                                     <select
-                                                        value={entry.status}
-                                                        onChange={(e) => handleScheduleChange(index, "status", e.target.value)}
+                                                        value={attendee.rsvpStatus}
+                                                        onChange={(e) => handleAttendeeChange(index, "rsvpStatus", e.target.value)}
                                                         className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                                     >
-                                                        <option value="Scheduled">Scheduled</option>
-                                                        <option value="Ongoing">Ongoing</option>
-                                                        <option value="Completed">Completed</option>
+                                                        <option value="attending">Attending</option>
+                                                        <option value="maybe">Maybe</option>
+                                                        <option value="declined">Declined</option>
                                                     </select>
                                                 </div>
-                                                {formData.schedule.length > 1 && (
+                                                {formData.attendees.length > 1 && (
                                                     <button
                                                         type="button"
-                                                        onClick={() => removeScheduleEntry(index)}
+                                                        onClick={() => removeAttendeeField(index)}
                                                         className="ml-2 text-rose-600 dark:text-rose-400 p-2"
                                                     >
                                                         <X className="w-5 h-5" />
@@ -863,6 +924,7 @@ const ClubManagement = () => {
                                     </button>
                                 </div>
                             </form>
+
 
                         </div>
                     </div>
