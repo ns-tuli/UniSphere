@@ -25,6 +25,10 @@ import classroomRoutes from "./routes/classroomRoutes.js";
 import newsRoutes from './routes/newsRoutes.js'; // Fixed missing quotes
 import uploadRoutes from "./routes/uploadRoutes.js"; // Routes for file uploads
 
+import lostFoundRoutes from "./routes/lostFoundRoutes.js";
+
+import { createServer } from "http";
+import initializeSocketServer from "./socket-server.js";
 
 dotenv.config();
 
@@ -47,6 +51,18 @@ app.use(cors({
 
 app.use(express.json());
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static("uploads")); // Serve uploaded files
+
+// Create uploads directory if it doesn't exist
+import { mkdir } from "fs/promises";
+try {
+  await mkdir("uploads", { recursive: true });
+} catch (err) {
+  if (err.code !== "EEXIST") {
+    console.error("Error creating uploads directory:", err);
+  }
+}
 
 const GEMINI_AI_KEY = process.env.GEMINI_AI; // Access the environment variable
 
@@ -134,8 +150,12 @@ app.use("/api/alerts", alertRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/student", studentRoutes);
+app.use("/api/lostfound", lostFoundRoutes);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+const httpServer = createServer(app);
+initializeSocketServer(httpServer);
+
+})

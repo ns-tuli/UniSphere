@@ -7,6 +7,7 @@ import {
   FaCalendarAlt,
   FaUserTie,
   FaMapMarkedAlt,
+  FaSearch,
   FaBell,
   FaUsers,
   FaGraduationCap,
@@ -89,11 +90,10 @@ export default function HomePage() {
     },
     {
       id: 8,
-      title: "Learning Hub",
-      icon: <FaGraduationCap className="text-3xl text-teal-600" />,
-      description:
-        "Access all learning tools, virtual classrooms, and resources",
-      path: "/LearningHub",
+      title: "LostFound",
+      icon: <FaSearch className="text-3xl text-indigo-600" />,
+      description: "Lost and found items on campus",
+      path: "/LostFound",
       color: "bg-teal-50",
       hoverColor: "hover:bg-teal-100",
       borderColor: "border-teal-200",
@@ -184,10 +184,10 @@ export default function HomePage() {
                   Virtual Classroom
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Video calling with online whiteboard
+                  Video calling, online whiteboard, and real-time chat
                 </p>
                 <Link
-                  to="/lobby"
+                  to="/Collab"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
                   Enter Classroom →
@@ -256,16 +256,16 @@ export default function HomePage() {
 
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  Read Articles
+                  Skill Courses
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Get updated with the latest articles about your subject!
+                  Specialized courses to enhance your professional skills
                 </p>
                 <Link
-                  to="/readArticle"
+                  to="/learning-hub/skill-courses"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
-                  Browse Articles →
+                  Browse Courses →
                 </Link>
               </div>
 
