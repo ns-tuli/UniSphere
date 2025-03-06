@@ -1,5 +1,5 @@
 //client\src\components\Admin\EventManagement.jsx
-
+import axios from "axios"
 import React, { useState, useEffect } from "react";
 import { addEvent, getEvents, getEventById, updateEvent, deleteEvent } from "../../api/event.js"
 import {
@@ -39,6 +39,19 @@ const EventManagement = () => {
 
 
     const [currentEventId, setCurrentEventId] = useState(null);
+    const [clubs, setClubs] = useState([])
+    useEffect(() => {
+        const fetchClubs = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/api/clubs");
+                setClubs(response.data);
+            } catch (err) {
+                console.error("Failed to fetch clubs:", err);
+            }
+        };
+
+        fetchClubs();
+    }, []);
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -55,6 +68,14 @@ const EventManagement = () => {
 
     // Notification state
     const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+
+
+    const handleClubSelection = (e) => {
+        setFormData({
+            ...formData,
+            organizer: e.target.value,  // Store the selected club's ObjectId
+        });
+    };
 
     const fetchEvents = async () => {
         setLoading(true);
@@ -186,21 +207,21 @@ const EventManagement = () => {
             setLoading(false);
         }
     };
-    
+
 
     // Open delete confirmation
     const openDeleteConfirmation = (event) => {
         setSelectedEvent(event);
         setActiveCard("delete");
     };
-    
+
 
     // Close form
     const closeForm = () => {
         setIsFormOpen(false);
         setActiveCard("view");
     };
-    
+
 
     // Submit form  // Import the addEvent API function
 
@@ -208,14 +229,7 @@ const EventManagement = () => {
         e.preventDefault();
         setLoading(true);
 
-        // Validate form data
-        // if (!formData.title || !formData.description || !formData.startDate || !formData.endDate || !formData.location) {
-        //     showNotification("Please fill in all required fields.", "error");
-        //     setLoading(false);
-        //     return;
-        // }
-
-        // Filter out empty tags (if any)
+        // Include the organizer (hosting club) ID in the event data
         const cleanedFormData = {
             ...formData,
             tags: formData.tags.filter(tag => tag.trim() !== ""),
@@ -223,18 +237,14 @@ const EventManagement = () => {
 
         try {
             if (isEditing) {
-                // If editing, call the API to update the event
                 await updateEvent(currentEventId, cleanedFormData);
                 showNotification("Event updated successfully!", "success");
             } else {
-                // If adding a new event, call the API to add the event
-                await addEvent(cleanedFormData);
+                await addEvent(cleanedFormData);  // This will send the form data along with the organizer ID
                 showNotification("New event added successfully!", "success");
             }
-
-            // Fetch the events again to get the updated list
-            fetchEvents();
-            closeForm();  // Close the form after submission
+            fetchEvents();  // Re-fetch events to reflect changes
+            closeForm();    // Close the form after submission
         } catch (err) {
             showNotification(
                 isEditing
@@ -249,8 +259,9 @@ const EventManagement = () => {
     };
 
 
-   
-    
+
+
+
     // Delete bus schedule
     const handleDelete = async (eventId) => {
         setLoading(true);
@@ -266,7 +277,7 @@ const EventManagement = () => {
             setLoading(false);
         }
     };
-    
+
     // Show notification
     const showNotification = (message, type) => {
         setNotification({ show: true, message, type });
@@ -275,7 +286,7 @@ const EventManagement = () => {
             setNotification({ show: false, message: "", type: "" });
         }, 5000);
     };
-    
+
 
     // Get status color
     const getStatusColor = (status) => {
@@ -287,7 +298,7 @@ const EventManagement = () => {
         }
         return "text-blue-600 bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400";
     };
-    
+
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
@@ -801,18 +812,22 @@ const EventManagement = () => {
 
                                     {/* Organizer Club */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        <label htmlFor="organizer" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Hosting Club *
                                         </label>
-                                        <input
-                                            type="text"
+                                        <select
                                             name="organizer"
                                             value={formData.organizer}
-                                            onChange={handleInputChange}
-                                            placeholder="e.g. Robotics Club"
+                                            onChange={handleClubSelection}
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-
-                                        />
+                                        >
+                                            <option value="">Select a club</option>
+                                            {clubs.map((club) => (
+                                                <option key={club._id} value={club._id}>
+                                                    {club.name}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
 
                                     {/* Event Capacity */}
