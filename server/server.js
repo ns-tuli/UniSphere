@@ -26,6 +26,8 @@ import newsRoutes from './routes/newsRoutes.js'; // Fixed missing quotes
 import uploadRoutes from "./routes/uploadRoutes.js"; // Routes for file uploads
 
 import lostFoundRoutes from "./routes/lostFoundRoutes.js";
+import menuRoutes from './routes/menuRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 
 import { createServer } from "http";
 import initializeSocketServer from "./socket-server.js";
@@ -104,8 +106,8 @@ app.use("/api/classroom", classroomRoutes);
 app.use("/api/news", newsRoutes);  // Fixed route path
 app.use("/api/uploads", uploadRoutes); // Use the upload routes
 app.use('/api/user',userRoutes)
-
-
+app.use('/api/orders', orderRoutes);
+app.use('/api/menu', menuRoutes);
 
 const rooms = {};
 
