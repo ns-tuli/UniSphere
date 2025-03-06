@@ -27,10 +27,11 @@ import uploadRoutes from "./routes/uploadRoutes.js"; // Routes for file uploads
 
 import lostFoundRoutes from "./routes/lostFoundRoutes.js";
 import menuRoutes from './routes/menuRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 
-import { createServer } from "http";
-import initializeSocketServer from "./socket-server.js";
+
+
 
 dotenv.config();
 
@@ -106,6 +107,7 @@ app.use("/api/classroom", classroomRoutes);
 app.use("/api/news", newsRoutes);  // Fixed route path
 app.use("/api/uploads", uploadRoutes); // Use the upload routes
 app.use('/api/user',userRoutes)
+app.use('/api/notifications', notificationRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/menu', menuRoutes);
 
@@ -156,8 +158,5 @@ app.use("/api/lostfound", lostFoundRoutes);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-
-const httpServer = createServer(app);
-initializeSocketServer(httpServer);
-
-})
+  console.log(`Server is running on port ${PORT}`);
+});
