@@ -14,6 +14,7 @@ import alertRoutes from "./routes/alerts.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import studentRoutes from "./routes/studentDataRoutes.js";
+import arRoutes from "./routes/arRoutes.js";
 
 import facultyRoutes from "./routes/facultyRoutes.js";
 import { createServer } from "http";
@@ -69,6 +70,7 @@ app.use("/api/alerts", alertRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/student", studentRoutes);
+app.use("/api/ar", arRoutes);
 
 const PORT = process.env.PORT || 5000;
 

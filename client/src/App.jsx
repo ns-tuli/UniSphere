@@ -26,6 +26,7 @@ import TestAuth from "./components/TestAuth";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import UserManagement from "./components/Admin/UserManagement";
 import Collab from "./components/Collab/Collab";
+import AR from "./components/AR";
 
 function App() {
   return (
@@ -112,6 +113,7 @@ function App() {
             <Route path="/profile" element={<StudentProfile />} />
             <Route path="/alerts" element={<Alert />} />
             <Route path="/test-auth" element={<TestAuth />} />
+            <Route path="/AR" element={<AR />} />
           </Route>
         </Routes>
       </Router>
