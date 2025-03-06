@@ -1,4 +1,14 @@
-import { scheduleNotification, cancelNotification, getScheduledNotifications } from '../services/notificationService.js';
+import { cancelNotification, getScheduledNotifications, scheduleNotification } from '../services/notificationService.js';
+import nodemailer from 'nodemailer';
+
+// Configure nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 /**
  * Schedule a new notification
@@ -29,6 +39,40 @@ export function schedule(req, res) {
   } catch (error) {
     console.error('❌ Error scheduling notification:', error);
     res.status(500).json({ error: 'Failed to schedule notification' });
+  }
+}
+
+export async function send(req, res) {
+  try {
+    const { to, subject, text, html, name } = req.body;
+
+    if (!to || !subject || !text) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      text,
+      html: html || undefined,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    
+    res.status(200).json({ 
+      success: true, 
+      messageId: info.messageId,
+      message: 'Email sent successfully'
+    });
+
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to send email',
+      details: error.message 
+    });
   }
 }
 

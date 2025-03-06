@@ -4,9 +4,10 @@ import nodemailer from 'nodemailer';
 const scheduledJobs = new Map();
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.example.com',
-  port: process.env.SMTP_PORT || 587,
-  secure: process.env.SMTP_SECURE === 'true',
+  service: "gmail",
+  host:'smtp.example.com',
+  port: 587,
+  secure: 'false',
   auth: {
     user: process.env.SMTP_USER || 'bhuiyansiyam294@gmail.com',
     pass: process.env.SMTP_PASS || 'dnvg izhz xfvw mrji'
