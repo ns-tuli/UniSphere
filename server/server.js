@@ -17,6 +17,7 @@ import { Server } from "socket.io";
 import classroomRoutes from "./routes/classroomRoutes.js";
 import newsRoutes from './routes/newsRoutes.js';  // Fixed missing quotes
 import bodyParser from 'body-parser';
+import quizRoutes from "./routes/quizRoutes.js"; // Import the quiz routes
 import uploadRoutes from "./routes/uploadRoutes.js"; // Routes for file uploads
 
 
@@ -80,7 +81,8 @@ app.use("/api/faculty", faculty);
 app.use("/api/navigation", navigationRoutes);
 app.use("/api/classroom", classroomRoutes);
 app.use("/api/news", newsRoutes);  // Fixed route path
-app.use("/api/v1/uploads", uploadRoutes); // Use the upload routes
+app.use("/api/quiz", quizRoutes); // Use the upload routes
+
 
 
 const rooms = {};

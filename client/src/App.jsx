@@ -23,6 +23,7 @@ import Classroom from "./pages/Classroom";
 import NewsPortal from "./components/NewsPortal"; // Adjust the path as necessary
 import ClubManagement from "./components/Admin/ClubManagement";
 import UploadNotes from "./components/UploadNotes";
+import Chateau from "./components/Chateau"; // Adjust the path as necessary
 function App() {
   return (
     <Router>
@@ -59,7 +60,7 @@ function App() {
           <Route path="/profile" element={<StudentProfile />} />
           <Route path="/readArticle" element={<NewsPortal />} />
           <Route path="/upload-notes" element={<UploadNotes />} />
-
+        <Route path="/Chateau" element={<Chateau />} />
           <Route path="/Admin/Events" element={<ClubManagement />} />
         </Route>
       </Routes>
