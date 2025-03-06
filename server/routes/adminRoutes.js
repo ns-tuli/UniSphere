@@ -1,6 +1,12 @@
 import express from "express";
 import { protect, isAdmin } from "../middleware/authMiddleware.js";
 import User from "../models/User.js";
+import {
+  getAllItems,
+  updateItemStatus,
+  deleteItem,
+  bulkDeleteItems,
+} from "../controllers/lostFoundController.js";
 
 const router = express.Router();
 
@@ -54,5 +60,11 @@ router.put("/remove-admin/:id", protect, isAdmin, async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+
+// Lost & Found Management Routes
+router.get("/lostfound/items", getAllItems);
+router.patch("/lostfound/items/:id", updateItemStatus);
+router.delete("/lostfound/items/:id", deleteItem);
+router.post("/lostfound/bulk-delete", bulkDeleteItems);
 
 export default router;

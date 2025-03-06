@@ -26,6 +26,9 @@ import TestAuth from "./components/TestAuth";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import UserManagement from "./components/Admin/UserManagement";
 import Collab from "./components/Collab/Collab";
+import LostFound from "./components/LostFound";
+import LostFoundManagement from "./components/Admin/LostFoundManagement";
+
 
 function App() {
   return (
@@ -94,6 +97,14 @@ function App() {
                 }
               />
               <Route
+                path="LostFoundManagement"
+                element={
+                  <ProtectedAdminRoute>
+                    <LostFoundManagement />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
                 path="UserManagement"
                 element={
                   <ProtectedAdminRoute>
@@ -112,6 +123,7 @@ function App() {
             <Route path="/profile" element={<StudentProfile />} />
             <Route path="/alerts" element={<Alert />} />
             <Route path="/test-auth" element={<TestAuth />} />
+            <Route path="/LostFound" element={<LostFound />} />
           </Route>
         </Routes>
       </Router>

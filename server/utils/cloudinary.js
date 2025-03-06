@@ -9,17 +9,18 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const uploadToCloudinary = async (file) => {
+export const uploadToCloudinary = async (file, folder = "faculty") => {
   try {
     const result = await cloudinary.uploader.upload(file.path, {
-      folder: "faculty",
-      width: 300,
-      crop: "scale",
+      folder: folder,
+      resource_type: "auto",
+      width: 800,
+      crop: "limit",
     });
     return {
       public_id: result.public_id,
       url: result.secure_url,
-    };
+    }; // Fixed syntax error here
   } catch (error) {
     console.error("Cloudinary upload error:", error);
     throw error;

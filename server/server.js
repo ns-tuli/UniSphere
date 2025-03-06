@@ -14,6 +14,7 @@ import alertRoutes from "./routes/alerts.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import studentRoutes from "./routes/studentDataRoutes.js";
+import lostFoundRoutes from "./routes/lostFoundRoutes.js";
 
 import facultyRoutes from "./routes/facultyRoutes.js";
 import { createServer } from "http";
@@ -28,6 +29,18 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static("uploads")); // Serve uploaded files
+
+// Create uploads directory if it doesn't exist
+import { mkdir } from "fs/promises";
+try {
+  await mkdir("uploads", { recursive: true });
+} catch (err) {
+  if (err.code !== "EEXIST") {
+    console.error("Error creating uploads directory:", err);
+  }
+}
 
 const GEMINI_AI_KEY = process.env.GEMINI_AI; // Access the environment variable
 
@@ -69,6 +82,7 @@ app.use("/api/alerts", alertRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/student", studentRoutes);
+app.use("/api/lostfound", lostFoundRoutes);
 
 const PORT = process.env.PORT || 5000;
 
