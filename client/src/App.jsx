@@ -25,6 +25,7 @@ import Lobby from "./pages/Lobby"
 import NewsPortal from "./components/NewsPortal"; // Adjust the path as necessary
 import ClubManagement from "./components/Admin/ClubManagement";
 import EventManagement from "./components/Admin/EventManagement";
+import MyClubEvents from "./components/MyClubEvents";
 function App() {
   return (
     <Router>
@@ -63,6 +64,7 @@ function App() {
           <Route path="/readArticle" element={<NewsPortal />} />
           <Route path="/Admin/Events" element={<EventManagement/>} />
           <Route path="/Admin/Clubs" element={<ClubManagement />} />
+          <Route path="/MyClubEvents" element={<MyClubEvents />} />
         </Route>
       </Routes>
     </Router>
