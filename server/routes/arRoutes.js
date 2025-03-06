@@ -1,10 +1,10 @@
-import express from 'express';
-import Location from '../models/Location.js';
+import express from "express";
+import Location from "../models/Location.js";
 
 const router = express.Router();
 
 // Get all locations
-router.get('/locations', async (req, res) => {
+router.get("/locations", async (req, res) => {
   try {
     const locations = await Location.find();
     res.json(locations);
@@ -14,13 +14,13 @@ router.get('/locations', async (req, res) => {
 });
 
 // Add new location
-router.post('/locations', async (req, res) => {
+router.post("/locations", async (req, res) => {
   const location = new Location({
     name: req.body.name,
     type: req.body.type,
     coordinates: req.body.coordinates,
     description: req.body.description,
-    icon: req.body.icon
+    icon: req.body.icon,
   });
 
   try {
