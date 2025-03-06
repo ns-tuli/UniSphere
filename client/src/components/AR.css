@@ -36,12 +36,11 @@
 }
 
 .place-details {
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
+  background: rgba(0, 0, 0, 0.9);
   padding: 20px;
-  border-radius: 10px;
-  max-width: 300px;
-  margin: 10px auto;
+  border-radius: 15px;
+  max-width: 80%;
+  margin: 0 auto;
 }
 
 .place-details button {
@@ -93,4 +92,91 @@
   border-radius: 5px;
   text-align: center;
   margin-top: 10px;
+}
+
+.ar-start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #4cc3d9 100%);
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.start-ar-button {
+  background: #4cc3d9;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 18px;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.start-ar-button:hover {
+  transform: scale(1.05);
+}
+
+.location-info {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.ar-overlay {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.navigation-modal {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.navigation-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.navigation-buttons button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 15px;
+  background: #4cc3d9;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.navigation-buttons button:hover {
+  transform: scale(1.05);
+  background: #3ba3b9;
 }

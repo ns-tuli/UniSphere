@@ -41,6 +41,16 @@ const testLocations = [
     description: "Campus dining hall",
     icon: "cone",
   },
+  {
+    name: "Siyam's home",
+    type: "other",
+    coordinates: {
+      latitude: 23.8102, // Slightly offset coordinates
+      longitude: 90.4123,
+    },
+    description: "siyam",
+    icon: "cone",
+  },
 ];
 
 const addLocations = async () => {
