@@ -15,6 +15,8 @@ import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import studentRoutes from "./routes/studentDataRoutes.js";
 import lostFoundRoutes from "./routes/lostFoundRoutes.js";
+import path from "path";
+import virtualQuizRoutes from "./routes/api/virtualQuiz.js";
 
 import facultyRoutes from "./routes/facultyRoutes.js";
 import { createServer } from "http";
@@ -27,15 +29,29 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5175", "http://localhost:3000"], // Add your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/uploads", express.static("uploads")); // Serve uploaded files
+
+// Serve uploaded files - make sure this is before any routes
+app.use("/uploads", express.static("uploads"));
+// app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+// Get the current file's directory path using import.meta.url
+const __dirname = new URL('.', import.meta.url).pathname;
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
 
 // Create uploads directory if it doesn't exist
 import { mkdir } from "fs/promises";
 try {
   await mkdir("uploads", { recursive: true });
+  console.log("Uploads directory created or already exists");
 } catch (err) {
   if (err.code !== "EEXIST") {
     console.error("Error creating uploads directory:", err);
@@ -83,12 +99,32 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/lostfound", lostFoundRoutes);
+app.use("/api/virtual-quiz", virtualQuizRoutes);
+
+// Serve static assets in production
+if (process.env.NODE_ENV === "production") {
+  // Set static folder
+  app.use(express.static("client/build"));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
 
 const PORT = process.env.PORT || 5000;
 
 const httpServer = createServer(app);
-initializeSocketServer(httpServer);
+
+// Attach app to the httpServer for socket.io access in controllers
+httpServer.app = app;
+
+// Initialize socket server
+const io = initializeSocketServer(httpServer);
+
+// Make io available to the app
+app.set("io", io);
 
 httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Socket.io server initialized for real-time bus tracking`);
 });

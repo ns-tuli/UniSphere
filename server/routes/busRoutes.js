@@ -9,4 +9,8 @@ router.post("/", busController.addBusSchedule);
 router.put("/:busId", busController.updateBusSchedule);
 router.delete("/:busId", busController.deleteBusSchedule);
 
+router.put("/:busId/location", busController.updateBusLocation);
+router.post("/:busId/notifications", busController.addBusNotification);
+router.get("/:busId/notifications", busController.getBusNotifications);
+
 export default router;

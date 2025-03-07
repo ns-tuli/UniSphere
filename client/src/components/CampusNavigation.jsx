@@ -12,6 +12,7 @@ import {
   Layers,
   AlertTriangle,
   BookOpen,
+  Loader2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import MapboxMap from "./Map/MapboxMap";
@@ -265,6 +266,99 @@ function ARModeComponent() {
   );
 }
 
+// Add new RouteSelector component
+const RouteSelector = ({
+  userLocation,
+  buildings,
+  onRouteSelect,
+  startLocation,
+  endLocation,
+}) => {
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h3 className="text-lg font-medium text-yellow-600 mb-4">
+        Plan Your Route
+      </h3>
+
+      <div className="space-y-4">
+        {/* Start Location Selector */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Start Location
+          </label>
+          <select
+            className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700"
+            value={startLocation ? JSON.stringify(startLocation) : ""}
+            onChange={(e) =>
+              onRouteSelect(
+                "start",
+                e.target.value ? JSON.parse(e.target.value) : null
+              )
+            }
+          >
+            <option value="">Select start point...</option>
+            <option value={JSON.stringify(userLocation)}>
+              📍 My Current Location
+            </option>
+            {buildings.map((building) => (
+              <option
+                key={`start-${building.id}`}
+                value={JSON.stringify(building.coordinates)}
+              >
+                🏢 {building.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* End Location Selector */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Destination
+          </label>
+          <select
+            className="w-full p-2 border rounded-lg bg-gray-50 dark:bg-gray-700"
+            value={endLocation ? JSON.stringify(endLocation) : ""}
+            onChange={(e) =>
+              onRouteSelect(
+                "end",
+                e.target.value ? JSON.parse(e.target.value) : null
+              )
+            }
+          >
+            <option value="">Select destination...</option>
+            {buildings.map((building) => (
+              <option
+                key={`end-${building.id}`}
+                value={JSON.stringify(building.coordinates)}
+              >
+                🏢 {building.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {startLocation && endLocation && (
+          <div className="flex gap-2 mt-4">
+            <button
+              onClick={() => onRouteSelect("clear")}
+              className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg"
+            >
+              Clear Route
+            </button>
+            <button
+              onClick={() => onRouteSelect("swap")}
+              className="flex-1 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg"
+            >
+              Swap Points
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function CampusNavigation() {
   const [selectedBuilding, setSelectedBuilding] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -319,34 +413,38 @@ export default function CampusNavigation() {
       const options = {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 0
+        maximumAge: 0,
       };
 
       const success = (position) => {
         const { latitude, longitude } = position.coords;
         setUserLocation([latitude, longitude]);
         setLocationAccuracy(position.coords.accuracy);
-        
-        setViewState(prev => ({
+
+        setViewState((prev) => ({
           ...prev,
           latitude,
           longitude,
-          zoom: 17
+          zoom: 17,
         }));
-        
+
         setIsLocatingUser(false);
       };
 
       const error = (err) => {
         setIsLocatingUser(false);
         console.warn(`ERROR(${err.code}): ${err.message}`);
-        
+
         switch (err.code) {
           case err.PERMISSION_DENIED:
-            alert("Please enable location access in your browser settings to use this feature.");
+            alert(
+              "Please enable location access in your browser settings to use this feature."
+            );
             break;
           case err.POSITION_UNAVAILABLE:
-            alert("Location information is unavailable. Please check your device's GPS settings.");
+            alert(
+              "Location information is unavailable. Please check your device's GPS settings."
+            );
             break;
           case err.TIMEOUT:
             alert("Location request timed out. Please try again.");
@@ -360,7 +458,11 @@ export default function CampusNavigation() {
       navigator.geolocation.getCurrentPosition(success, error, options);
 
       // Watch position for updates
-      const watchId = navigator.geolocation.watchPosition(success, error, options);
+      const watchId = navigator.geolocation.watchPosition(
+        success,
+        error,
+        options
+      );
 
       // Cleanup
       return () => {
@@ -387,24 +489,26 @@ export default function CampusNavigation() {
         const { latitude, longitude } = position.coords;
         setUserLocation([latitude, longitude]);
         setLocationAccuracy(position.coords.accuracy);
-        
+
         setViewState({
           longitude,
           latitude,
-          zoom: 17
+          zoom: 17,
         });
-        
+
         setIsLocatingUser(false);
       },
       (error) => {
         setIsLocatingUser(false);
-        alert("Could not get your location. Please check your device settings.");
+        alert(
+          "Could not get your location. Please check your device settings."
+        );
         console.error("Error getting location:", error);
       },
       {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 0
+        maximumAge: 0,
       }
     );
   };
@@ -464,185 +568,166 @@ export default function CampusNavigation() {
     }
   };
 
-  // Modify the renderRouteControls function
-  const renderRouteControls = (building) => (
-    <div className="mt-4 bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-      <h4 className="text-lg font-medium text-yellow-600 dark:text-yellow-400 mb-4">
-        Route Planning
-      </h4>
+  // Add new route selection handler
+  const handleRouteSelection = (type, value) => {
+    switch (type) {
+      case "start":
+        setRouteStart(value);
+        break;
+      case "end":
+        setRouteEnd(value);
+        break;
+      case "clear":
+        setRouteStart(null);
+        setRouteEnd(null);
+        break;
+      case "swap":
+        const temp = routeStart;
+        setRouteStart(routeEnd);
+        setRouteEnd(temp);
+        break;
+    }
+  };
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        {/* Start Location Box */}
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
-          <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-            Start
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="font-medium">
-              {routeStart
-                ? routeStart === userLocation
-                  ? "Current Location"
-                  : campusBuildings.find(
-                      (b) =>
-                        b.coordinates[0] === routeStart[0] &&
-                        b.coordinates[1] === routeStart[1]
-                    )?.name || "Selected Location"
-                : "Not Set"}
-            </span>
-            {routeStart && (
-              <button
-                onClick={() => setRouteStart(null)}
-                className="text-red-500 hover:text-red-600"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        </div>
+  // Modify the renderMapView function
+  const renderMapView = () => (
+    <div className="h-[calc(100vh-12rem)] flex flex-col lg:flex-row gap-4">
+      {/* Side Panel - Route Selection & Building List */}
+      <div className="w-full lg:w-[320px] flex flex-col gap-4 overflow-y-auto p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+        <RouteSelector
+          userLocation={userLocation}
+          buildings={campusBuildings}
+          onRouteSelect={handleRouteSelection}
+          startLocation={routeStart}
+          endLocation={routeEnd}
+        />
 
-        {/* Destination Box */}
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
-          <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-            Destination
+        {/* Building List */}
+        <div className="flex-1 overflow-hidden">
+          <div className="p-3 bg-yellow-500 dark:bg-yellow-600 text-white rounded-t-lg">
+            <h3 className="text-lg font-semibold flex items-center">
+              <Layers className="w-4 h-4 mr-2" />
+              Campus Buildings
+            </h3>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="font-medium">
-              {routeEnd
-                ? campusBuildings.find(
-                    (b) =>
-                      b.coordinates[0] === routeEnd[0] &&
-                      b.coordinates[1] === routeEnd[1]
-                  )?.name || "Selected Location"
-                : "Not Set"}
-            </span>
-            {routeEnd && (
-              <button
-                onClick={() => setRouteEnd(null)}
-                className="text-red-500 hover:text-red-600"
+          <div className="overflow-y-auto max-h-[calc(100vh-36rem)]">
+            {filteredBuildings.map((building) => (
+              <motion.div
+                key={building.id}
+                whileHover={{ scale: 1.02 }}
+                onClick={() => handleBuildingSelect(building)}
+                className={`p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-yellow-50 dark:hover:bg-gray-700 ${
+                  selectedBuilding?.id === building.id
+                    ? "bg-yellow-100 dark:bg-gray-700"
+                    : ""
+                }`}
               >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+                <h3 className="text-lg font-medium text-yellow-700 dark:text-yellow-300">
+                  {building.name}
+                </h3>
+                <div className="flex items-center mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  <span className="mr-4">
+                    <Info className="w-4 h-4 inline mr-1" />
+                    {building.type.charAt(0).toUpperCase() +
+                      building.type.slice(1)}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        {!routeStart && (
-          <>
-            <button
-              onClick={() => handleRouteSelect({ coordinates: userLocation })}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2"
-            >
-              <Navigation className="w-5 h-5" />
-              Start from Current Location
-            </button>
-            <button
-              onClick={() => handleRouteSelect(building)}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2"
-            >
-              <Map className="w-5 h-5" />
-              Set as Start
-            </button>
-          </>
-        )}
-        {routeStart && !routeEnd && (
+      {/* Main Map Container */}
+      <div className="flex-1 relative rounded-xl overflow-hidden shadow-lg min-h-[600px]">
+        <MapboxMap
+          buildings={filteredBuildings}
+          selectedBuilding={selectedBuilding}
+          userLocation={userLocation}
+          onBuildingSelect={setSelectedBuilding}
+          viewState={viewState}
+          onViewStateChange={setViewState}
+          routeStart={routeStart}
+          routeEnd={routeEnd}
+        />
+
+        {/* Map Controls - Positioned absolutely over the map */}
+        <div className="absolute top-4 right-4 flex flex-col gap-2">
           <button
-            onClick={() => handleRouteSelect(building)}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+            onClick={getUserLocation}
+            className="bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 p-3 rounded-lg shadow-lg transition-all"
+            title="Center on my location"
           >
-            <Navigation className="w-5 h-5" />
-            Set as Destination
+            <Navigation className="w-5 h-5 text-yellow-600" />
           </button>
-        )}
-        {routeStart && routeEnd && (
-          <div className="flex gap-2">
+          {routeStart && routeEnd && (
             <button
               onClick={() => {
                 setRouteStart(null);
                 setRouteEnd(null);
               }}
-              className="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+              className="bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 p-3 rounded-lg shadow-lg transition-all"
+              title="Clear route"
             >
-              <X className="w-5 h-5" />
-              Clear Route
+              <X className="w-5 h-5 text-red-500" />
             </button>
-            <button
-              onClick={() => setActiveMode("map")}
-              className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2"
-            >
-              <Map className="w-5 h-5" />
-              View on Map
-            </button>
+          )}
+        </div>
+
+        {/* Route Status Overlay */}
+        {(routeStart || routeEnd) && (
+          <div className="absolute top-4 left-4 bg-white/90 dark:bg-gray-800/90 p-3 rounded-lg shadow-lg max-w-sm">
+            <div className="text-sm space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span className="font-medium">
+                  From: {getLocationName(routeStart)}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-red-500 rounded-full" />
+                <span className="font-medium">
+                  To: {getLocationName(routeEnd)}
+                </span>
+              </div>
+            </div>
           </div>
         )}
       </div>
     </div>
   );
 
-  const renderMapView = () => (
-    <div className="h-[600px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden relative">
-      <MapboxMap
-        buildings={filteredBuildings}
-        selectedBuilding={selectedBuilding}
-        userLocation={userLocation}
-        onBuildingSelect={setSelectedBuilding}
-        viewState={viewState}
-        onViewStateChange={setViewState}
-        routeStart={routeStart}
-        routeEnd={routeEnd}
-      />
-
-      {/* Location accuracy indicator */}
-      {locationAccuracy && (
-        <div className="absolute top-4 left-4 bg-white/90 dark:bg-gray-800/90 px-3 py-2 rounded-lg shadow-lg text-sm">
-          <p className="text-gray-600 dark:text-gray-300">
-            Location accuracy: ±{Math.round(locationAccuracy)}m
-          </p>
-        </div>
-      )}
-
-      {/* Enhanced location button */}
-      <button
-        onClick={getUserLocation}
-        className="absolute bottom-4 right-4 bg-yellow-500 hover:bg-yellow-600 text-white p-3 rounded-full shadow-lg z-10 transition-all duration-200 transform hover:scale-105"
-        disabled={isLocatingUser}
-        title="Center on my location"
-      >
-        {isLocatingUser ? (
-          <div className="animate-spin">
-            <Loader className="w-6 h-6" />
-          </div>
-        ) : (
-          <Navigation className="w-6 h-6" />
-        )}
-      </button>
-
-      {/* Add route status indicator */}
-      {routeStart && (
-        <div className="absolute top-4 left-4 bg-white/90 dark:bg-gray-800/90 px-3 py-2 rounded-lg shadow-lg">
-          <p className="text-sm font-medium">
-            {!routeEnd ? "Select destination" : "Route displayed"}
-          </p>
-        </div>
-      )}
-    </div>
-  );
+  // Add helper function to get location name
+  const getLocationName = (coords) => {
+    if (!coords) return "Not selected";
+    if (
+      userLocation &&
+      coords[0] === userLocation[0] &&
+      coords[1] === userLocation[1]
+    ) {
+      return "My Current Location";
+    }
+    const building = campusBuildings.find(
+      (b) => b.coordinates[0] === coords[0] && b.coordinates[1] === coords[1]
+    );
+    return building ? building.name : "Custom Location";
+  };
 
   return (
-    <div className="bg-gradient-to-br from-yellow-50 to-amber-100 dark:from-gray-900 dark:to-gray-800 min-h-screen p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-6">
-          <h1 className="text-4xl font-bold text-yellow-700 dark:text-yellow-300">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-amber-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="max-w-[1920px] mx-auto p-4 md:p-6 space-y-4">
+        {/* Header */}
+        <header className="bg-white/90 dark:bg-gray-800/90 rounded-xl p-4 shadow-lg">
+          <h1 className="text-3xl font-bold text-yellow-700 dark:text-yellow-300">
             Campus Navigation
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mt-2">
+          <p className="text-gray-600 dark:text-gray-300 mt-1">
             Explore the campus with our interactive map and AR navigation
           </p>
         </header>
 
-        {/* Navigation Mode Selector */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 mb-6">
+        {/* Navigation Controls */}
+        <div className="bg-white/90 dark:bg-gray-800/90 rounded-xl p-4 shadow-lg">
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setActiveMode("map")}
@@ -681,7 +766,7 @@ export default function CampusNavigation() {
         </div>
 
         {/* Search and Filter */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 mb-6">
+        <div className="bg-white/90 dark:bg-gray-800/90 rounded-xl p-4 shadow-lg">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-grow">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -741,204 +826,136 @@ export default function CampusNavigation() {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Building List */}
-          <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden h-full">
-              <div className="p-4 bg-yellow-500 dark:bg-yellow-600 text-white">
-                <h3 className="text-xl font-semibold flex items-center">
-                  <Layers className="w-5 h-5 mr-2" />
-                  Campus Buildings
-                </h3>
-              </div>
-              <div className="overflow-y-auto max-h-[500px]">
-                {filteredBuildings.length > 0 ? (
-                  filteredBuildings.map((building) => (
-                    <motion.div
-                      key={building.id}
-                      whileHover={{ scale: 1.02 }}
-                      onClick={() => handleBuildingSelect(building)}
-                      className={`p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors duration-200 ${
-                        selectedBuilding?.id === building.id
-                          ? "bg-yellow-100 dark:bg-gray-700"
-                          : ""
-                      }`}
-                    >
-                      <h3 className="text-lg font-medium text-yellow-700 dark:text-yellow-300">
-                        {building.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        {building.description.substring(0, 80)}...
-                      </p>
-                      <div className="flex items-center mt-2 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="mr-4">
-                          <Info className="w-4 h-4 inline mr-1" />
-                          {building.type.charAt(0).toUpperCase() +
-                            building.type.slice(1)}
-                        </span>
-                        <span>
-                          <Clock className="w-4 h-4 inline mr-1" />
-                          {building.hours}
-                        </span>
-                      </div>
-                    </motion.div>
-                  ))
-                ) : (
-                  <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                    <SearchX className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-                    <p>No buildings found matching your search.</p>
-                    <button
-                      onClick={() => {
-                        setSearchQuery("");
-                        setActiveFilter("all");
-                      }}
-                      className="mt-2 text-yellow-600 dark:text-yellow-400 underline"
-                    >
-                      Clear filters
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+        {/* Main Content Area */}
+        {activeMode === "map" && renderMapView()}
+        {activeMode === "ar" && (
+          <div className="h-[calc(100vh-12rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+            <ARView buildings={filteredBuildings} userLocation={userLocation} />
           </div>
+        )}
+        {activeMode === "directions" && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden h-[600px]">
+            <div className="p-4 bg-yellow-500 dark:bg-yellow-600 text-white">
+              <h3 className="text-xl font-semibold flex items-center"></h3>
+              <Navigation className="w-5 h-5 mr-2" />
+              Directions
+            </div>
 
-          {/* Map or AR View */}
-          <div className="lg:col-span-2">
-            {activeMode === "map" && renderMapView()}
-            {activeMode === "ar" && (
-              <div className="h-[600px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
-                <ARView
-                  buildings={filteredBuildings}
-                  userLocation={userLocation}
-                />
-              </div>
-            )}
-            {activeMode === "directions" && (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden h-[600px]">
-                <div className="p-4 bg-yellow-500 dark:bg-yellow-600 text-white">
-                  <h3 className="text-xl font-semibold flex items-center"></h3>
-                  <Navigation className="w-5 h-5 mr-2" />
-                  Directions
-                </div>
+            <div className="p-6">
+              {selectedBuilding ? (
+                <div>
+                  <div className="mb-4">
+                    <h3 className="text-xl font-medium text-yellow-700 dark:text-yellow-300">
+                      Directions to {selectedBuilding.name}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 mt-2">
+                      {!userLocation
+                        ? "Please enable location services to get directions."
+                        : "Directions from your current location:"}
+                    </p>
+                  </div>
 
-                <div className="p-6">
-                  {selectedBuilding ? (
-                    <div>
-                      <div className="mb-4">
-                        <h3 className="text-xl font-medium text-yellow-700 dark:text-yellow-300">
-                          Directions to {selectedBuilding.name}
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-400 mt-2">
-                          {!userLocation
-                            ? "Please enable location services to get directions."
-                            : "Directions from your current location:"}
-                        </p>
-                      </div>
-
-                      {userLocation && (
-                        <div className="mt-4">
-                          <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
-                            <div className="mr-4 mt-1">
-                              <div className="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
-                                1
-                              </div>
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-yellow-700 dark:text-yellow-300">
-                                Start at your current location
-                              </h4>
-                              <p className="text-gray-600 dark:text-gray-400 mt-1">
-                                Head east toward University Avenue
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="h-10 w-1 bg-yellow-200 dark:bg-gray-600 ml-8"></div>
-
-                          <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
-                            <div className="mr-4 mt-1">
-                              <div className="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
-                                2
-                              </div>
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-yellow-700 dark:text-yellow-300">
-                                Continue straight for 200 meters
-                              </h4>
-                              <p className="text-gray-600 dark:text-gray-400 mt-1">
-                                Pass the Student Union on your right
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="h-10 w-1 bg-yellow-200 dark:bg-gray-600 ml-8"></div>
-
-                          <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
-                            <div className="mr-4 mt-1">
-                              <div className="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
-                                3
-                              </div>
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-yellow-700 dark:text-yellow-300">
-                                Turn left at the fountain
-                              </h4>
-                              <p className="text-gray-600 dark:text-gray-400 mt-1">
-                                Walk 150 meters toward the quad
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="h-10 w-1 bg-yellow-200 dark:bg-gray-600 ml-8"></div>
-
-                          <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
-                            <div className="mr-4 mt-1">
-                              <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center text-white">
-                                <Check className="h-5 w-5" />
-                              </div>
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-green-600 dark:text-green-400">
-                                Arrive at {selectedBuilding.name}
-                              </h4>
-                              <p className="text-gray-600 dark:text-gray-400 mt-1">
-                                Your destination is on the right
-                              </p>
-                            </div>
+                  {userLocation && (
+                    <div className="mt-4">
+                      <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
+                        <div className="mr-4 mt-1">
+                          <div className="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
+                            1
                           </div>
                         </div>
-                      )}
+                        <div>
+                          <h4 className="font-medium text-yellow-700 dark:text-yellow-300">
+                            Start at your current location
+                          </h4>
+                          <p className="text-gray-600 dark:text-gray-400 mt-1">
+                            Head east toward University Avenue
+                          </p>
+                        </div>
+                      </div>
 
-                      <div className="mt-6 flex justify-center">
-                        <button
-                          onClick={() => setActiveMode("map")}
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded flex items-center"
-                        >
-                          <Map className="w-5 h-5 mr-2" />
-                          View on Map
-                        </button>
+                      <div className="h-10 w-1 bg-yellow-200 dark:bg-gray-600 ml-8"></div>
+
+                      <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
+                        <div className="mr-4 mt-1">
+                          <div className="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
+                            2
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-yellow-700 dark:text-yellow-300">
+                            Continue straight for 200 meters
+                          </h4>
+                          <p className="text-gray-600 dark:text-gray-400 mt-1">
+                            Pass the Student Union on your right
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-10">
-                      <div className="mx-auto w-16 h-16 bg-yellow-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
-                        <Map className="w-8 h-8 text-yellow-500 dark:text-yellow-400" />
+
+                      <div className="h-10 w-1 bg-yellow-200 dark:bg-gray-600 ml-8"></div>
+
+                      <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
+                        <div className="mr-4 mt-1">
+                          <div className="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
+                            3
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-yellow-700 dark:text-yellow-300">
+                            Turn left at the fountain
+                          </h4>
+                          <p className="text-gray-600 dark:text-gray-400 mt-1">
+                            Walk 150 meters toward the quad
+                          </p>
+                        </div>
                       </div>
-                      <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300">
-                        Select a building to get directions
-                      </h3>
-                      <p className="text-gray-500 dark:text-gray-400 mt-2 max-w-md mx-auto">
-                        Choose a location from the list on the left to view
-                        detailed walking directions.
-                      </p>
+
+                      <div className="h-10 w-1 bg-yellow-200 dark:bg-gray-600 ml-8"></div>
+
+                      <div className="flex items-start p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg">
+                        <div className="mr-4 mt-1">
+                          <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center text-white">
+                            <Check className="h-5 w-5" />
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-green-600 dark:text-green-400">
+                            Arrive at {selectedBuilding.name}
+                          </h4>
+                          <p className="text-gray-600 dark:text-gray-400 mt-1">
+                            Your destination is on the right
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   )}
+
+                  <div className="mt-6 flex justify-center">
+                    <button
+                      onClick={() => setActiveMode("map")}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded flex items-center"
+                    >
+                      <Map className="w-5 h-5 mr-2" />
+                      View on Map
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="text-center py-10">
+                  <div className="mx-auto w-16 h-16 bg-yellow-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                    <Map className="w-8 h-8 text-yellow-500 dark:text-yellow-400" />
+                  </div>
+                  <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300">
+                    Select a building to get directions
+                  </h3>
+                  <p className="text-gray-500 dark:text-gray-400 mt-2 max-w-md mx-auto">
+                    Choose a location from the list on the left to view detailed
+                    walking directions.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Building Details (when selected) */}
         {selectedBuilding && (
@@ -987,11 +1004,18 @@ export default function CampusNavigation() {
                 </div>
               </div>
 
-              
-
               {/* Action Buttons */}
               <div className="flex gap-3">
                 <button
+                  onClick={() => setActiveMode("directions")}
+                  className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Navigation className="w-5 h-5" />
+                  Get Directions
+                </button>
+
+                <button
+                  onClick={handleARMode}
                   onClick={() => setActiveMode("directions")}
                   className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
                 >
@@ -1008,8 +1032,6 @@ export default function CampusNavigation() {
                 </button>
               </div>
             </div>
-
-            {renderRouteControls(selectedBuilding)}
           </motion.div>
         )}
 
