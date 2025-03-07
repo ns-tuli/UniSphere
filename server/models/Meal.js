@@ -1,59 +1,23 @@
+// const mongoose = require("mongoose");
 import mongoose from "mongoose";
+import mongooseSequence from "mongoose-sequence";
 
-const mealSchema = new mongoose.Schema(
-  {
-    mealId: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    categories: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
-    available: {
-      type: Boolean,
-      default: true,
-    },
-    prepTime: {
-      type: String,
-    },
-    image: {
-      type: String,
-      default: "default-meal.jpg",
-    },
-    nutrition: {
-      calories: Number,
-      protein: Number,
-      carbs: Number,
-      fat: Number,
-    },
-    popularity: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 5,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+const mealSchema = new mongoose.Schema({
+  mealId: { type: Number, unique: true },
+  image:{type:String},
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  price: { type: Number, required: true },
+  image: { type: String},
+  categories: { type: [String]},
+  available: { type: Boolean},
+  prepTime: { type: String},
+});
 
-const Meal = mongoose.model("Meal", mealSchema);
-export default Meal;
+mealSchema.plugin(mongooseSequence(mongoose), {
+  inc_field: 'mealId',  // Specify the field that will be auto-incremented
+  start_seq: 1,         // Start incrementing from 1
+});
+
+// module.exports = mongoose.model("Meal", mealSchema);
+export default mongoose.model("Meal", mealSchema);

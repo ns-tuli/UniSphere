@@ -7,12 +7,12 @@ import mongoose from "mongoose"
 import connectDB from "./config/db.js";
 import faqData from "./data/faq_training_data.js"; // Fix import path
 import adminRoutes from "./routes/adminRoutes.js";
+
 import alertRoutes from "./routes/alerts.js";
 import virtualQuizRoutes from "./routes/api/virtualQuiz.js";
 import authRoutes from "./routes/authRoutes.js";
 import busRoutes from "./routes/busRoutes.js";
 import classRoutes from "./routes/classRoutes.js";
-import clubRoutes from './routes/clubRoutes.js';
 import departmentRoutes from "./routes/departmentRoutes.js";
 import cookieParser from 'cookie-parser';
 import faculty from "./routes/facultyRoutes.js";
@@ -34,6 +34,24 @@ import uploadRoutes from "./routes/uploadRoutes.js"; // Routes for file uploads
 
 import { createServer } from "http";
 import initializeSocketServer from "./socket-server.js";
+import roadmapRoutes from './routes/roadmapRoutes.js';
+import studentRoutes from "./routes/studentDataRoutes.js";
+import userRoutes from './routes/userRoutes.js';
+
+import bodyParser from 'body-parser';
+import http from "http";
+import { Server } from "socket.io";
+import classroomRoutes from "./routes/classroomRoutes.js";
+import newsRoutes from './routes/newsRoutes.js'; // Fixed missing quotes
+import uploadRoutes from "./routes/uploadRoutes.js"; // Routes for file uploads
+
+import lostFoundRoutes from "./routes/lostFoundRoutes.js";
+import menuRoutes from './routes/menuRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+
+
+
 
 dotenv.config();
 
@@ -57,7 +75,14 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
+// Middleware
+app.use(cors({
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE"] // Add PUT and DELETE here
+}));
+
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files - make sure this is before any routes
@@ -163,6 +188,10 @@ if (process.env.NODE_ENV === "production") {
 app.use("/api/classroom", classroomRoutes);
 app.use("/api/news", newsRoutes);  // Fixed route path
 app.use("/api/uploads", uploadRoutes); // Use the upload routes
+app.use('/api/user',userRoutes)
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/menu', menuRoutes);
 app.use("/api/events", eventRoutes); // Use the upload routes
 app.use("/api/clubs", clubRoutes); // Use the upload routes
 app.use("/api/auth", authRoutes)
@@ -208,4 +237,19 @@ app.set("io", io);
 httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Socket.io server initialized for real-time bus tracking`);
+});
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err);  // Log the error
+  res.status(500).json({ message: 'Internal Server Error', error: err.message });  // Send detailed error message
+});
+app.use("/api/alerts", alertRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/student", studentRoutes);
+app.use("/api/lostfound", lostFoundRoutes);
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

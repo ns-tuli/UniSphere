@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
   // Video Call Signaling: Handle User Call (Sending Offer)
   socket.on("user:call", ({ to, offer }) => {
     console.log(`Sending offer to ${to}`);
-    socket.to(to).emit("incomming:call", { from: socket.id, offer });
+    socket.to(to).emit("incoming:call", { from: socket.id, offer });
   });
 
   // Video Call Signaling: Handle Call Acceptance (Sending Answer)

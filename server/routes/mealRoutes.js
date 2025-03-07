@@ -1,15 +1,26 @@
-import express from "express";
-import mealController from "../controllers/mealController.js";
-import upload from "../middlewares/uploadMiddleware.js";
+import express from 'express';
+import {
+    createMealSchedule,
+    deleteMealSchedule,
+    getAllMealSchedules,
+    getMealScheduleByDayAndType,
+    updateMealSchedule
+} from '../controllers/mealController.js';
 
 const router = express.Router();
 
-router.get("/", mealController.getMeals);
-router.get("/:mealId", mealController.getMealById);
-router.post("/", upload.single("image"), mealController.addMeal);
-router.put("/:mealId", upload.single("image"), mealController.updateMeal);
-router.delete("/:mealId", mealController.deleteMeal);
-router.put("/:mealId/popularity", mealController.updateMealPopularity);
-router.get("/category/:category", mealController.getMealsByCategory);
+router
+  .route('/')
+  .get(getAllMealSchedules)
+  .post(createMealSchedule);
+
+router
+  .route('/:id')
+  .put(updateMealSchedule)
+  .delete(deleteMealSchedule);
+
+router
+  .route('/:day/:mealType')
+  .get(getMealScheduleByDayAndType);
 
 export default router;

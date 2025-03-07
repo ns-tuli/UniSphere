@@ -1,6 +1,5 @@
 //path: client/src/context/UserContext.jsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useContext, useState } from 'react';
 
 const UserContext = createContext();
 
@@ -10,7 +9,7 @@ export const UserProvider = ({ children }) => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  const updateUser = (userData) => {
+  const updateUser = userData => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
   };

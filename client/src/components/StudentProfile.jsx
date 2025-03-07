@@ -1,49 +1,70 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
 import {
-  FaUser,
-  FaEnvelope,
-  FaPhone,
-  FaGraduationCap,
-  FaIdCard,
-  FaCalendar,
-  FaMapMarkerAlt,
   FaBook,
-} from "react-icons/fa";
-import { useUser } from "../context/UserContext";
+  FaCalendar,
+  FaEnvelope,
+  FaGraduationCap,
+  FaMapMarkerAlt,
+  FaPhone,
+  FaUser,
+} from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
 const StudentProfile = () => {
   const navigate = useNavigate();
   const { user, logout, updateUser } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
-    studentId: user?.studentId || "",
-    department: user?.department || "",
-    semester: "Spring 2024",
-    phone: user?.phone || "",
-    address: user?.address || "",
-    cgpa: "3.85",
-    credits: "45",
-    enrollmentDate: user?.joinDate || "",
-    currentCourses: [{ code: "", name: "", credits: "" }],
-    achievements: [""],
+    studentId: user?.studentId || '',
+    department: user?.department || '',
+    semester: 'Spring 2024',
+    phone: user?.phone || '',
+    address: user?.address || '',
+    cgpa: '3.85',
+    credits: '45',
+    enrollmentDate: user?.joinDate || '',
+    currentCourses: [{ code: '', name: '', credits: '' }],
+    achievements: [''],
+  });
+  useEffect(() => {
+    data();
   });
 
+  const data = async () => {
+    const res = await fetch('http://localhost:5000/api/student', {
+      method: 'POST', // Change to POST to send a request body
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Pass the userId in the request body as JSON
+      body: JSON.stringify({ id: user._id }),
+    });
+
+    if (!res.ok) {
+      throw new Error('User not found');
+    }
+    const data = await res.json(); // Correct usage; no parameters here
+    setUserData(data);
+  };
+  console.log('Address', userData?.address);
+
   if (!user) {
-    return navigate("/auth");
+    return navigate('/auth');
   }
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
   };
-
+  console.log(data);
   const handleCourseChange = (index, field, value) => {
-    setFormData((prev) => {
+    setFormData(prev => {
       const newCourses = [...prev.currentCourses];
       newCourses[index] = { ...newCourses[index], [field]: value };
       return { ...prev, currentCourses: newCourses };
@@ -51,7 +72,7 @@ const StudentProfile = () => {
   };
 
   const handleAchievementChange = (index, value) => {
-    setFormData((prev) => {
+    setFormData(prev => {
       const newAchievements = [...prev.achievements];
       newAchievements[index] = value;
       return { ...prev, achievements: newAchievements };
@@ -59,35 +80,35 @@ const StudentProfile = () => {
   };
 
   const addCourse = () => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       currentCourses: [
         ...prev.currentCourses,
-        { code: "", name: "", credits: "" },
+        { code: '', name: '', credits: '' },
       ],
     }));
   };
 
   const addAchievement = () => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      achievements: [...prev.achievements, ""],
+      achievements: [...prev.achievements, ''],
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       if (!user) {
-        throw new Error("User ID not found");
+        throw new Error('User ID not found');
       }
 
       const response = await fetch(`http://localhost:5000/api/student`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
           id: user._id,
@@ -97,17 +118,17 @@ const StudentProfile = () => {
           address: formData.address,
           cgpa: formData.cgpa,
           currentCourses: formData.currentCourses.filter(
-            (course) => course.code && course.name && course.credits
+            course => course.code && course.name && course.credits,
           ),
-          achievements: formData.achievements.filter((achievement) =>
-            achievement.trim()
+          achievements: formData.achievements.filter(achievement =>
+            achievement.trim(),
           ),
         }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || "Failed to update profile");
+        throw new Error(error.message || 'Failed to update profile');
       }
 
       const updatedData = await response.json();
@@ -119,11 +140,11 @@ const StudentProfile = () => {
       });
 
       // Show success message
-      alert("Profile updated successfully");
+      alert('Profile updated successfully');
       setIsEditing(false);
     } catch (error) {
-      console.error("Error updating profile:", error);
-      alert(error.message || "Failed to update profile");
+      console.error('Error updating profile:', error);
+      alert(error.message || 'Failed to update profile');
     } finally {
       setIsSubmitting(false);
     }
@@ -133,16 +154,16 @@ const StudentProfile = () => {
     name: user.name,
     email: user.email,
     picture: user.picture,
-    studentId: user.studentId ,
+    studentId: user.studentId,
     department: user.department,
     semester: user.semester,
-    phone: user.phone ,
-    address: user.address ,
-    cgpa: user.cgpa ,
-    credits: user.credits ,
-    enrollmentDate: user.joinDate ,
-    currentCourses: user.currentCourses || [""],
-    achievements: user.achievement || [""],
+    phone: user.phone,
+    address: user.address,
+    cgpa: user.cgpa,
+    credits: user.credits,
+    enrollmentDate: user.joinDate,
+    currentCourses: user.currentCourses || [''],
+    achievements: user.achievement || [''],
   };
   console.log(studentData);
 
@@ -187,7 +208,7 @@ const StudentProfile = () => {
                 {user.email}
               </p>
               <p className="text-gray-500 dark:text-gray-400">
-                {user.studentId || "Student ID not set"}
+                {user.studentId || 'Student ID not set'}
               </p>
               <p className="text-gray-500 dark:text-gray-400">
                 Joined: {new Date(user.joinDate).toLocaleDateString()}
@@ -292,8 +313,8 @@ const StudentProfile = () => {
                         type="text"
                         placeholder="Course Code"
                         value={course.code}
-                        onChange={(e) =>
-                          handleCourseChange(index, "code", e.target.value)
+                        onChange={e =>
+                          handleCourseChange(index, 'code', e.target.value)
                         }
                         className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                       />
@@ -301,8 +322,8 @@ const StudentProfile = () => {
                         type="text"
                         placeholder="Course Name"
                         value={course.name}
-                        onChange={(e) =>
-                          handleCourseChange(index, "name", e.target.value)
+                        onChange={e =>
+                          handleCourseChange(index, 'name', e.target.value)
                         }
                         className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                       />
@@ -310,8 +331,8 @@ const StudentProfile = () => {
                         type="number"
                         placeholder="Credits"
                         value={course.credits}
-                        onChange={(e) =>
-                          handleCourseChange(index, "credits", e.target.value)
+                        onChange={e =>
+                          handleCourseChange(index, 'credits', e.target.value)
                         }
                         className="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                       />
@@ -336,7 +357,7 @@ const StudentProfile = () => {
                       <input
                         type="text"
                         value={achievement}
-                        onChange={(e) =>
+                        onChange={e =>
                           handleAchievementChange(index, e.target.value)
                         }
                         className="w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
@@ -365,10 +386,10 @@ const StudentProfile = () => {
                     type="submit"
                     disabled={isSubmitting}
                     className={`px-4 py-2 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700 ${
-                      isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                      isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >
-                    {isSubmitting ? "Saving..." : "Save Changes"}
+                    {isSubmitting ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
               </form>
@@ -386,7 +407,7 @@ const StudentProfile = () => {
               <div className="flex items-center space-x-3">
                 <FaGraduationCap className="text-yellow-600 dark:text-yellow-400" />
                 <span className="text-gray-600 dark:text-gray-300">
-                  CGPA: {user.cgpa}
+                  CGPA: {userData?.cgpa}
                 </span>
               </div>
               <div className="flex items-center space-x-3">
@@ -398,7 +419,7 @@ const StudentProfile = () => {
               <div className="flex items-center space-x-3">
                 <FaCalendar className="text-yellow-600 dark:text-yellow-400" />
                 <span className="text-gray-600 dark:text-gray-300">
-                  Current Semester: {user.semester}
+                  Current Semester: {userData?.semester}
                 </span>
               </div>
             </div>
@@ -419,13 +440,13 @@ const StudentProfile = () => {
               <div className="flex items-center space-x-3">
                 <FaPhone className="text-yellow-600 dark:text-yellow-400" />
                 <span className="text-gray-600 dark:text-gray-300">
-                  {studentData.phone}
+                  {userData?.phone}
                 </span>
               </div>
               <div className="flex items-center space-x-3">
                 <FaMapMarkerAlt className="text-yellow-600 dark:text-yellow-400" />
                 <span className="text-gray-600 dark:text-gray-300">
-                  {studentData.address}
+                  {userData?.address}
                 </span>
               </div>
             </div>
