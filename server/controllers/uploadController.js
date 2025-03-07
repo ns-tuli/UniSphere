@@ -1,45 +1,66 @@
-// controllers/uploadController.js
-import PDF from "../models/Pdf.js";
-import upload from "../utils/uploadUtils.js"; // Helper function to handle file upload to storage
+import multer from 'multer';
+import PDF from '../models/Pdf.js'; // Assuming you have a PDF model for saving file details
+import ErrorResponse from '../utils/errorResponse.js'; // Utility for consistent error handling
 
-// Handle file upload
-export const uploadFile = async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded." });
+// Set up multer to handle file storage and naming
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Define the folder where files will be uploaded
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname); // Unique filename
   }
+});
 
-  const { userId } = req.user;  // Extract userId from the authenticated user
+const upload = multer({ storage }).single('file'); // Handle single file upload
 
-  if (!userId) {
-    return res.status(400).json({ error: "User ID is missing from the request." });
-  }
+// Upload file handler
+export const uploadFile = async (req, res, next) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      return next(new ErrorResponse('Error while uploading the file.', 500));
+    }
 
-  try {
-    // Save the PDF file information in the database along with the userId
-    const pdfData = new PDF({
-      pdfFileName: req.file.originalname,
-      uploadedAt: new Date(),
-      userId: userId,  // Associate the file with the authenticated user
-    });
+    if (!req.file) {
+      return next(new ErrorResponse('No file selected for upload.', 400));
+    }
+    const {email}= req.body;
 
-    await pdfData.save();
+    try {
+      // Save the file information in the database with the associated user
+      const pdfData = new PDF({
+        email: email,
+        pdfFileName: req.file.filename,
+        uploadedAt: new Date()
+      });
 
-    res.status(200).json({ message: "File uploaded successfully!" });
-  } catch (error) {
-    console.error("Error uploading file:", error);
-    res.status(500).json({ error: "An error occurred during file upload." });
-  }
+      await pdfData.save();
+
+      res.status(200).json({
+        success: true,
+        message: 'File uploaded successfully!',
+        file: req.file.filename // Return the uploaded file name in the response
+      });
+    } catch (error) {
+      return next(new ErrorResponse('Error saving file data to database.', 500));
+    }
+  });
 };
 
-// Fetch uploaded files for the authenticated user
-export const getUploadedFiles = async (req, res) => {
-  const { userId } = req.user; // Extract userId from the authenticated user
-
+// Fetch uploaded files handler
+export const getUploadedFiles = async (req, res, next) => {
   try {
-    const files = await PDF.find({ userId }); // Fetch PDFs associated with the authenticated user
-    res.status(200).json({ files });
+    // Fetch files associated with the authenticated user (based on userId from JWT)
+    const email= req.headers['email']
+    const files = await PDF.find({email: email});
+
+    
+
+    res.status(200).json({
+      success: true,
+      files // Return the list of uploaded files
+    });
   } catch (error) {
-    console.error("Error fetching files:", error);
-    res.status(500).json({ error: "An error occurred while fetching files." });
+    return next(new ErrorResponse('Error fetching files from the database.', 500));
   }
 };

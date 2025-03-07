@@ -16,7 +16,6 @@ import CafeteriaManagement from "./components/Admin/CafeteriaManagement";
 import Notes from "./pages/Notes";
 import Roadmap from "./pages/Roadmap";
 import Chatbot from "./components/Chatbot";
-import UploadNotes from "./components/UploadNotes";
 import FacultyContact from "./components/FacultyContact";
 import Auth from "./components/Auth";
 import StudentProfile from "./components/StudentProfile";
@@ -37,11 +36,13 @@ import QuizTest from "./components/QuizTest";
 import Calendar from "./components/Calendar";
 
 import Classroom from "./pages/Classroom";
-import Lobby from "./pages/Lobby"
 import NewsPortal from "./components/NewsPortal"; // Adjust the path as necessary
 import ClubManagement from "./components/Admin/ClubManagement";
 import EventManagement from "./components/Admin/EventManagement";
 import MyClubEvents from "./components/MyClubEvents";
+import UploadNotes from "./components/UploadNotes";
+import Chateau from "./components/Chateau"; // Adjust the path as necessary
+import Lobby from "./components/Lobby"; // Import Lobby component
 function App() {
   return (
     <Router>
@@ -148,6 +149,9 @@ function App() {
           <Route path="/Admin/Events" element={<EventManagement/>} />
           <Route path="/Admin/Clubs" element={<ClubManagement />} />
           <Route path="/MyClubEvents" element={<MyClubEvents />} />
+          <Route path="/readArticle" element={<NewsPortal />} />
+          <Route path="/upload-notes" element={<UploadNotes />} />
+          <Route path="/Chateau" element={<Chateau />} />
           </Route>
         </Routes>
       </Router>

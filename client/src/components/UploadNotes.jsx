@@ -6,15 +6,17 @@ const UploadNotes = () => {
   const [error, setError] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
+  // Fetch the list of uploaded files when the component mounts
   useEffect(() => {
-    // Fetch the list of uploaded files when the component mounts
-    fetchUploadedFiles();
+    fetchUploadedFiles(); // Call the function to fetch uploaded files
   }, []);
 
+  // Handle file input change
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
+  // Upload the file to the server
   const handleUpload = async (e) => {
     e.preventDefault();
 
@@ -24,20 +26,21 @@ const UploadNotes = () => {
     }
 
     const formData = new FormData();
+    const user= JSON.parse(localStorage.getItem("user"));
     formData.append("file", file);
-
+    formData.append("email", user.email);
+    
     try {
-      const response = await fetch("http://localhost:5000/api/uploads/upload", {
+      const response = await fetch("http://localhost:5000/api/v1/uploads/upload", {
         method: "POST",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        body: formData, // Attach the file in the form data
       });
 
       const data = await response.json();
-
       if (response.ok) {
-        setMessage(data.message); // Display success message
-        setError("");
-        fetchUploadedFiles(); // Refresh the uploaded files list
+        setMessage(data.message); // Success message
+        setError(""); // Clear any previous error
+        fetchUploadedFiles(); // Refresh the uploaded files list after successful upload
       } else {
         setError(data.error || "Failed to upload file.");
       }
@@ -46,19 +49,21 @@ const UploadNotes = () => {
     }
   };
 
+  // Fetch the list of uploaded files from the server
   const fetchUploadedFiles = async () => {
+    const user= JSON.parse(localStorage.getItem("user"));
+
     try {
-      const response = await fetch("http://localhost:5000/api/uploads/upload", {
-        method: "POST",
-        headers: { 
-          Authorization: `Bearer ${localStorage.getItem("token")}` 
+      const response = await fetch("http://localhost:5000/api/v1/uploads/files",{
+        method: "GET",
+        headers: {
+          'email': user.email
         },
-        body: formData,
-      });
-      
+      })
+
       const data = await response.json();
       if (response.ok) {
-        setUploadedFiles(data.files);
+        setUploadedFiles(data.files); // Update the state with the fetched files
       } else {
         setError(data.error || "Failed to fetch uploaded files.");
       }
@@ -70,8 +75,8 @@ const UploadNotes = () => {
   return (
     <div>
       {/* Display success or error message */}
-      {message && <p>{message}</p>}
-      {error && <p>{error}</p>}
+      {message && <p style={{ color: 'green' }}>{message}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {/* File Upload Form */}
       <form onSubmit={handleUpload}>
@@ -83,16 +88,21 @@ const UploadNotes = () => {
       <div>
         <h3>Uploaded PDFs</h3>
         <ul>
-          {uploadedFiles.map((file, index) => (
-            <li key={index}>
-              <a
-                href={`http://localhost:5000/api/uploads/file/${file._id}`}
-                target="_blank"
-              >
-                {file.pdfFileName}
-              </a>
-            </li>
-          ))}
+          {uploadedFiles.length > 0 ? (
+            uploadedFiles.map((file, index) => (
+              <li key={index}>
+                <a
+                  href={`http://localhost:5000/api/v1/uploads/file/${file._id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {file.pdfFileName}
+                </a>
+              </li>
+            ))
+          ) : (
+            <li>No files uploaded yet.</li>
+          )}
         </ul>
       </div>
     </div>
