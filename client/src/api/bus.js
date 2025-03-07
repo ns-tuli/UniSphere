@@ -52,3 +52,39 @@ export const deleteBusSchedule = async (busId) => {
     throw new Error("Error deleting bus schedule: " + error.message);
   }
 };
+
+// Update bus location
+export const updateBusLocation = async (busId, locationData) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/${busId}/location`,
+      locationData
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Error updating bus location: " + error.message);
+  }
+};
+
+// Add a notification for a bus
+export const addBusNotification = async (busId, notificationData) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/${busId}/notifications`,
+      notificationData
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Error adding bus notification: " + error.message);
+  }
+};
+
+// Get all active notifications for a bus
+export const getBusNotifications = async (busId) => {
+  try {
+    const response = await axios.get(`${API_URL}/${busId}/notifications`);
+    return response.data;
+  } catch (error) {
+    throw new Error("Error fetching bus notifications: " + error.message);
+  }
+};

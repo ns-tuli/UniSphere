@@ -2,9 +2,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Landing from "./components/Landing";
 import BusSchedule from "./components/BusSchedule";
+import BusDetails from "./components/BusDetails";
+import BusDriver from "./components/BusDriver";
 import CafeteriaMenu from "./components/CafeteriaMenu";
 import EventCalendar from "./components/EventCalendar";
 import ClassSchedule from "./components/ClassSchedule";
+import ClassRoutine from "./components/ClassRoutine";
 import CampusNavigation from "./components/CampusNavigation";
 import HomePage from "./components/Homepage";
 import AdminDashboard from "./components/Admin/AdminDashboard";
@@ -26,7 +29,12 @@ import TestAuth from "./components/TestAuth";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import UserManagement from "./components/Admin/UserManagement";
 import Collab from "./components/Collab/Collab";
-import AR from "./components/AR";
+import LostFound from "./components/LostFound";
+import LostFoundManagement from "./components/Admin/LostFoundManagement";
+import Forums from "./components/Forums";
+import VirtualQuiz from "./components/VirtualQuiz";
+import QuizTest from "./components/QuizTest";
+import Calendar from "./components/Calendar";
 
 function App() {
   return (
@@ -39,11 +47,18 @@ function App() {
           {/* Protected routes with header */}
           <Route element={<Layout />}>
             <Route path="/homepage" element={<HomePage />} />
+            <Route path="/Forums" element={<Forums />} />
             <Route path="/BusSchedule" element={<BusSchedule />} />
+            <Route path="/BusDetails/:busId" element={<BusDetails />} />
+            <Route path="/BusDriver/:busId" element={<BusDriver />} />
             <Route path="/CafeteriaMenu" element={<CafeteriaMenu />} />
             <Route path="/EventCalendar" element={<EventCalendar />} />
             <Route path="/ClassSchedule" element={<ClassSchedule />} />
+            <Route path="/ClassRoutine" element={<ClassRoutine />} />
+            <Route path="/ClassRoutine/:day" element={<ClassRoutine />} />
             <Route path="/CampusNavigation" element={<CampusNavigation />} />
+            <Route path="/VirtualQuiz" element={<VirtualQuiz />} />
+            <Route path="/QuizTest" element={<QuizTest />} />
             <Route path="/Collab" element={<Collab />} />
             <Route path="/Admin">
               <Route
@@ -95,6 +110,14 @@ function App() {
                 }
               />
               <Route
+                path="LostFoundManagement"
+                element={
+                  <ProtectedAdminRoute>
+                    <LostFoundManagement />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
                 path="UserManagement"
                 element={
                   <ProtectedAdminRoute>
@@ -113,7 +136,8 @@ function App() {
             <Route path="/profile" element={<StudentProfile />} />
             <Route path="/alerts" element={<Alert />} />
             <Route path="/test-auth" element={<TestAuth />} />
-            <Route path="/AR" element={<AR />} />
+            <Route path="/LostFound" element={<LostFound />} />
+            <Route path="/Calendar" element={<Calendar />} />
           </Route>
         </Routes>
       </Router>
