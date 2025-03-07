@@ -1,9 +1,8 @@
 import express from "express";
-import { verifyToken } from "../middlewares/auth.js";
 import User from "../models/User.js";
 const router = express.Router();
 import PDF from "../models/Pdf.js";
-router.get("/profile", verifyToken, async (req, res) => {
+router.get("/profile", async (req, res) => {
     try {
       if (!req.user || !req.user.userId) {
         console.error("User ID missing in request.");
@@ -26,7 +25,7 @@ router.get("/profile", verifyToken, async (req, res) => {
       res.status(500).json({ error: "Failed to fetch profile data." });
     }
   });
-  router.put("/username", verifyToken, async (req, res) => {
+  router.put("/username", async (req, res) => {
     try {
       const user = await User.findByIdAndUpdate(
         req.user.userId,
@@ -39,7 +38,7 @@ router.get("/profile", verifyToken, async (req, res) => {
     }
   });
   
-  router.put("/social-links", verifyToken, async (req, res) => {
+  router.put("/social-links",  async (req, res) => {
     try {
       const user = await User.findByIdAndUpdate(
         req.user.userId,
@@ -53,7 +52,7 @@ router.get("/profile", verifyToken, async (req, res) => {
   });
   
   
-  router.get("/pdfs", verifyToken, async (req, res) => {
+  router.get("/pdfs",  async (req, res) => {
     try {
       const userId = req.user?.userId; // Logged-in user's userId
   
@@ -71,7 +70,7 @@ router.get("/profile", verifyToken, async (req, res) => {
     }
   });
   
-  router.put("/pdfs/:id/toggle-privacy", verifyToken, async (req, res) => {
+  router.put("/pdfs/:id/toggle-privacy",  async (req, res) => {
     try {
       const pdfId = req.params.id;
       const { doubleClick } = req.body; // Determine if this is a double-click

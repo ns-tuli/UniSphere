@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import path from "path";
+import mongoose from "mongoose"
 import connectDB from "./config/db.js";
 import faqData from "./data/faq_training_data.js"; // Fix import path
 import adminRoutes from "./routes/adminRoutes.js";
@@ -11,13 +12,27 @@ import virtualQuizRoutes from "./routes/api/virtualQuiz.js";
 import authRoutes from "./routes/authRoutes.js";
 import busRoutes from "./routes/busRoutes.js";
 import classRoutes from "./routes/classRoutes.js";
+import clubRoutes from './routes/clubRoutes.js';
 import departmentRoutes from "./routes/departmentRoutes.js";
+import cookieParser from 'cookie-parser';
 import faculty from "./routes/facultyRoutes.js";
 import lostFoundRoutes from "./routes/lostFoundRoutes.js";
 import mealRoutes from "./routes/mealRoutes.js";
 import navigationRoutes from "./routes/navigationRoutes.js";
 import roadmapRoutes from "./routes/roadmapRoutes.js";
 import studentRoutes from "./routes/studentDataRoutes.js";
+import eventRoutes from './routes/eventRoutes.js';
+import faculty from "./routes/facultyRoutes.js";
+import mealRoutes from "./routes/mealRoutes.js";
+import navigationRoutes from "./routes/navigationRoutes.js";
+import facultyRoutes from "./routes/facultyRoutes.js";
+import http from "http";
+import { Server } from "socket.io";
+import classroomRoutes from "./routes/classroomRoutes.js";
+import newsRoutes from './routes/newsRoutes.js';  // Fixed missing quotes
+import bodyParser from 'body-parser';
+import quizRoutes from "./routes/quizRoutes.js"; // Import the quiz routes
+import uploadRoutes from "./routes/uploadRoutes.js"; // Routes for file uploads
 
 import { createServer } from "http";
 import initializeSocketServer from "./socket-server.js";
@@ -146,11 +161,37 @@ app.use("/api/virtual-quiz", virtualQuizRoutes);
 if (process.env.NODE_ENV === "production") {
   // Set static folder
   app.use(express.static("client/build"));
+app.use("/api/classroom", classroomRoutes);
+app.use("/api/news", newsRoutes);  // Fixed route path
+app.use("/api/uploads", uploadRoutes); // Use the upload routes
+app.use("/api/events", eventRoutes); // Use the upload routes
+app.use("/api/clubs", clubRoutes); // Use the upload routes
+app.use("/api/auth", authRoutes)
+app.use("/api/quiz", quizRoutes); // Use the upload routes
+
 
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 }
+
+// MongoDB connection setup
+mongoose.connect(process.env.MONGO, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch((err) => {
+    console.error('MongoDB connection error:', err.message);
+    process.exit(1);
+  });
+
+// GridFSBucket setup
+let gfsBucket;
+mongoose.connection.once('open', () => {
+  gfsBucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, { bucketName: 'uploads' });
+  app.locals.gfsBucket = gfsBucket;
+  app.locals.db = mongoose.connection.db;
+  console.log('GridFSBucket initialized.');
+});
+
 
 const PORT = process.env.PORT || 5000;
 

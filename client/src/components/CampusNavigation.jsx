@@ -160,7 +160,7 @@ const campusBuildings = [
     id: 10,
     name: "South Hall of Residence",
     type: "residential",
-    coordinates: [23.94900190458333, 90.38009004610988],
+    coordinates: [23.94700090458333, 90.38009004610988],
     description:
       "Another accommodation facility for male students with modern amenities.",
     facilities: ["Dormitories", "Recreation Rooms", "Laundry Facilities"],
