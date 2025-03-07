@@ -29,7 +29,12 @@ import { AuthProvider } from "./context/AuthContext";
 import Notes from "./pages/Notes";
 import Roadmap from "./pages/Roadmap";
 
-
+import Classroom from "./pages/Classroom";
+import Lobby from "./pages/Lobby"
+import NewsPortal from "./components/NewsPortal"; // Adjust the path as necessary
+import ClubManagement from "./components/Admin/ClubManagement";
+import EventManagement from "./components/Admin/EventManagement";
+import MyClubEvents from "./components/MyClubEvents";
 function App() {
   return (
     <AuthProvider>

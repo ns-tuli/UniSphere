@@ -2,7 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import connectDB from "./config/db.js";
-
+import roadmapRoutes from "./routes/roadmapRoutes.js"
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import adminRoutes from "./routes/adminRoutes.js";
 
@@ -42,7 +42,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
 
@@ -110,6 +110,9 @@ app.use('/api/user',userRoutes)
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/menu', menuRoutes);
+app.use("/api/events", eventRoutes); // Use the upload routes
+app.use("/api/clubs", clubRoutes); // Use the upload routes
+app.use("/api/auth", authRoutes)
 
 const rooms = {};
 

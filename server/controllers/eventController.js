@@ -5,89 +5,55 @@ import Notification from '../models/Notification.js';
 import User from '../models/User.js';
 
 export const createEvent = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
   try {
-    // Validate dates
-    const startDate = new Date(req.body.startDate);
-    const endDate = new Date(req.body.endDate);
-    if (endDate < startDate) {
-      return res.status(400).json({ error: 'End date cannot be before start date' });
+    const { organizer, title, description, startDate, endDate, location, capacity, tags, imageUrl } = req.body;
+    
+    // Find the hosting club by its ID
+    const club = await Club.findById(organizer);
+    if (!club) {
+      return res.status(404).json({ error: "Hosting club not found" });
     }
-    const event = new Event(req.body);
-    // If organizer (club) is specified, add event to club's events
-    if (req.body.organizer) {
-      const club = await Club.findById(req.body.organizer);
-      if (!club) {
-        return res.status(404).json({ error: 'Organizer club not found' });
-      }
-      await event.save();
-      club.events.push(event._id);
-      await club.save();
-    } else {
-      await event.save();
-    }
-    res.status(201).json(event);
+
+    // Extract the emails of the club members and set them as default attendees
+    const defaultAttendees = club.members.map(member => ({
+      email: member.email,  // Assuming `email` is a field in the `members` array of the Club model
+      rsvpStatus: 'invited',
+    }));
+
+    // Create the new event with attendees populated from the club's members
+    const event = new Event({
+      title,
+      description,
+      startDate,
+      endDate,
+      location,
+      organizer,  // Store the club reference here
+      capacity,
+      tags,
+      imageUrl,
+      attendees: defaultAttendees,
+    });
+
+    await event.save();
+    
+    res.status(201).json(event);  // Return the newly created event
+
   } catch (error) {
-    next(error);
+    console.error("Error creating event:", error);
+    res.status(500).json({ error: "Failed to create event" });
   }
 };
 
 export const getEvents = async (req, res, next) => {
   try {
-    const { startDate, endDate, organizer, tags, search, showPast = 'true' } = req.query;
-    let query = {};
-
-    // Date filtering
-    if (startDate || endDate) {
-      query.$and = [];
-      if (startDate) {
-        query.$and.push({ startDate: { $gte: new Date(startDate) } });
-      }
-      if (endDate) {
-        query.$and.push({ endDate: { $lte: new Date(endDate) } });
-      }
-    } else if (showPast !== 'true') {
-      // Only filter future events if showPast is explicitly set to false
-      query.startDate = { $gte: new Date() };
-    }
-
-    // Organizer filtering
-    if (organizer) {
-      query.organizer = organizer;
-    }
-
-    // Tags filtering
-    if (tags) {
-      const tagArray = tags.split(',').map(tag => tag.trim());
-      query.tags = { $in: tagArray };
-    }
-
-    // Search filtering
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { location: { $regex: search, $options: 'i' } }
-      ];
-    }
-
-    console.log('Query:', JSON.stringify(query, null, 2));
-
-    const events = await Event.find(query)
-      .populate('organizer', 'name')
-      .populate('attendees.user', 'name email')
+    const events = await Event.find()
+      .populate('organizer', 'name')  // Populate the organizer with the club's name
       .sort({ startDate: 1 });
-
-    console.log('Found events:', events.length);
 
     res.status(200).json({
       success: true,
       count: events.length,
-      data: events,
-      query: query // Including query in response for debugging
+      data: events
     });
   } catch (error) {
     console.error('Error in getEvents:', error);
@@ -98,8 +64,8 @@ export const getEvents = async (req, res, next) => {
 export const getEvent = async (req, res, next) => {
   try {
     const event = await Event.findById(req.params.id)
-      .populate('organizer')
-      .populate('attendees.user', 'name email');
+      .populate('organizer', 'name')  // Populate the organizer (the hosting club) with its name
+      .exec();
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
@@ -175,6 +141,70 @@ export const getTags = async (req, res, next) => {
   try {
     const tags = await Event.distinct('tags');
     res.json(tags);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateEvent = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  
+  try {
+    const { id } = req.params;
+    const eventData = req.body;
+
+    // Validate dates
+    const startDate = new Date(eventData.startDate);
+    const endDate = new Date(eventData.endDate);
+    if (endDate < startDate) {
+      return res.status(400).json({ error: 'End date cannot be before start date' });
+    }
+
+    // Find event by ID
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    // Update event data
+    event.title = eventData.title || event.title;
+    event.description = eventData.description || event.description;
+    event.startDate = eventData.startDate || event.startDate;
+    event.endDate = eventData.endDate || event.endDate;
+    event.location = eventData.location || event.location;
+    event.organizer = eventData.organizer || event.organizer;
+    event.capacity = eventData.capacity || event.capacity;
+    event.tags = eventData.tags || event.tags;
+    event.imageUrl = eventData.imageUrl || event.imageUrl;
+
+    // Save updated event
+    await event.save();
+
+    res.status(200).json({ message: 'Event updated successfully', event });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteEvent = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Find event by ID
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    // Remove event from the database
+    await event.deleteOne();
+
+    // Optionally: You can also remove the event from any other related collections, such as clubs or users.
+
+    res.status(200).json({ message: 'Event deleted successfully' });
   } catch (error) {
     next(error);
   }
