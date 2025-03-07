@@ -30,7 +30,7 @@
     "multer-gridfs": "^0.0.1",
     "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^3.1.9",
-    "pdfjs-dist": "^3.11.174",
+    "pdfjs-dist": "^2.16.105",
     "pusher": "^5.2.0",
     "react-leaflet": "^5.0.0",
     "simple-peer": "^9.11.1",
