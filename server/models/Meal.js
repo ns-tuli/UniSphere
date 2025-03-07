@@ -4,6 +4,7 @@ import mongooseSequence from "mongoose-sequence";
 
 const mealSchema = new mongoose.Schema({
   mealId: { type: Number, unique: true },
+  image:{type:String},
   name: { type: String, required: true },
   description: { type: String, required: true },
   price: { type: Number, required: true },
