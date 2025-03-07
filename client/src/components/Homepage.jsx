@@ -86,7 +86,7 @@ export default function HomePage() {
       title: "Clubs & Events",
       icon: <FaUsers className="text-3xl text-indigo-600" />,
       description: "Join clubs, RSVP to events, and get event recommendations",
-      path: "/EventCalender",
+      path: "/MyClubEvents",
       color: "bg-indigo-50",
       hoverColor: "hover:bg-indigo-100",
       borderColor: "border-indigo-200",

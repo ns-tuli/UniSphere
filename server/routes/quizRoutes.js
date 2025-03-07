@@ -7,7 +7,8 @@ import PDF from "../models/Pdf.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";// Import extractTextFromFile helper function
 import axios from "axios";
-import { getDocument } from 'pdfjs-dist';
+import pkg from 'pdfjs-dist';
+const { getDocument } = pkg;
 
 dotenv.config();
 

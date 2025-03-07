@@ -49,3 +49,13 @@ export const getNotifications = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const getUsers = async (request, response) => {
+    try {
+        const users = await User.find({}); // Fetches all users without any condition
+        response.status(200).json(users);
+    } catch (error) {
+        response.status(500).json({ error: error.message }); // Sending error message for better debugging
+    }
+}

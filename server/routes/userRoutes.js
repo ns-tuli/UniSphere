@@ -1,6 +1,6 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { createUser, getNotifications, getUser } from '../controllers/UserController.js';
+import { createUser, getNotifications, getUser, getUsers } from '../controllers/UserController.js';
 
 const router = express.Router();
 
@@ -17,6 +17,8 @@ router.post(
 
 // Get user by ID
 router.get('/:id', getUser);
+
+router.get('/', getUsers);
 
 // Get notifications for a user
 router.get('/:userId/notifications', getNotifications);

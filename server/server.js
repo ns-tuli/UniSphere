@@ -21,9 +21,6 @@ import navigationRoutes from "./routes/navigationRoutes.js";
 import roadmapRoutes from "./routes/roadmapRoutes.js";
 import studentRoutes from "./routes/studentDataRoutes.js";
 import eventRoutes from './routes/eventRoutes.js';
-import faculty from "./routes/facultyRoutes.js";
-import mealRoutes from "./routes/mealRoutes.js";
-import navigationRoutes from "./routes/navigationRoutes.js";
 import facultyRoutes from "./routes/facultyRoutes.js";
 import http from "http";
 import { Server } from "socket.io";
@@ -32,7 +29,7 @@ import newsRoutes from './routes/newsRoutes.js';  // Fixed missing quotes
 import bodyParser from 'body-parser';
 import quizRoutes from "./routes/quizRoutes.js"; // Import the quiz routes
 import uploadRoutes from "./routes/uploadRoutes.js"; // Routes for file uploads
-
+import userRoutes from "./routes/userRoutes.js"
 import { createServer } from "http";
 import initializeSocketServer from "./socket-server.js";
 
@@ -129,7 +126,7 @@ app.use("/api/lostfound", lostFoundRoutes);
 app.use("/api/virtual-quiz", virtualQuizRoutes);
 
 // Serve static assets in production
-if (process.env.NODE_ENV === "production") {
+
   // Set static folder
   app.use(express.static("client/build"));
 app.use("/api/classroom", classroomRoutes);
@@ -139,13 +136,9 @@ app.use("/api/events", eventRoutes); // Use the upload routes
 app.use("/api/clubs", clubRoutes); // Use the upload routes
 app.use("/api/auth", authRoutes)
 app.use("/api/quiz", quizRoutes); // Use the upload routes
+app.use("/api/users", userRoutes)
 
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-  });
-}
-
+  
 // MongoDB connection setup
 mongoose.connect(process.env.MONGO, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected successfully'))
@@ -181,3 +174,4 @@ httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Socket.io server initialized for real-time bus tracking`);
 });
+

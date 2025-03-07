@@ -9,6 +9,7 @@ import {
   FaClock,
   FaGraduationCap,
   FaUser,
+  FaFacebookMessenger
 } from "react-icons/fa";
 import { getFaculty } from "../api/faculty";
 
@@ -189,6 +190,16 @@ const FacultyContact = () => {
                       <FaGraduationCap className="mr-2 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
                       <span className="text-sm">{faculty.education}</span>
                     </div>
+                  )}
+                  {(
+                    <a href="/">
+                    <div style={{cursor:"pointer"}} className="flex items-center text-gray-700 dark:text-gray-300">
+                      
+                      <FaFacebookMessenger className="mr-2 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+                      <h1 className="text-xxl" >Chat with Faculty</h1>
+                     
+                    </div>
+                    </a>
                   )}
                 </div>
 

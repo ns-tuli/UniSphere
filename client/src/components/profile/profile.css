@@ -1,0 +1,15 @@
+.drawer-left {
+    max-width: 2000px;
+    width: 1200px !important;
+    height: 713.5px;
+    margin-top: 24px;
+    margin-left: 24px
+}
+
+.drawer-right {
+    max-width: 420px;
+    height: 713.5px;
+    margin-top: 24px;
+    margin-right: 24px;
+}
+

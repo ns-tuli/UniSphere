@@ -1015,8 +1015,7 @@ export default function CampusNavigation() {
                 </button>
 
                 <button
-                  onClick={handleARMode}
-                  onClick={() => setActiveMode("directions")}
+                  onClick={() => { handleARMode(); setActiveMode("directions"); }}
                   className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
                 >
                   <Navigation className="w-5 h-5" />
