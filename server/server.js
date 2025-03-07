@@ -21,10 +21,8 @@ import navigationRoutes from "./routes/navigationRoutes.js";
 import roadmapRoutes from "./routes/roadmapRoutes.js";
 import studentRoutes from "./routes/studentDataRoutes.js";
 import eventRoutes from './routes/eventRoutes.js';
-import faculty from "./routes/facultyRoutes.js";
-import mealRoutes from "./routes/mealRoutes.js";
-import navigationRoutes from "./routes/navigationRoutes.js";
-import facultyRoutes from "./routes/facultyRoutes.js";
+
+import emailRoutes from './routes/emailRoutes.js';
 import http from "http";
 import { Server } from "socket.io";
 import classroomRoutes from "./routes/classroomRoutes.js";
@@ -127,6 +125,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/lostfound", lostFoundRoutes);
 app.use("/api/virtual-quiz", virtualQuizRoutes);
+app.use('/api/email', emailRoutes);
 
 // Serve static assets in production
 if (process.env.NODE_ENV === "production") {
