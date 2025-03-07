@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios"; // Add this import
+import { createAlert } from "../api/Alert";
 import {
   FaExclamationTriangle,
   FaMapMarkerAlt,
@@ -22,6 +24,7 @@ const Alert = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [message, setMessage] = useState("");
   const [isSOSActive, setIsSOSActive] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const emergencyCategories = [
     {
@@ -101,24 +104,26 @@ const Alert = () => {
     ],
   };
 
-  const recentAlerts = [
+  const emergencyContacts = [
     {
-      id: 1,
-      category: "Fire Drill",
-      time: "2 hours ago",
-      location: "Engineering Building",
+      title: "Campus Security (24/7)",
+      number: "080-2293-2400",
+      icon: <FaShieldAlt className="text-2xl text-red-500" />,
     },
     {
-      id: 2,
-      category: "Medical Response",
-      time: "Yesterday",
-      location: "Student Center",
+      title: "Medical Emergency",
+      number: "080-2293-2501",
+      icon: <FaAmbulance className="text-2xl text-blue-500" />,
     },
     {
-      id: 3,
-      category: "Security Alert",
-      time: "2 days ago",
-      location: "North Parking Lot",
+      title: "Fire Emergency",
+      number: "080-2293-2333",
+      icon: <FaFire className="text-2xl text-orange-500" />,
+    },
+    {
+      title: "Emergency Helpline",
+      number: "112",
+      icon: <FaPhone className="text-2xl text-green-500" />,
     },
   ];
 
@@ -153,37 +158,55 @@ const Alert = () => {
     }, 1000);
   };
 
-  const cancelSOS = () => {
-    setCountdown(null);
-    setIsSOSActive(false);
+  const cancelSOS = async () => {
+    try {
+      setCountdown(null);
+      setIsSOSActive(false);
+      setMessage("");
+      setSelectedCategory("");
+      setLoading(false);
+    } catch (error) {
+      console.error("Error cancelling alert:", error);
+    }
   };
 
   const sendEmergencyAlert = async () => {
     setIsSOSActive(true);
-    // Implement your alert sending logic here
+    setLoading(true);
+
+    // Get the user ID from your auth context or local storage
+    const userId = localStorage.getItem("userId"); // Adjust based on your auth setup
+
     const alertData = {
       category: selectedCategory,
-      location,
-      message,
-      timestamp: new Date().toISOString(),
+      message: message || `Emergency alert: ${selectedCategory}`,
+      location: location || { lat: 0, lng: 0 },
+      status: "active",
+      user: userId, // Add the user ID
     };
 
     try {
-      // Send to your backend
-      console.log("Sending emergency alert:", alertData);
-      // await axios.post('/api/emergency-alerts', alertData);
+      const response = await createAlert(alertData);
+      console.log("Alert created:", response);
+      alert("Emergency alert has been sent to campus security.");
     } catch (error) {
       console.error("Error sending alert:", error);
+      setIsSOSActive(false);
+      alert(
+        "Failed to send emergency alert. Please call emergency services directly."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-900 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Emergency Header with SOS Button */}
-        <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg shadow-lg p-6 text-white relative">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center flex-grow">
+        {/* Emergency Header - Modified */}
+        <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
               <FaExclamationTriangle className="text-4xl mr-4" />
               <div>
                 <h1 className="text-3xl font-bold">Emergency Alert System</h1>
@@ -192,35 +215,7 @@ const Alert = () => {
                 </p>
               </div>
             </div>
-
-            {/* Moved SOS Button here */}
-            <div className="flex-shrink-0">
-              {!isSOSActive ? (
-                <button
-                  onClick={startSOS}
-                  disabled={!selectedCategory || countdown !== null}
-                  className="bg-white text-red-600 rounded-lg px-8 py-4 flex flex-col items-center justify-center text-xl font-bold shadow-lg hover:bg-gray-100 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {countdown ? (
-                    <span className="text-3xl">{countdown}</span>
-                  ) : (
-                    <>
-                      <FaExclamationTriangle className="text-3xl mb-1" />
-                      <span>SOS</span>
-                    </>
-                  )}
-                </button>
-              ) : (
-                <button
-                  onClick={cancelSOS}
-                  className="bg-gray-800 text-white rounded-lg px-8 py-4 flex items-center justify-center text-xl font-bold shadow-lg hover:bg-gray-700 transition-all"
-                >
-                  Cancel Alert
-                </button>
-              )}
-            </div>
-
-            <div className="hidden md:block ml-4">
+            <div className="hidden md:block">
               <div className="bg-white/20 rounded-lg px-4 py-2">
                 <span className="text-sm">Status: </span>
                 <span className="font-semibold">System Active</span>
@@ -231,6 +226,7 @@ const Alert = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left column - Map and Categories */}
           <div className="lg:col-span-2 space-y-6">
             {/* Map Container */}
             {location && (
@@ -251,13 +247,13 @@ const Alert = () => {
               </div>
             )}
 
-            {/* Emergency Categories */}
+            {/* Emergency Categories with Guidelines */}
             <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
               <h2 className="text-xl font-semibold mb-6 flex items-center text-white">
                 <FaBullhorn className="mr-2 text-red-500" />
                 Select Emergency Type
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                 {emergencyCategories.map((category) => (
                   <button
                     key={category.id}
@@ -277,34 +273,68 @@ const Alert = () => {
                   </button>
                 ))}
               </div>
+
+              {/* Emergency Guidelines - Moved here */}
+              {selectedCategory && (
+                <div className="mt-8 border-t border-gray-700 pt-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center text-white">
+                    <FaInfoCircle className="mr-2 text-blue-500" />
+                    Emergency Guidelines
+                  </h3>
+                  <ul className="space-y-3">
+                    {emergencyGuidelines[selectedCategory].map(
+                      (guideline, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center text-gray-300"
+                        >
+                          <span className="w-6 h-6 rounded-full bg-blue-900 text-blue-300 flex items-center justify-center mr-3 text-sm">
+                            {index + 1}
+                          </span>
+                          {guideline}
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
 
+          {/* Right column - Modified */}
           <div className="space-y-6">
-            {/* Emergency Guidelines */}
-            {selectedCategory && (
-              <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
-                <h2 className="text-xl font-semibold mb-4 flex items-center text-white">
-                  <FaInfoCircle className="mr-2 text-blue-500" />
-                  Emergency Guidelines
-                </h2>
-                <ul className="space-y-3">
-                  {emergencyGuidelines[selectedCategory].map(
-                    (guideline, index) => (
-                      <li
-                        key={index}
-                        className="flex items-center text-gray-300"
-                      >
-                        <span className="w-6 h-6 rounded-full bg-blue-900 text-blue-300 flex items-center justify-center mr-3 text-sm">
-                          {index + 1}
-                        </span>
-                        {guideline}
-                      </li>
-                    )
-                  )}
-                </ul>
+            {/* Emergency Contacts - New Section */}
+            <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
+              <h2 className="text-xl font-semibold mb-6 flex items-center text-white">
+                <FaPhone className="mr-2 text-red-500" />
+                Emergency Contacts
+              </h2>
+              <div className="space-y-4">
+                {emergencyContacts.map((contact, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      {contact.icon}
+                      <h3 className="text-white font-medium">
+                        {contact.title}
+                      </h3>
+                    </div>
+                    <p className="text-gray-300 text-sm mb-2">
+                      {contact.description}
+                    </p>
+                    <a
+                      href={`tel:${contact.number}`}
+                      className="flex items-center gap-2 text-blue-400 hover:text-blue-300"
+                    >
+                      <FaPhone className="text-sm" />
+                      <span className="font-mono">{contact.number}</span>
+                    </a>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
 
             {/* Message Input */}
             <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
@@ -312,36 +342,66 @@ const Alert = () => {
                 Additional Details
               </h2>
               <textarea
-                className="w-full p-4 border rounded-lg bg-gray-700 text-white border-gray-600 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full p-4 border rounded-lg bg-gray-700 text-white border-gray-600 
+                  focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none mb-4"
                 rows="4"
                 placeholder="Provide specific details about the emergency..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
-            </div>
 
-            {/* Recent Alerts */}
-            <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
-              <h2 className="text-xl font-semibold mb-4 flex items-center text-white">
-                <FaHistory className="mr-2 text-gray-400" />
-                Recent Alerts
-              </h2>
-              <div className="space-y-3">
-                {recentAlerts.map((alert) => (
-                  <div
-                    key={alert.id}
-                    className="flex items-center justify-between p-3 bg-gray-700 rounded-lg"
-                  >
-                    <div>
-                      <h3 className="font-medium text-white">
-                        {alert.category}
-                      </h3>
-                      <p className="text-sm text-gray-400">{alert.location}</p>
+              {/* SOS Button */}
+              {!isSOSActive ? (
+                <button
+                  onClick={startSOS}
+                  disabled={!selectedCategory || countdown !== null || loading}
+                  className={`w-full ${
+                    loading
+                      ? "bg-gray-500"
+                      : "bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400"
+                  } text-white rounded-lg py-4 flex items-center justify-center gap-3
+                  transition-all transform hover:scale-102 disabled:opacity-50 disabled:cursor-not-allowed
+                  shadow-lg hover:shadow-red-500/50`}
+                >
+                  {loading ? (
+                    <span>Sending Alert...</span>
+                  ) : countdown ? (
+                    <div className="text-5xl font-bold animate-pulse">
+                      {countdown}
                     </div>
-                    <span className="text-xs text-gray-400">{alert.time}</span>
+                  ) : (
+                    <>
+                      <FaExclamationTriangle className="text-2xl" />
+                      <span className="text-xl font-bold tracking-wider">
+                        SEND EMERGENCY ALERT
+                      </span>
+                    </>
+                  )}
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <div className="bg-red-900/30 p-3 rounded-lg">
+                    <p className="text-red-200 text-center font-medium">
+                      Emergency Alert Active
+                    </p>
                   </div>
-                ))}
-              </div>
+                  <button
+                    onClick={cancelSOS}
+                    className="w-full bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg 
+                      flex items-center justify-center gap-2 font-bold transition-all"
+                  >
+                    Cancel Emergency Alert
+                  </button>
+                </div>
+              )}
+
+              {isSOSActive && (
+                <div className="mt-4 p-4 bg-red-900/50 rounded-lg">
+                  <p className="text-red-200 text-sm text-center">
+                    Alert is active. Campus security has been notified.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

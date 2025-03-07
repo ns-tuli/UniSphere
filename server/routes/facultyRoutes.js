@@ -1,7 +1,16 @@
 import express from "express";
+import multer from "multer";
 import Faculty from "../models/faculty.js";
+import {
+  uploadToCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
 
 const router = express.Router();
+
+// Configure multer for file upload
+const storage = multer.diskStorage({});
+const upload = multer({ storage });
 
 // Get all faculty
 router.get("/", async (req, res) => {
@@ -26,10 +35,19 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Create new faculty
-router.post("/", async (req, res) => {
-  const faculty = new Faculty(req.body);
+// Create new faculty with image
+router.post("/", upload.single("image"), async (req, res) => {
   try {
+    const facultyData = req.body;
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file);
+      facultyData.image = {
+        public_id: result.public_id,
+        url: result.url,
+      };
+    }
+
+    const faculty = new Faculty(facultyData);
     const newFaculty = await faculty.save();
     res.status(201).json(newFaculty);
   } catch (error) {
@@ -37,14 +55,32 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Update faculty
-router.put("/:id", async (req, res) => {
+// Update faculty with image
+router.put("/:id", upload.single("image"), async (req, res) => {
   try {
+    const facultyData = req.body;
+    const existingFaculty = await Faculty.findById(req.params.id);
+
+    if (req.file) {
+      // Delete old image if exists
+      if (existingFaculty.image?.public_id) {
+        await deleteFromCloudinary(existingFaculty.image.public_id);
+      }
+
+      // Upload new image
+      const result = await uploadToCloudinary(req.file);
+      facultyData.image = {
+        public_id: result.public_id,
+        url: result.url,
+      };
+    }
+
     const updatedFaculty = await Faculty.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      facultyData,
       { new: true }
     );
+
     if (!updatedFaculty) {
       return res.status(404).json({ message: "Faculty not found" });
     }
@@ -54,13 +90,20 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// Delete faculty
+// Delete faculty and image
 router.delete("/:id", async (req, res) => {
   try {
-    const faculty = await Faculty.findByIdAndDelete(req.params.id);
+    const faculty = await Faculty.findById(req.params.id);
     if (!faculty) {
       return res.status(404).json({ message: "Faculty not found" });
     }
+
+    // Delete image from Cloudinary if exists
+    if (faculty.image?.public_id) {
+      await deleteFromCloudinary(faculty.image.public_id);
+    }
+
+    await Faculty.findByIdAndDelete(req.params.id);
     res.json({ message: "Faculty deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });

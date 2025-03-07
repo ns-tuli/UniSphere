@@ -91,7 +91,7 @@ const Roadmap = () => {
     <div className="flex min-h-screen bg-gradient-to-b from-[#FFFDF7] to-[#FFF9E6]">
       <div
         className="flex-1 transition-all duration-300"
-        style={{ marginLeft: "260px" }}
+        style={{ marginLeft: "0px" }}
       >
         {/* Header Section */}
         <div className="bg-gradient-to-r from-[#FFF9E6] to-[#FFFDF7] border-b border-amber-100 py-8 px-6 mb-8">

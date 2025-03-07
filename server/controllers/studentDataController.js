@@ -1,9 +1,10 @@
 import StudentData from "../models/studentData.js";
+import User from "../models/User.js";
 
 export const getStudentData = async (req, res) => {
   try {
-    const { studentId } = req.params;
-    const studentData = await StudentData.findOne({ studentId });
+    const userId = req.user._id; // Get user from auth middleware
+    const studentData = await StudentData.findOne({ user: userId });
 
     if (!studentData) {
       return res.status(404).json({ message: "Student data not found" });
@@ -17,7 +18,18 @@ export const getStudentData = async (req, res) => {
 
 export const createStudentData = async (req, res) => {
   try {
-    const newStudentData = new StudentData(req.body);
+    const userId = req.user.id; // Get user from auth middleware
+
+    // Check if student data already exists
+    const User = await User.findOne({ user: userId });
+    if (existingData) {
+      return res.status(400).json({ message: "Student data already exists" });
+    }
+
+    const newStudentData = new StudentData({
+      ...req.body,
+      user: userId,
+    });
     await newStudentData.save();
     res.status(201).json(newStudentData);
   } catch (error) {
@@ -27,9 +39,9 @@ export const createStudentData = async (req, res) => {
 
 export const updateStudentData = async (req, res) => {
   try {
-    const { studentId } = req.params;
+    const userId = req.user.id; // Get user from auth middleware
     const updatedData = await StudentData.findOneAndUpdate(
-      { studentId },
+      { user: userId },
       { ...req.body, lastUpdated: Date.now() },
       { new: true }
     );
@@ -46,8 +58,8 @@ export const updateStudentData = async (req, res) => {
 
 export const deleteStudentData = async (req, res) => {
   try {
-    const { studentId } = req.params;
-    const deletedData = await StudentData.findOneAndDelete({ studentId });
+    const userId = req.user._id; // Get user from auth middleware
+    const deletedData = await StudentData.findOneAndDelete({ user: userId });
 
     if (!deletedData) {
       return res.status(404).json({ message: "Student data not found" });

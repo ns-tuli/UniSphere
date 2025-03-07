@@ -7,9 +7,13 @@ import {
   FaCalendarAlt,
   FaUserTie,
   FaMapMarkedAlt,
+  FaSearch,
   FaBell,
   FaUsers,
   FaGraduationCap,
+  FaBook,
+  FaRobot,
+  FaQuestion,
 } from "react-icons/fa";
 
 export default function HomePage() {
@@ -89,11 +93,10 @@ export default function HomePage() {
     },
     {
       id: 8,
-      title: "Learning Hub",
-      icon: <FaGraduationCap className="text-3xl text-teal-600" />,
-      description:
-        "Access all learning tools, virtual classrooms, and resources",
-      path: "/LearningHub",
+      title: "LostFound",
+      icon: <FaSearch className="text-3xl text-indigo-600" />,
+      description: "Lost and found items on campus",
+      path: "/LostFound",
       color: "bg-teal-50",
       hoverColor: "hover:bg-teal-100",
       borderColor: "border-teal-200",
@@ -184,10 +187,10 @@ export default function HomePage() {
                   Virtual Classroom
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Video calling with online whiteboard
+                  Video calling, online whiteboard, and real-time chat
                 </p>
                 <Link
-                  to="/lobby"
+                  to="/Collab"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
                   Enter Classroom →
@@ -211,43 +214,44 @@ export default function HomePage() {
 
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  Smart Notes
+                  Discussion Forums
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Take notes that automatically sync to your profile
+                  Ask questions, share knowledge, and collaborate with peers
                 </p>
                 <Link
-                  to="/notes"
+                  to="/Forums"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
-                  Open Notes →
+                  Join Discussions →
                 </Link>
               </div>
 
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  Collaborative Editor
+                  Class Routine
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Code and study with friends in real-time
+                  Personalized class routines with automatic reminders and
+                  assignment tracking
                 </p>
                 <Link
-                  to="/learning-hub/collaborative-editor"
+                  to="/ClassRoutine"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
-                  Start Collaborating →
+                  View Routine →
                 </Link>
               </div>
 
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  Virtual Quiz System
+                  Quiz Test
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
                   Practice tests and assessments for all your courses
                 </p>
                 <Link
-                  to="/learning-hub/quiz"
+                  to="/QuizTest"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
                   Take Quiz →
@@ -256,16 +260,16 @@ export default function HomePage() {
 
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  Read Articles
+                  Skill Courses
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                  Get updated with the latest articles about your subject!
+                  Specialized courses to enhance your professional skills
                 </p>
                 <Link
-                  to="/readArticle"
+                  to="/learning-hub/skill-courses"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
-                  Browse Articles →
+                  Browse Courses →
                 </Link>
               </div>
 
@@ -277,7 +281,7 @@ export default function HomePage() {
                   All your notes in one place!
                 </p>
                 <Link
-                  to="/uploadNotes"
+                  to="/virtualQuiz"
                   className="text-teal-600 dark:text-teal-400 text-sm hover:underline"
                 >
                   Read your notes →
@@ -354,64 +358,6 @@ export default function HomePage() {
               className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium"
             >
               View all announcements →
-            </Link>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <div className="px-6 py-4 bg-gray-100 dark:bg-gray-700">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Quick Links
-            </h2>
-          </div>
-          <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link
-              to="/student-profile"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Student Profile
-            </Link>
-            <Link
-              to="/academic-records"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Academic Records
-            </Link>
-            <Link
-              to="/financial-aid"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Financial Aid
-            </Link>
-            <Link
-              to="/career-services"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Career Services
-            </Link>
-            <Link
-              to="/library"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Library Resources
-            </Link>
-            <Link
-              to="/health-services"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Health Services
-            </Link>
-            <Link
-              to="/housing"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Housing Portal
-            </Link>
-            <Link
-              to="/help-desk"
-              className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              Help Desk
             </Link>
           </div>
         </div>

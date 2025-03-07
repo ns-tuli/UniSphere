@@ -8,7 +8,7 @@ import {
   FaBuilding,
   FaClock,
   FaGraduationCap,
-  FaUser, // Add this import
+  FaUser,
 } from "react-icons/fa";
 import { getFaculty } from "../api/faculty";
 
@@ -123,72 +123,86 @@ const FacultyContact = () => {
           </div>
         )}
 
-        {/* Faculty Grid */}
+        {/* Faculty Grid - Updated with more compact and elegant cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredFaculty.map((faculty) => (
             <div
               key={faculty._id}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105"
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:translate-y-1 max-w-sm mx-auto w-full"
             >
-              <div className="p-6">
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="w-20 h-20 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
-                    <FaUser className="w-10 h-10 text-yellow-600 dark:text-yellow-400" />
+              {/* Card Header with Image */}
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+                {faculty.image?.url ? (
+                  <img
+                    src={faculty.image.url}
+                    alt={faculty.name}
+                    className="w-full h-56 object-cover object-center"
+                  />
+                ) : (
+                  <div className="w-full h-56 flex items-center justify-center bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-800">
+                    <FaUser className="w-20 h-20 text-yellow-600 dark:text-yellow-400 opacity-60" />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                      {faculty.name}
-                    </h3>
-                    <p className="text-yellow-600 dark:text-yellow-400 font-medium">
-                      {faculty.position}
-                    </p>
-                  </div>
+                )}
+                
+                {/* Name and Title Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
+                  <h3 className="text-xl font-bold text-white">
+                    {faculty.name}
+                  </h3>
+                  <p className="text-yellow-300 font-medium">
+                    {faculty.position}
+                  </p>
                 </div>
-
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center text-gray-600 dark:text-gray-300">
-                    <FaBuilding className="mr-2" />
-                    <span>{faculty.department}</span>
+              </div>
+              
+              {/* Card Content */}
+              <div className="p-5">
+                <div className="space-y-2.5 mb-4">
+                  <div className="flex items-center text-gray-700 dark:text-gray-300">
+                    <FaBuilding className="mr-2 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+                    <span className="text-sm">{faculty.department}</span>
                   </div>
-                  <div className="flex items-center text-gray-600 dark:text-gray-300">
-                    <FaEnvelope className="mr-2" />
+                  <div className="flex items-center text-gray-700 dark:text-gray-300">
+                    <FaEnvelope className="mr-2 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
                     <a
                       href={`mailto:${faculty.email}`}
-                      className="hover:text-yellow-600"
+                      className="text-sm hover:text-yellow-600 truncate"
                     >
                       {faculty.email}
                     </a>
                   </div>
                   {faculty.phone && (
-                    <div className="flex items-center text-gray-600 dark:text-gray-300">
-                      <FaPhone className="mr-2" />
-                      <span>{faculty.phone}</span>
+                    <div className="flex items-center text-gray-700 dark:text-gray-300">
+                      <FaPhone className="mr-2 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+                      <span className="text-sm">{faculty.phone}</span>
                     </div>
                   )}
                   {faculty.officeHours && (
-                    <div className="flex items-center text-gray-600 dark:text-gray-300">
-                      <FaClock className="mr-2" />
-                      <span>{faculty.officeHours}</span>
+                    <div className="flex items-center text-gray-700 dark:text-gray-300">
+                      <FaClock className="mr-2 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+                      <span className="text-sm">{faculty.officeHours}</span>
                     </div>
                   )}
                   {faculty.education && (
-                    <div className="flex items-center text-gray-600 dark:text-gray-300">
-                      <FaGraduationCap className="mr-2" />
-                      <span>{faculty.education}</span>
+                    <div className="flex items-center text-gray-700 dark:text-gray-300">
+                      <FaGraduationCap className="mr-2 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+                      <span className="text-sm">{faculty.education}</span>
                     </div>
                   )}
                 </div>
 
+                {/* Expertise Tags */}
                 {faculty.expertise && faculty.expertise.length > 0 && (
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-2 text-sm">
                       Expertise
                     </h4>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5">
                       {faculty.expertise.map((skill, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-full text-sm"
+                          className="px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-200 rounded-full text-xs"
                         >
                           {skill}
                         </span>
@@ -197,15 +211,16 @@ const FacultyContact = () => {
                   </div>
                 )}
 
-                <div className="flex justify-center space-x-4 mt-6">
+                {/* Social Links */}
+                <div className="flex justify-center space-x-4 mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
                   {faculty.linkedin && (
                     <a
                       href={faculty.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-700"
+                      className="text-blue-600 hover:text-blue-700 transition-colors"
                     >
-                      <FaLinkedin size={24} />
+                      <FaLinkedin size={20} />
                     </a>
                   )}
                   {faculty.googleScholar && (
@@ -213,9 +228,9 @@ const FacultyContact = () => {
                       href={faculty.googleScholar}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-red-600 hover:text-red-700"
+                      className="text-red-600 hover:text-red-700 transition-colors"
                     >
-                      <FaGoogle size={24} />
+                      <FaGoogle size={20} />
                     </a>
                   )}
                 </div>

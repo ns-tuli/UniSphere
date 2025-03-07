@@ -41,6 +41,14 @@ const facultySchema = new mongoose.Schema({
   googleScholar: {
     type: String,
   },
+  image: {
+    public_id: {
+      type: String,
+    },
+    url: {
+      type: String,
+    },
+  },
   available: {
     type: Boolean,
     default: true,
