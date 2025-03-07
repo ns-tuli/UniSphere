@@ -1,20 +1,24 @@
+import SendEmailPage from "../../pages/SendEmailPage";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import {
   FaExclamationTriangle,
   FaCheck,
   FaTimes,
-  FaPhoneVolume,
+  FaUserTie,
   FaMapMarkerAlt,
+  FaChevronDown,
 } from "react-icons/fa";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { getAlerts, updateAlert } from "../../api/Alert";
 
 const AlertManagement = () => {
-  const [alerts, setAlerts] = useState([]); // Initialize as empty array
+  const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedAlert, setSelectedAlert] = useState(null);
+  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAlerts();
@@ -39,7 +43,7 @@ const AlertManagement = () => {
     } catch (error) {
       console.error("Error fetching alerts:", error);
       setError(error.message || "Failed to fetch alerts");
-      setAlerts([]); // Set empty array on error
+      setAlerts([]);
     } finally {
       setLoading(false);
     }
@@ -71,6 +75,14 @@ const AlertManagement = () => {
     return colors[category] || "gray";
   };
 
+  const handleRoleSelect = (role) => {
+    // Navigate to SendEmailPage with role and alertId data
+    navigate("/SendEmailPage", {
+      state: { role, alertId: selectedAlert?._id },
+    });
+    setIsRoleDropdownOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
@@ -96,7 +108,6 @@ const AlertManagement = () => {
             <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
               <h2 className="text-xl font-semibold mb-6 text-white">
                 Active Alerts
-                {}
               </h2>
 
               {loading ? (
@@ -181,17 +192,27 @@ const AlertManagement = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 gap-6">
                     <div>
                       <h4 className="text-white font-semibold mb-4">Details</h4>
                       <p className="text-gray-300">{selectedAlert.message}</p>
                     </div>
+
+                    {/* Announcement Button */}
                     <div>
-                      <h4 className="text-white font-semibold mb-4">Contact</h4>
-                      <div className="flex items-center gap-3 text-gray-300">
-                        <FaPhoneVolume />
-                        <span>Emergency Services: 112</span>
-                      </div>
+                      <h4 className="text-white font-semibold mb-4">
+                        Contact Admin
+                      </h4>
+                      <button
+                        onClick={() =>
+                          navigate("/SendEmailPage", {
+                            state: { alertId: selectedAlert?._id },
+                          })
+                        }
+                        className="w-full flex justify-center items-center px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      >
+                        Announcement
+                      </button>
                     </div>
                   </div>
                 </div>
