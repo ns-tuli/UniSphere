@@ -17,6 +17,7 @@ import mealRoutes from "./routes/mealRoutes.js";
 import navigationRoutes from "./routes/navigationRoutes.js";
 import roadmapRoutes from "./routes/roadmapRoutes.js";
 import studentRoutes from "./routes/studentDataRoutes.js";
+import faqData from "./data/faq_training_data.js";  // Fix import path
 
 import { createServer } from "http";
 import initializeSocketServer from "./socket-server.js";
@@ -73,6 +74,25 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 app.options("/api/chat", cors());
 
+// Add this function before the chat endpoint
+const findRelevantFAQs = (message) => {
+  const relevantFAQs = [];
+  
+  // Search through all categories
+  Object.values(faqData.faqTrainingData).forEach(category => {
+    Object.values(category).forEach(subcategory => {
+      subcategory.forEach(qa => {
+        if (qa.question.toLowerCase().includes(message.toLowerCase()) ||
+            qa.answer.toLowerCase().includes(message.toLowerCase())) {
+          relevantFAQs.push(qa);
+        }
+      });
+    });
+  });
+  
+  return relevantFAQs.slice(0, 2); // Return top 2 matches
+};
+
 // Chat endpoint with specific CORS handling
 app.post("/api/chat", cors(), async (req, res) => {
   res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
@@ -85,8 +105,17 @@ app.post("/api/chat", cors(), async (req, res) => {
   }
 
   try {
-    const prompt = `You are UniSphere's helpful assistant. You specialize in university-related topics including academics, campus life, and student services. 
-    Please provide a helpful, friendly response to: ${message}`;
+    const relevantFAQs = findRelevantFAQs(message);
+    const faqContext = relevantFAQs.map(faq => 
+      `Q: ${faq.question}\nA: ${faq.answer}`
+    ).join('\n\n');
+
+    const prompt = `You are UniSphere's helpful assistant. You specialize in university-related topics including academics, campus life, and student services.
+    
+Here are some relevant FAQ entries that might help:
+${faqContext}
+
+Based on this context and your knowledge, please provide a helpful, friendly response to: ${message}`;
 
     const result = await model.generateContent(prompt);
     const botResponse = result.response.text();

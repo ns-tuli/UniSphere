@@ -1,8 +1,7 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import Footer from "./Footer";
-import { Award, Book, Brain, Terminal, Timer, Users } from "lucide-react";
-import Header from "./Header";
+import { Award, Book, Brain, Terminal, Timer, Users } from 'lucide-react';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Header from './Header'
 
 export function Landing() {
   return (
@@ -49,49 +48,49 @@ export function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
-                number: "50+",
-                label: "Cafeteria Menu Items",
-                description: "Daily updated menu with pricing and availability",
+                number: '50+',
+                label: 'Cafeteria Menu Items',
+                description: 'Daily updated menu with pricing and availability',
               },
               {
-                number: "100+",
-                label: "Bus Schedules",
-                description: "Real-time bus tracking and route information",
+                number: '100+',
+                label: 'Bus Schedules',
+                description: 'Real-time bus tracking and route information',
               },
               {
-                number: "500+",
-                label: "Class Timetable Entries",
-                description: "Up-to-date schedules with faculty details",
+                number: '500+',
+                label: 'Class Timetable Entries',
+                description: 'Up-to-date schedules with faculty details',
               },
               {
-                number: "20+",
-                label: "Campus Navigation Features",
+                number: '20+',
+                label: 'Campus Navigation Features',
                 description:
-                  "AR maps and GPS-based navigation for easy movement",
+                  'AR maps and GPS-based navigation for easy movement',
               },
               {
-                number: "1000+",
-                label: "Club & Event Announcements",
+                number: '1000+',
+                label: 'Club & Event Announcements',
                 description:
-                  "AI-integrated chatbot for real-time event updates",
+                  'AI-integrated chatbot for real-time event updates',
               },
               {
-                number: "99%",
-                label: "Learning Support",
+                number: '99%',
+                label: 'Learning Support',
                 description:
-                  "Video calls, online whiteboard, and text-based coding sessions",
+                  'Video calls, online whiteboard, and text-based coding sessions',
               },
               {
-                number: "200+",
-                label: "Skill-Specific Courses",
+                number: '200+',
+                label: 'Skill-Specific Courses',
                 description:
-                  "Personalized learning paths for university students",
+                  'Personalized learning paths for university students',
               },
               {
-                number: "95%",
-                label: "Student Engagement",
+                number: '95%',
+                label: 'Student Engagement',
                 description:
-                  "Collaborative text editor and interactive quiz system",
+                  'Collaborative text editor and interactive quiz system',
               },
             ].map((stat, index) => (
               <div
@@ -123,47 +122,47 @@ export function Landing() {
                 icon: (
                   <Terminal className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "Cafeteira Menu",
+                title: 'Cafeteira Menu',
                 description:
-                  "enjoy your meal and get the best food in the cafeteria.",
+                  'enjoy your meal and get the best food in the cafeteria.',
               },
               {
                 icon: (
                   <Brain className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "AI-Powered Learning and take quizzes",
+                title: 'AI-Powered Learning and take quizzes',
                 description:
-                  "Get personalized suggestions and help from our AI assistant as you code.",
+                  'Get personalized suggestions and help from our AI assistant as you code.',
               },
               {
                 icon: (
                   <Book className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "courses to get skilled",
-                description: "course to get skilled and learn new things.",
+                title: 'courses to get skilled',
+                description: 'course to get skilled and learn new things.',
               },
               {
                 icon: (
                   <Timer className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "Bus Schedules",
-                description: "monitor the bus schedules.",
+                title: 'Bus Schedules',
+                description: 'monitor the bus schedules.',
               },
               {
                 icon: (
                   <Users className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "complaint box",
+                title: 'complaint box',
                 description:
-                  "secure complaint system for hall, security, and academic issues.",
+                  'secure complaint system for hall, security, and academic issues.',
               },
               {
                 icon: (
                   <Award className="w-12 h-12 text-black dark:text-yellow-200 group-hover:text-gray-800 dark:group-hover:text-yellow-300 transition-colors duration-300" />
                 ),
-                title: "personalized study zone",
+                title: 'personalized study zone',
                 description:
-                  "get personalized study zone and learn at your own pace.",
+                  'get personalized study zone and learn at your own pace.',
               },
             ].map((feature, index) => (
               <div
@@ -194,26 +193,26 @@ export function Landing() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                name: "Raisa Hasan",
-                role: "CSE 3rd year",
+                name: 'Raisa Hasan',
+                role: 'CSE 3rd year',
                 image:
-                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
                 quote:
-                  "UniSphere helped me transition from a beginner to a confident developer. The AI suggestions are incredibly helpful!",
+                  'UniSphere helped me transition from a beginner to a confident developer. The AI suggestions are incredibly helpful!',
               },
               {
-                name: "Tasnim Akhter",
-                role: "Mechanical 2nd year",
+                name: 'Tasnim Akhter',
+                role: 'Mechanical 2nd year',
                 image:
-                  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
                 quote:
-                  "The interactive  environment and community support made learning enjoyable and effective.",
+                  'The interactive  environment and community support made learning enjoyable and effective.',
               },
               {
-                name: "Tasnim Hossain Orna",
-                role: "IPE 4rth year",
+                name: 'Tasnim Hossain Orna',
+                role: 'IPE 4rth year',
                 image:
-                  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                  'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
                 quote:
                   "I love the variety of courses available on UniSphere. It's a great platform for students to learn and grow together.",
               },
@@ -255,25 +254,25 @@ export function Landing() {
           <div className="max-w-3xl mx-auto space-y-6">
             {[
               {
-                question: "What features does the campus app offer?",
+                question: 'What features does the campus app offer?',
                 answer:
-                  "It includes cafeteria menus, bus schedules, class timetables, faculty contacts, campus navigation, AR maps, alerts, event management, virtual classrooms, note-taking, and a chatbot.",
+                  'It includes cafeteria menus, bus schedules, class timetables, faculty contacts, campus navigation, AR maps, alerts, event management, virtual classrooms, note-taking, and a chatbot.',
               },
               {
-                question: "How does the event management system work?",
+                question: 'How does the event management system work?',
                 answer:
-                  "AI recommends events based on interests, and announcements automatically appear in chatbot prompts for easy access.",
+                  'AI recommends events based on interests, and announcements automatically appear in chatbot prompts for easy access.',
               },
               {
                 question:
-                  "Can students report complaints or security concerns?",
+                  'Can students report complaints or security concerns?',
                 answer:
-                  "Yes, the complaint box allows reporting of security, hall, and mental health issues, along with career guidance support.",
+                  'Yes, the complaint box allows reporting of security, hall, and mental health issues, along with career guidance support.',
               },
               {
-                question: "Does the app support real-time collaboration?",
+                question: 'Does the app support real-time collaboration?',
                 answer:
-                  "Yes, students can use a collaborative text editor with Socket.io for group coding and learning.",
+                  'Yes, students can use a collaborative text editor with Socket.io for group coding and learning.',
               },
             ].map((faq, index) => (
               <div
@@ -307,33 +306,33 @@ export function Landing() {
             </div>
             {[
               {
-                title: "Quick Links",
+                title: 'Quick Links',
                 links: [
-                  { name: "Courses", path: "/courses" },
-                  { name: "Pricing", path: "/pricing" },
-                  { name: "About Us", path: "/about" },
-                  { name: "Contact", path: "/contact" },
+                  { name: 'Courses', path: '/courses' },
+                  { name: 'Pricing', path: '/pricing' },
+                  { name: 'About Us', path: '/about' },
+                  { name: 'Contact', path: '/contact' },
                 ],
               },
               {
-                title: "Resources",
+                title: 'Resources',
                 links: [
-                  { name: "Blog", path: "/blog" },
-                  { name: "Documentation", path: "/documentation" },
-                  { name: "Tutorials", path: "/tutorials" },
-                  { name: "FAQ", path: "/faq" },
+                  { name: 'Blog', path: '/blog' },
+                  { name: 'Documentation', path: '/documentation' },
+                  { name: 'Tutorials', path: '/tutorials' },
+                  { name: 'FAQ', path: '/faq' },
                 ],
               },
               {
-                title: "Connect",
+                title: 'Connect',
                 links: [
                   {
-                    name: "GitHub",
-                    path: "https://github.com/Siyam-Bhuiyan/UniSphere",
+                    name: 'GitHub',
+                    path: 'https://github.com/Siyam-Bhuiyan/UniSphere',
                   },
-                  { name: "Twitter", path: "#" },
-                  { name: "LinkedIn", path: "#" },
-                  { name: "Discord", path: "#" },
+                  { name: 'Twitter', path: '#' },
+                  { name: 'LinkedIn', path: '#' },
+                  { name: 'Discord', path: '#' },
                 ],
               },
             ].map((section, index) => (

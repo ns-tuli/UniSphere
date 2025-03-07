@@ -1,128 +1,174 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios"; // Add this import
-import { createAlert } from "../api/Alert";
+import 'leaflet/dist/leaflet.css';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  FaAmbulance,
+  FaBullhorn,
+  FaCarCrash,
+  FaCloudShowersHeavy,
+  FaExclamationCircle,
   FaExclamationTriangle,
+  FaFire,
+  FaInfoCircle,
   FaMapMarkerAlt,
   FaPhone,
-  FaFire,
-  FaAmbulance,
+  FaSearch,
+  FaLocationArrow,
+  FaCheckCircle,
   FaShieldAlt,
-  FaCarCrash,
-  FaExclamationCircle,
-  FaHistory,
-  FaInfoCircle,
-  FaBullhorn,
-  FaCloudShowersHeavy,
-} from "react-icons/fa";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+} from 'react-icons/fa';
+import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import { createAlert } from '../api/Alert';
+
+// Custom marker icon - ensures the marker displays correctly
+const customIcon = new L.Icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+  shadowSize: [41, 41]
+});
+
+// Component to handle map clicks and events
+function MapEventHandler({ onLocationUpdate }) {
+  const map = useMapEvents({
+    click: async (e) => {
+      const { lat, lng } = e.latlng;
+      onLocationUpdate({ lat, lng });
+      
+      // Fetch address for the clicked location
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
+        );
+        const data = await response.json();
+        if (data.display_name) {
+          onLocationUpdate({ lat, lng, address: data.display_name });
+        }
+      } catch (error) {
+        console.error('Error fetching address:', error);
+      }
+    }
+  });
+  
+  return null;
+}
 
 const Alert = () => {
   const [location, setLocation] = useState(null);
   const [countdown, setCountdown] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [message, setMessage] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [message, setMessage] = useState('');
   const [isSOSActive, setIsSOSActive] = useState(false);
   const [loading, setLoading] = useState(false);
+  const timerRef = useRef(null);
+  
+  // New state for location search
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [mapCenter, setMapCenter] = useState([23.838282, 90.357230]);
+  const [zoom, setZoom] = useState(13);
+  const mapRef = useRef(null);
 
   const emergencyCategories = [
     {
-      id: "fire",
-      label: "Fire Emergency",
-      color: "bg-red-500",
+      id: 'fire',
+      label: 'Fire Emergency',
+      color: 'bg-red-500',
       icon: <FaFire className="text-2xl mb-2" />,
     },
     {
-      id: "medical",
-      label: "Medical Emergency",
-      color: "bg-blue-500",
+      id: 'medical',
+      label: 'Medical Emergency',
+      color: 'bg-blue-500',
       icon: <FaAmbulance className="text-2xl mb-2" />,
     },
     {
-      id: "harassment",
-      label: "Harassment",
-      color: "bg-purple-500",
+      id: 'harassment',
+      label: 'Harassment',
+      color: 'bg-purple-500',
       icon: <FaShieldAlt className="text-2xl mb-2" />,
     },
     {
-      id: "accident",
-      label: "Accident",
-      color: "bg-yellow-500",
+      id: 'accident',
+      label: 'Accident',
+      color: 'bg-yellow-500',
       icon: <FaCarCrash className="text-2xl mb-2" />,
     },
     {
-      id: "security",
-      label: "Security Threat",
-      color: "bg-orange-500",
+      id: 'security',
+      label: 'Security Threat',
+      color: 'bg-orange-500',
       icon: <FaExclamationCircle className="text-2xl mb-2" />,
     },
     {
-      id: "natural",
-      label: "Natural Disaster",
-      color: "bg-teal-500",
+      id: 'natural',
+      label: 'Natural Disaster',
+      color: 'bg-teal-500',
       icon: <FaCloudShowersHeavy className="text-2xl mb-2" />,
     },
   ];
 
   const emergencyGuidelines = {
     fire: [
-      "Evacuate the building immediately",
-      "Pull the fire alarm",
-      "Call campus security",
-      "Do not use elevators",
+      'Evacuate the building immediately',
+      'Pull the fire alarm',
+      'Call campus security',
+      'Do not use elevators',
     ],
     medical: [
-      "Call emergency services",
+      'Call emergency services',
       "Don't move the injured person",
-      "Apply first aid if qualified",
-      "Clear the area",
+      'Apply first aid if qualified',
+      'Clear the area',
     ],
     harassment: [
-      "Move to a safe location",
-      "Document the incident",
-      "Contact campus security",
-      "Preserve any evidence",
+      'Move to a safe location',
+      'Document the incident',
+      'Contact campus security',
+      'Preserve any evidence',
     ],
     accident: [
-      "Check for injuries",
-      "Call emergency services",
-      "Document the scene",
-      "Exchange information if vehicle-related",
+      'Check for injuries',
+      'Call emergency services',
+      'Document the scene',
+      'Exchange information if vehicle-related',
     ],
     security: [
-      "Find safe shelter",
-      "Lock doors and windows",
-      "Stay quiet",
-      "Follow authority instructions",
+      'Find safe shelter',
+      'Lock doors and windows',
+      'Stay quiet',
+      'Follow authority instructions',
     ],
     natural: [
-      "Move to designated shelter",
-      "Stay away from windows",
-      "Follow evacuation routes",
-      "Monitor emergency broadcasts",
+      'Move to designated shelter',
+      'Stay away from windows',
+      'Follow evacuation routes',
+      'Monitor emergency broadcasts',
     ],
   };
 
   const emergencyContacts = [
     {
-      title: "Campus Security (24/7)",
-      number: "080-2293-2400",
+      title: 'Campus Security (24/7)',
+      number: '080-2293-2400',
       icon: <FaShieldAlt className="text-2xl text-red-500" />,
     },
     {
-      title: "Medical Emergency",
-      number: "080-2293-2501",
+      title: 'Medical Emergency',
+      number: '080-2293-2501',
       icon: <FaAmbulance className="text-2xl text-blue-500" />,
     },
     {
-      title: "Fire Emergency",
-      number: "080-2293-2333",
+      title: 'Fire Emergency',
+      number: '080-2293-2333',
       icon: <FaFire className="text-2xl text-orange-500" />,
     },
     {
-      title: "Emergency Helpline",
-      number: "112",
+      title: 'Emergency Helpline',
+      number: '112',
       icon: <FaPhone className="text-2xl text-green-500" />,
     },
   ];
@@ -131,25 +177,86 @@ const Alert = () => {
     // Get user's location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
+        position => {
+          const newLocation = {
             lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
+            lng: position.coords.longitude
+          };
+          setLocation(newLocation);
+          setMapCenter([newLocation.lat, newLocation.lng]);
+          setZoom(17);
+          fetchAddressForCoordinates(newLocation.lat, newLocation.lng);
         },
-        (error) => {
-          console.error("Error getting location:", error);
-        }
+        error => {
+          console.error('Error getting location:', error);
+        },
       );
     }
   }, []);
 
+  // Fetch address for coordinates
+  const fetchAddressForCoordinates = async (lat, lng) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
+      );
+      const data = await response.json();
+      if (data.display_name) {
+        setLocation(prev => ({ ...prev, address: data.display_name }));
+      }
+    } catch (error) {
+      console.error('Error fetching address:', error);
+    }
+  };
+
+  // Search for locations by name
+  const searchLocations = async () => {
+    if (!searchQuery.trim()) return;
+    
+    setIsSearching(true);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`
+      );
+      const data = await response.json();
+      setSearchResults(data);
+    } catch (error) {
+      console.error('Error searching locations:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Handle search form submission
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    searchLocations();
+  };
+
+  // Handle selecting a search result
+  const handleSelectSearchResult = (result) => {
+    const newLocation = {
+      lat: parseFloat(result.lat),
+      lng: parseFloat(result.lon),
+      address: result.display_name
+    };
+    setLocation(newLocation);
+    setMapCenter([newLocation.lat, newLocation.lng]);
+    setZoom(17);
+    setSearchResults([]);
+  };
+
+  // Handle location update from map click
+  const handleLocationUpdate = (newLocation) => {
+    setLocation(newLocation);
+  };
+
   const startSOS = () => {
     setCountdown(5);
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
+    timerRef.current = setInterval(() => {
+      setCountdown(prev => {
         if (prev <= 1) {
-          clearInterval(timer);
+          clearInterval(timerRef.current);
           sendEmergencyAlert();
           return null;
         }
@@ -159,15 +266,15 @@ const Alert = () => {
   };
 
   const cancelSOS = async () => {
-    try {
-      setCountdown(null);
-      setIsSOSActive(false);
-      setMessage("");
-      setSelectedCategory("");
-      setLoading(false);
-    } catch (error) {
-      console.error("Error cancelling alert:", error);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
+    setCountdown(null);
+    setIsSOSActive(false);
+    setMessage('');
+    setSelectedCategory('');
+    setLoading(false);
   };
 
   const sendEmergencyAlert = async () => {
@@ -175,25 +282,26 @@ const Alert = () => {
     setLoading(true);
 
     // Get the user ID from your auth context or local storage
-    const userId = localStorage.getItem("userId"); // Adjust based on your auth setup
+    const userId = localStorage.getItem('userId'); // Adjust based on your auth setup
 
     const alertData = {
       category: selectedCategory,
       message: message || `Emergency alert: ${selectedCategory}`,
       location: location || { lat: 0, lng: 0 },
-      status: "active",
+      address: location?.address,
+      status: 'active',
       user: userId, // Add the user ID
     };
 
     try {
       const response = await createAlert(alertData);
-      console.log("Alert created:", response);
-      alert("Emergency alert has been sent to campus security.");
+      console.log('Alert created:', response);
+      alert('Emergency alert has been sent to campus security.');
     } catch (error) {
-      console.error("Error sending alert:", error);
+      console.error('Error sending alert:', error);
       setIsSOSActive(false);
       alert(
-        "Failed to send emergency alert. Please call emergency services directly."
+        'Failed to send emergency alert. Please call emergency services directly.',
       );
     } finally {
       setLoading(false);
@@ -228,24 +336,110 @@ const Alert = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left column - Map and Categories */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Map Container */}
-            {location && (
-              <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700">
-                <div className="h-[500px] w-full">
-                  <MapContainer
-                    center={[location.lat, location.lng]}
-                    zoom={17}
-                    style={{ height: "100%", width: "100%" }}
-                    className="dark-map" // Add this class for dark theme
+            {/* Map Container with Search */}
+            <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700">
+              {/* Search Bar */}
+              <div className="p-4 bg-gray-700">
+                <form onSubmit={handleSearchSubmit} className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      placeholder="Search for a location..."
+                      className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchResults.length > 0 && (
+                      <div className="absolute z-10 mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        {searchResults.map((result, index) => (
+                          <div
+                            key={`${result.place_id}-${index}`}
+                            className="p-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700 last:border-0 text-white"
+                            onClick={() => handleSelectSearchResult(result)}
+                          >
+                            <div className="flex items-start">
+                              <FaMapMarkerAlt className="text-red-500 mt-1 mr-2 flex-shrink-0" />
+                              <span>{result.display_name}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="submit"
+                    className="bg-blue-600 hover:bg-blue-500 text-white rounded-lg px-4 flex items-center justify-center"
+                    disabled={isSearching}
                   >
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    <Marker position={[location.lat, location.lng]}>
-                      <Popup>Your current location</Popup>
-                    </Marker>
-                  </MapContainer>
-                </div>
+                    {isSearching ? 'Searching...' : <FaSearch />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                          position => {
+                            const newLocation = {
+                              lat: position.coords.latitude,
+                              lng: position.coords.longitude
+                            };
+                            setLocation(newLocation);
+                            setMapCenter([newLocation.lat, newLocation.lng]);
+                            setZoom(17);
+                            fetchAddressForCoordinates(newLocation.lat, newLocation.lng);
+                          },
+                          error => {
+                            console.error('Error getting location:', error);
+                          }
+                        );
+                      }
+                    }}
+                    className="bg-green-600 hover:bg-green-500 text-white rounded-lg px-4 flex items-center justify-center"
+                  >
+                    <FaLocationArrow />
+                  </button>
+                </form>
               </div>
-            )}
+
+              {/* Map Container */}
+              <div className="h-[400px] w-full">
+                <MapContainer
+                  center={mapCenter}
+                  zoom={zoom}
+                  ref={mapRef}
+                  style={{ height: '100%', width: '100%' }}
+                  className="dark-map"
+                >
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                  <MapEventHandler onLocationUpdate={handleLocationUpdate} />
+                  {location && (
+                    <Marker position={[location.lat, location.lng]} icon={customIcon}>
+                      <Popup>
+                        {location.address || 'Selected location'}
+                      </Popup>
+                    </Marker>
+                  )}
+                </MapContainer>
+              </div>
+
+              {/* Selected Location Display */}
+              {location?.address && (
+                <div className="p-4 bg-gray-700 border-t border-gray-600">
+                  <div className="bg-gray-800 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <FaCheckCircle className="text-green-500 mt-1 flex-shrink-0" />
+                      <div>
+                        <h3 className="font-medium text-white mb-1">Selected Location</h3>
+                        <p className="text-gray-300 text-sm">{location.address}</p>
+                        <div className="mt-2 text-xs text-gray-400">
+                          Coordinates: {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Emergency Categories with Guidelines */}
             <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
@@ -254,7 +448,7 @@ const Alert = () => {
                 Select Emergency Type
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                {emergencyCategories.map((category) => (
+                {emergencyCategories.map(category => (
                   <button
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
@@ -264,8 +458,8 @@ const Alert = () => {
                       flex flex-col items-center justify-center text-center
                       ${
                         selectedCategory === category.id
-                          ? "ring-4 ring-offset-2"
-                          : ""
+                          ? 'ring-4 ring-offset-2'
+                          : ''
                       }`}
                   >
                     {category.icon}
@@ -293,7 +487,7 @@ const Alert = () => {
                           </span>
                           {guideline}
                         </li>
-                      )
+                      ),
                     )}
                   </ul>
                 </div>
@@ -347,37 +541,49 @@ const Alert = () => {
                 rows="4"
                 placeholder="Provide specific details about the emergency..."
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={e => setMessage(e.target.value)}
               />
 
-              {/* SOS Button */}
+              {/* SOS Button or Countdown with Cancel */}
               {!isSOSActive ? (
-                <button
-                  onClick={startSOS}
-                  disabled={!selectedCategory || countdown !== null || loading}
-                  className={`w-full ${
-                    loading
-                      ? "bg-gray-500"
-                      : "bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400"
-                  } text-white rounded-lg py-4 flex items-center justify-center gap-3
-                  transition-all transform hover:scale-102 disabled:opacity-50 disabled:cursor-not-allowed
-                  shadow-lg hover:shadow-red-500/50`}
-                >
-                  {loading ? (
-                    <span>Sending Alert...</span>
-                  ) : countdown ? (
+                countdown ? (
+                  <div className="flex flex-col items-center">
                     <div className="text-5xl font-bold animate-pulse">
                       {countdown}
                     </div>
-                  ) : (
-                    <>
-                      <FaExclamationTriangle className="text-2xl" />
-                      <span className="text-xl font-bold tracking-wider">
-                        SEND EMERGENCY ALERT
-                      </span>
-                    </>
-                  )}
-                </button>
+                    <button
+                      onClick={cancelSOS}
+                      className="mt-2 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={startSOS}
+                    disabled={!selectedCategory || loading || !location}
+                    className={`w-full ${
+                      loading || !location
+                        ? 'bg-gray-500'
+                        : 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400'
+                    } text-white rounded-lg py-4 flex items-center justify-center gap-3
+                    transition-all transform hover:scale-102 disabled:opacity-50 disabled:cursor-not-allowed
+                    shadow-lg hover:shadow-red-500/50`}
+                  >
+                    {loading ? (
+                      <span>Sending Alert...</span>
+                    ) : !location ? (
+                      <span>Select a location first</span>
+                    ) : (
+                      <>
+                        <FaExclamationTriangle className="text-2xl" />
+                        <span className="text-xl font-bold tracking-wider">
+                          SOS
+                        </span>
+                      </>
+                    )}
+                  </button>
+                )
               ) : (
                 <div className="space-y-3">
                   <div className="bg-red-900/30 p-3 rounded-lg">
