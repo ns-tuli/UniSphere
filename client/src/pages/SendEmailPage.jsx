@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const SendEmailPage = () => {
+  const location = useLocation();
+  const { role, alertId } = location.state || {};
   const [notificationMessage, setNotificationMessage] = useState("");
 
   const handleSubmit = async (e) => {
@@ -12,7 +15,7 @@ const SendEmailPage = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ notificationMessage }),
+      body: JSON.stringify({ notificationMessage, role, alertId }),
     });
 
     const data = await response.json();
@@ -20,22 +23,22 @@ const SendEmailPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-semibold mb-4 text-center">
-          Send Notification to Users
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-900 to-yellow-300">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
+          Send Notification Email
         </h2>
         <form onSubmit={handleSubmit}>
           <textarea
             value={notificationMessage}
             onChange={(e) => setNotificationMessage(e.target.value)}
-            placeholder="Enter your one-liner notification..."
-            className="w-full p-2 border border-gray-300 rounded-md mb-4"
-            rows="3"
+            placeholder={`Enter your notification for ${role}...`}
+            className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="4"
           />
           <button
             type="submit"
-            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300"
           >
             Send Notification
           </button>

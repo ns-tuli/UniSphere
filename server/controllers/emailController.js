@@ -21,7 +21,7 @@ const sendEmailToUsers = async (req, res) => {
     const { notificationMessage } = req.body;
 
     // Fetch all users' emails (excluding admins)
-    const users = await User.find({ role: 'student' });
+    const users = await User.find();
 
     if (users.length === 0) {
       return res.status(404).json({ message: 'No users found.' });
