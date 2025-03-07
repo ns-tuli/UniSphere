@@ -5,19 +5,12 @@ import fs from "fs";
 import cloudinary from "cloudinary";
 import axios from "axios";
 import { createWorker } from "tesseract.js";
-import * as pdfjsLib from "pdfjs-dist";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Configure PDF.js worker
-pdfjsLib.getDocument = pdfjsLib.getDocument || {};
-pdfjsLib.GlobalWorkerOptions = pdfjsLib.GlobalWorkerOptions || {};
-pdfjsLib.GlobalWorkerOptions.workerSrc = path.resolve(
-  process.cwd(),
-  "node_modules",
-  "pdfjs-dist",
-  "build", 
-  "pdf.worker.js"
-);
+// Configure PDF.js for Node environment
+const DUMMY_CMAP_URL = "dummy";
+const DUMMY_CMAP_PACKED = true;
 
 // Configure Cloudinary
 cloudinary.config({
@@ -158,9 +151,15 @@ router.post("/extract-text", async (req, res) => {
         const uint8Array = new Uint8Array(buffer);
         console.log("Converting to Uint8Array, size:", uint8Array.length);
 
-        // Load and parse PDF
+        // Load and parse PDF with Node.js configuration
         console.log("Loading PDF document...");
-        const pdf = await pdfjsLib.getDocument({ data: uint8Array }).promise;
+        const loadingTask = pdfjsLib.getDocument({
+          data: uint8Array,
+          cMapUrl: DUMMY_CMAP_URL,
+          cMapPacked: DUMMY_CMAP_PACKED,
+        });
+
+        const pdf = await loadingTask.promise;
         console.log("PDF loaded successfully, pages:", pdf.numPages);
 
         let text = "";
