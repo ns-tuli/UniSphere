@@ -1,24 +1,23 @@
-import express from "express";
-import dotenv from "dotenv";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import path from "path";
 import connectDB from "./config/db.js";
-import mealRoutes from "./routes/mealRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import alertRoutes from "./routes/alerts.js";
+import virtualQuizRoutes from "./routes/api/virtualQuiz.js";
+import authRoutes from "./routes/authRoutes.js";
 import busRoutes from "./routes/busRoutes.js";
 import classRoutes from "./routes/classRoutes.js";
 import departmentRoutes from "./routes/departmentRoutes.js";
-import roadmapRoutes from "./routes/roadmapRoutes.js";
 import faculty from "./routes/facultyRoutes.js";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import navigationRoutes from "./routes/navigationRoutes.js";
-import alertRoutes from "./routes/alerts.js";
-import authRoutes from "./routes/authRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import studentRoutes from "./routes/studentDataRoutes.js";
 import lostFoundRoutes from "./routes/lostFoundRoutes.js";
-import path from "path";
-import virtualQuizRoutes from "./routes/api/virtualQuiz.js";
+import mealRoutes from "./routes/mealRoutes.js";
+import navigationRoutes from "./routes/navigationRoutes.js";
+import roadmapRoutes from "./routes/roadmapRoutes.js";
+import studentRoutes from "./routes/studentDataRoutes.js";
 
-import facultyRoutes from "./routes/facultyRoutes.js";
 import { createServer } from "http";
 import initializeSocketServer from "./socket-server.js";
 
@@ -28,14 +27,22 @@ connectDB();
 
 const app = express();
 
-// Middleware
+// CORS configuration - must be before any routes
 app.use(
   cors({
-    origin: ["http://localhost:5175", "http://localhost:3000"], // Add your frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: ["http://localhost:5175", "http://localhost:3000", "http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -66,7 +73,12 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 app.options("/api/chat", cors());
 
-app.post("/api/chat", async (req, res) => {
+// Chat endpoint with specific CORS handling
+app.post("/api/chat", cors(), async (req, res) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  
   const { message } = req.body;
   if (!message) {
     return res.status(400).json({ error: "Message is required" });
