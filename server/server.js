@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import express from "express";
 import path from "path";
 import connectDB from "./config/db.js";
+import faqData from "./data/faq_training_data.js"; // Fix import path
 import adminRoutes from "./routes/adminRoutes.js";
 import alertRoutes from "./routes/alerts.js";
 import virtualQuizRoutes from "./routes/api/virtualQuiz.js";
@@ -17,7 +18,6 @@ import mealRoutes from "./routes/mealRoutes.js";
 import navigationRoutes from "./routes/navigationRoutes.js";
 import roadmapRoutes from "./routes/roadmapRoutes.js";
 import studentRoutes from "./routes/studentDataRoutes.js";
-import faqData from "./data/faq_training_data.js";  // Fix import path
 
 import { createServer } from "http";
 import initializeSocketServer from "./socket-server.js";
@@ -122,7 +122,7 @@ Based on this context and your knowledge, please provide a helpful, friendly res
 
     return res.json({ text: botResponse });
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
+    console.error("Error calling Gemini API:", error);y
     return res.status(500).json({ error: "Failed to process your message" });
   }
 });
