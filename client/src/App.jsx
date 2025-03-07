@@ -36,13 +36,18 @@ import VirtualQuiz from "./components/VirtualQuiz";
 import QuizTest from "./components/QuizTest";
 import Calendar from "./components/Calendar";
 
+import Classroom from "./pages/Classroom";
+import Lobby from "./pages/Lobby"
+import NewsPortal from "./components/NewsPortal"; // Adjust the path as necessary
+import ClubManagement from "./components/Admin/ClubManagement";
+import EventManagement from "./components/Admin/EventManagement";
+import MyClubEvents from "./components/MyClubEvents";
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public routes that don't need the header */}
-          <Route path="/" element={<Landing />} />
+    <Router>
+      <Routes>
+        {/* Public routes that don't need the header */}
+        <Route path="/" element={<Landing />} />
 
           {/* Protected routes with header */}
           <Route element={<Layout />}>
@@ -138,6 +143,11 @@ function App() {
             <Route path="/test-auth" element={<TestAuth />} />
             <Route path="/LostFound" element={<LostFound />} />
             <Route path="/Calendar" element={<Calendar />} />
+            <Route path="/lobby" element={<Lobby />} />
+          <Route path="/readArticle" element={<NewsPortal />} />
+          <Route path="/Admin/Events" element={<EventManagement/>} />
+          <Route path="/Admin/Clubs" element={<ClubManagement />} />
+          <Route path="/MyClubEvents" element={<MyClubEvents />} />
           </Route>
         </Routes>
       </Router>

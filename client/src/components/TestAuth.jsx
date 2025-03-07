@@ -1,40 +1,40 @@
-import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const TestAuth = () => {
   const { login, register, logout, user } = useAuth();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    studentId: "",
-    department: "",
+    name: '',
+    email: '',
+    password: '',
+    studentId: '',
+    department: '',
   });
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
 
-  const handleRegister = async (e) => {
+  const handleRegister = async e => {
     e.preventDefault();
     try {
       await register(formData);
-      setMessage("Registration successful!");
+      setMessage('Registration successful!');
     } catch (error) {
-      setMessage(error.message || "Registration failed");
+      setMessage(error.message || 'Registration failed');
     }
   };
 
-  const handleLogin = async (e) => {
+  const handleLogin = async e => {
     e.preventDefault();
     try {
       await login(formData.email, formData.password);
-      setMessage("Login successful!");
+      setMessage('Login successful!');
     } catch (error) {
-      setMessage(error.message || "Login failed");
+      setMessage(error.message || 'Login failed');
     }
   };
 
   const handleLogout = () => {
     logout();
-    setMessage("Logged out successfully!");
+    setMessage('Logged out successfully!');
   };
 
   return (
@@ -44,7 +44,10 @@ const TestAuth = () => {
       {/* Current User Status */}
       <div className="mb-4 p-4 bg-gray-100 rounded">
         <h3 className="font-bold">Current User:</h3>
-        <pre>{user ? JSON.stringify(user, null, 2) : "No user logged in"}</pre>
+        <pre>
+          {user ? JSON.stringify(user, null, 2) : 'No user logged in'}
+          {user?._id}
+        </pre>
       </div>
 
       {/* Message Display */}
@@ -60,27 +63,25 @@ const TestAuth = () => {
           type="text"
           placeholder="Name"
           className="w-full p-2 border rounded"
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          onChange={e => setFormData({ ...formData, name: e.target.value })}
         />
         <input
           type="email"
           placeholder="Email"
           className="w-full p-2 border rounded"
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          onChange={e => setFormData({ ...formData, email: e.target.value })}
         />
         <input
           type="password"
           placeholder="Password"
           className="w-full p-2 border rounded"
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
+          onChange={e => setFormData({ ...formData, password: e.target.value })}
         />
         <input
           type="text"
           placeholder="Student ID"
           className="w-full p-2 border rounded"
-          onChange={(e) =>
+          onChange={e =>
             setFormData({ ...formData, studentId: e.target.value })
           }
         />
@@ -88,7 +89,7 @@ const TestAuth = () => {
           type="text"
           placeholder="Department"
           className="w-full p-2 border rounded"
-          onChange={(e) =>
+          onChange={e =>
             setFormData({ ...formData, department: e.target.value })
           }
         />
