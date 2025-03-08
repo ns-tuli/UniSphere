@@ -1,7 +1,4 @@
-import {
-  sendNotification,
-  getNotifications,
-} from "../services/notificationService.js";
+import { getNotifications, sendNotification, createNotification } from '../services/notificationService.js';
 import nodemailer from "nodemailer";
 
 // Configure nodemailer transporter

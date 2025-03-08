@@ -6,10 +6,13 @@
   "author": "",
   "type": "module",
   "main": "server.js",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server/server.js",
-    "build": "cd client && npm install && npm run build",
+    "build": "cd client && npm install && npm run build && cd .. && npm install",
     "start": "node server/server.js",
     "deploy": "vercel"
   },
