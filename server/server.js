@@ -41,6 +41,8 @@ import menuRoutes from "./routes/menuRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 
+import { fileURLToPath } from "url";
+
 dotenv.config();
 
 connectDB();
@@ -83,7 +85,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 // app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 // Get the current file's directory path using import.meta.url
-const __dirname = new URL(".", import.meta.url).pathname;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Create uploads directory if it doesn't exist
@@ -198,6 +201,25 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+// Add this after other middleware configurations but before routes
+app.use(
+  express.static(path.join(__dirname, "../client/dist"), {
+    setHeaders: (res, path) => {
+      if (path.endsWith(".js")) {
+        res.setHeader("Content-Type", "application/javascript");
+      }
+    },
+  })
+);
+
+// Replace multiple static configurations with a single one
+// Remove or comment out other express.static configurations
+
+// Move the catch-all route to be after API routes but before error handling
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../client/dist/index.html"));
+});
+
 // MongoDB connection setup
 mongoose
   .connect(process.env.MONGO, {
@@ -250,3 +272,5 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/lostfound", lostFoundRoutes);
+
+app.use(express.static(path.join(__dirname, "/client/build")));
