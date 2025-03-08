@@ -212,6 +212,14 @@ app.use(
   })
 );
 
+// Update static file serving
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+// Update catch-all route
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+});
+
 // Replace multiple static configurations with a single one
 // Remove or comment out other express.static configurations
 
