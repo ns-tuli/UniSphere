@@ -2,8 +2,10 @@ services:
   - type: web
     name: unisphere
     env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    buildCommand: |
+      npm install
+      cd client && npm install && npm run build && cd ..
+    startCommand: node server/server.js
     envVars:
       - key: NODE_VERSION
         value: 18.x

@@ -212,20 +212,23 @@ app.use(
   })
 );
 
-// Update static file serving
+// Update CORS configuration
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://unisphere.onrender.com"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// Remove duplicate CORS and static configurations
+// Keep only one static file serving configuration
 app.use(express.static(path.join(__dirname, "../client/dist")));
 
-// Update catch-all route
+// Single catch-all route at the end
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-});
-
-// Replace multiple static configurations with a single one
-// Remove or comment out other express.static configurations
-
-// Move the catch-all route to be after API routes but before error handling
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "../client/dist/index.html"));
 });
 
 // MongoDB connection setup
